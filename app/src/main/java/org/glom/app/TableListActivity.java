@@ -3,6 +3,7 @@ package org.glom.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 
 /**
@@ -49,6 +50,11 @@ public class TableListActivity extends FragmentActivity
                     .setActivateOnItemClick(true);
         }
 
+        //This lets us know what MIME Type to mention in the intent filter in the manifeset file,
+        //as long as we cannot register a more specific MIME type.
+        //Intent intent = getIntent();
+        //String type = intent.getType();
+        //Log.v("glomdebug", "type=" + type);
         // TODO: If exposing deep links into your app, handle intents here.
     }
 

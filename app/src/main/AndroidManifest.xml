@@ -15,6 +15,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- TODO: Is there any way to register a new MIME-type in Android?
+                Then we could specify application/x-glom instead of application/* -->
+                <data
+                    android:mimeType="text/plain"
+                    android:host="*"
+                    android:pathPattern=".*\\.glom"
+                    />
+            </intent-filter>
         </activity>
         <activity
             android:name="org.glom.app.TableDetailActivity"
