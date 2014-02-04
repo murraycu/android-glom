@@ -1,6 +1,6 @@
-package org.glom.web.shared.libglom;
+package org.glom.app.libglom;
 
-import org.glom.web.client.StringUtils;
+import android.text.TextUtils;
 
 public class Relationship extends Translatable {
 
@@ -14,7 +14,7 @@ public class Relationship extends Translatable {
 	 * @return
 	 */
 	public boolean getHasToTable() {
-		return !StringUtils.isEmpty(toTable);
+		return !TextUtils.isEmpty(toTable);
 	}
 
 	/**
@@ -28,8 +28,8 @@ public class Relationship extends Translatable {
 	 * @return
 	 */
 	public boolean getHasFields() {
-		return !StringUtils.isEmpty(toField) && !StringUtils.isEmpty(toTable) && !StringUtils.isEmpty(fromField)
-				&& !StringUtils.isEmpty(fromTable);
+		return !TextUtils.isEmpty(toField) && !TextUtils.isEmpty(toTable) && !TextUtils.isEmpty(fromField)
+				&& !TextUtils.isEmpty(fromTable);
 	}
 
 	/**
@@ -86,23 +86,23 @@ public class Relationship extends Translatable {
 			return false;
 		}
 
-		if (!StringUtils.equals(this.getName(), b.getName())) {
+		if (!TextUtils.equals(this.getName(), b.getName())) {
 			return false;
 		}
 
-		if (!StringUtils.equals(this.fromTable, b.fromTable)) {
+		if (!TextUtils.equals(this.fromTable, b.fromTable)) {
 			return false;
 		}
 
-		if (!StringUtils.equals(this.fromField, b.fromField)) {
+		if (!TextUtils.equals(this.fromField, b.fromField)) {
 			return false;
 		}
 
-		if (!StringUtils.equals(this.toTable, b.toTable)) {
+		if (!TextUtils.equals(this.toTable, b.toTable)) {
 			return false;
 		}
 
-		if (!StringUtils.equals(this.toField, b.toField)) {
+		if (!TextUtils.equals(this.toField, b.toField)) {
 			return false;
 		}
 

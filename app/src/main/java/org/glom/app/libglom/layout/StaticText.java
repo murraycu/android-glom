@@ -17,9 +17,9 @@
  * along with GWT-Glom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
-import org.glom.web.shared.libglom.Translatable;
+import org.glom.app.libglom.Translatable;
 
 /** The text of a LayoutItemText layout item.
  * The (optional) title is in the LayoutItemText itself.

@@ -48,38 +48,37 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.glom.web.server.Log;
-import org.glom.web.server.Utils;
-import org.glom.web.shared.DataItem;
-import org.glom.web.shared.libglom.CustomTitle;
-import org.glom.web.shared.libglom.Field;
-import org.glom.web.shared.libglom.Field.GlomFieldType;
-import org.glom.web.shared.libglom.NumericFormat;
-import org.glom.web.shared.libglom.Relationship;
-import org.glom.web.shared.libglom.Report;
-import org.glom.web.shared.libglom.Translatable;
-import org.glom.web.shared.libglom.layout.Formatting;
-import org.glom.web.shared.libglom.layout.LayoutGroup;
-import org.glom.web.shared.libglom.layout.LayoutItem;
-import org.glom.web.shared.libglom.layout.LayoutItemField;
-import org.glom.web.shared.libglom.layout.LayoutItemImage;
-import org.glom.web.shared.libglom.layout.LayoutItemNotebook;
-import org.glom.web.shared.libglom.layout.LayoutItemPortal;
-import org.glom.web.shared.libglom.layout.LayoutItemPortal.NavigationType;
-import org.glom.web.shared.libglom.layout.LayoutItemText;
-import org.glom.web.shared.libglom.layout.StaticText;
-import org.glom.web.shared.libglom.layout.TableToViewDetails;
-import org.glom.web.shared.libglom.layout.UsesRelationship;
-import org.glom.web.shared.libglom.layout.UsesRelationshipImpl;
-import org.glom.web.shared.libglom.layout.reportparts.LayoutItemGroupBy;
-import org.jooq.SQLDialect;
+import android.text.TextUtils;
+import android.util.Log;
+//import org.glom.web.server.Log;
+//import org.glom.web.server.Utils;
+import org.glom.app.libglom.DataItem;
+import org.glom.app.libglom.CustomTitle;
+import org.glom.app.libglom.Field;
+import org.glom.app.libglom.Field.GlomFieldType;
+import org.glom.app.libglom.NumericFormat;
+import org.glom.app.libglom.Relationship;
+import org.glom.app.libglom.Report;
+import org.glom.app.libglom.Translatable;
+import org.glom.app.libglom.Utils;
+import org.glom.app.libglom.layout.Formatting;
+import org.glom.app.libglom.layout.LayoutGroup;
+import org.glom.app.libglom.layout.LayoutItem;
+import org.glom.app.libglom.layout.LayoutItemField;
+import org.glom.app.libglom.layout.LayoutItemImage;
+import org.glom.app.libglom.layout.LayoutItemNotebook;
+import org.glom.app.libglom.layout.LayoutItemPortal;
+import org.glom.app.libglom.layout.LayoutItemPortal.NavigationType;
+import org.glom.app.libglom.layout.LayoutItemText;
+import org.glom.app.libglom.layout.StaticText;
+import org.glom.app.libglom.layout.TableToViewDetails;
+import org.glom.app.libglom.layout.UsesRelationship;
+import org.glom.app.libglom.layout.UsesRelationshipImpl;
+import org.glom.app.libglom.layout.reportparts.LayoutItemGroupBy;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import com.google.common.io.Files;
 
 /**
  * @author Murray Cumming <murrayc@openismus.com>
@@ -252,7 +251,7 @@ public class Document {
 
 		final Element rootNode = xmlDocument.getDocumentElement();
 		if (rootNode.getNodeName() != NODE_ROOT) {
-			Log.error("Unexpected XML root node name found: " + rootNode.getNodeName());
+			Log.v("android-glom", "Unexpected XML root node name found: " + rootNode.getNodeName());
 			return false;
 		}
 
@@ -260,7 +259,7 @@ public class Document {
 		//TODO: load() show complain (via an enum result) if the document format version is less than 7.
 		final String databaseTitleStr = rootNode.getAttribute(ATTRIBUTE_TITLE);
 		final String deprecatedDatabaseTitleStr = rootNode.getAttribute(DEPRECATED_ATTRIBUTE_DATABASE_TITLE);
-		if(!StringUtils.isEmpty(databaseTitleStr)) {
+		if(!TextUtils.isEmpty(databaseTitleStr)) {
 			databaseTitle.setTitleOriginal(databaseTitleStr);
 		} else {
 			databaseTitle.setTitleOriginal(deprecatedDatabaseTitleStr);
@@ -362,7 +361,7 @@ public class Document {
 
 	private double getAttributeAsDecimal(final Element node, final String attributeName) {
 		final String str = node.getAttribute(attributeName);
-		if (StringUtils.isEmpty(str)) {
+		if (TextUtils.isEmpty(str)) {
 			return 0;
 		}
 
@@ -418,7 +417,7 @@ public class Document {
 
 			final String locale = element.getAttribute(ATTRIBUTE_TRANSLATION_LOCALE);
 			final String translatedTitle = element.getAttribute(ATTRIBUTE_TRANSLATION_TITLE);
-			if (!StringUtils.isEmpty(locale) && !StringUtils.isEmpty(translatedTitle)) {
+			if (!TextUtils.isEmpty(locale) && !TextUtils.isEmpty(translatedTitle)) {
 				title.setTitle(translatedTitle, locale);
 
 				// Remember any new translation locales in our cached list:
@@ -516,7 +515,7 @@ public class Document {
 
 					final Element elementValue = (Element) nodeValue;
 					final String fieldName = elementValue.getAttribute(ATTRIBUTE_COLUMN);
-					if (StringUtils.isEmpty(fieldName)) {
+					if (TextUtils.isEmpty(fieldName)) {
 						continue;
 					}
 
@@ -612,7 +611,7 @@ public class Document {
 			// TODO
 			break;
 		default:
-			Log.error(documentID, "getNodeTextChildAsValue(): unexpected or invalid field type.");
+			Log.e("android-glom", documentID + ": getNodeTextChildAsValue(): unexpected or invalid field type.");
 			break;
 		}
 
@@ -648,7 +647,7 @@ public class Document {
 			str = ""; // TODO
 			break;
 		default:
-			Log.error(documentID, "setNodeTextChildAsValue(): unexpected or invalid field type.");
+			Log.e("android-glom", documentID + ": setNodeTextChildAsValue(): unexpected or invalid field type.");
 			break;
 		}
 
@@ -691,7 +690,7 @@ public class Document {
 				}
 
 				final String fieldName = field.getName();
-				if (StringUtils.isEmpty(fieldName)) {
+				if (TextUtils.isEmpty(fieldName)) {
 					continue;
 				}
 
@@ -785,7 +784,7 @@ public class Document {
 				} else if (name.equals(LAYOUT_NAME_LIST)) {
 					info.layoutGroupsList = listLayoutGroups;
 				} else {
-					Log.error(documentID, "loadTableNode(): unexpected layout name: " + name);
+					Log.e("android-glom", documentID + ": loadTableNode(): unexpected layout name: " + name);
 				}
 			}
 		}
@@ -881,26 +880,26 @@ public class Document {
 
 		final String relationshipName = element.getAttribute(ATTRIBUTE_RELATIONSHIP_NAME);
 		Relationship relationship = null;
-		if (!StringUtils.isEmpty(relationshipName)) {
+		if (!TextUtils.isEmpty(relationshipName)) {
 			// std::cout << "  debug in : tableName=" << tableName << ", relationshipName=" << relationship_name <<
 			// std::endl;
 			relationship = getRelationship(tableName, relationshipName);
 			item.setRelationship(relationship);
 
 			if (relationship == null) {
-				Log.error("relationship not found: " + relationshipName + ", in table: " + tableName);
+				Log.e("android-glom", "relationship not found: " + relationshipName + ", in table: " + tableName);
 			}
 		}
 
 		// TODO: Unit test loading of doubly-related fields.
 		final String relatedRelationshipName = element.getAttribute(ATTRIBUTE_RELATED_RELATIONSHIP_NAME);
-		if (!StringUtils.isEmpty(relatedRelationshipName) && (relationship != null)) {
+		if (!TextUtils.isEmpty(relatedRelationshipName) && (relationship != null)) {
 			final Relationship relatedRelationship = getRelationship(relationship.getToTable(), relatedRelationshipName);
 			item.setRelatedRelationship(relatedRelationship);
 
 			if (relatedRelationship == null) {
-				Log.error("related relationship not found in table=" + relationship.getToTable() + ",  name="
-						+ relatedRelationshipName);
+				Log.e("android-glom", "related relationship not found in table=" + relationship.getToTable() + ",  name="
+                        + relatedRelationshipName);
 			}
 		}
 	}
@@ -1024,10 +1023,10 @@ public class Document {
 		final DataItem image = getNodeTextChildAsValue(elementValue, Field.GlomFieldType.TYPE_IMAGE);
 		
 		//This lets the client-side request the full data from our OnlineGlomImage service.
-		final String layoutPath = Utils.buildImageDataUrl(documentID, path.tableName, path.layoutName, path.indices);
-		image.setImageDataUrl(layoutPath);
+		//TODO: final String layoutPath = Utils.buildImageDataUrl(documentID, path.tableName, path.layoutName, path.indices);
+		//image.setImageDataUrl(layoutPath);
 		
-		item.setImage(image);
+		//item.setImage(image);
 	}
 
 	/**
@@ -1118,7 +1117,7 @@ public class Document {
 		final Element elementNavigation = getElementByName(element, NODE_DATA_LAYOUT_PORTAL_NAVIGATIONRELATIONSHIP);
 		if (elementNavigation != null) {
 			final String navigationTypeAsString = elementNavigation.getAttribute(ATTRIBUTE_PORTAL_NAVIGATION_TYPE);
-			if (StringUtils.isEmpty(navigationTypeAsString)
+			if (TextUtils.isEmpty(navigationTypeAsString)
 					|| navigationTypeAsString.equals(ATTRIBUTE_PORTAL_NAVIGATION_TYPE_AUTOMATIC)) {
 				portal.setNavigationType(LayoutItemPortal.NavigationType.NAVIGATION_AUTOMATIC);
 			} else if (navigationTypeAsString.equals(ATTRIBUTE_PORTAL_NAVIGATION_TYPE_NONE)) {
@@ -1142,7 +1141,7 @@ public class Document {
 
 		Field.GlomFieldType fieldType = Field.GlomFieldType.TYPE_INVALID;
 		final String fieldTypeStr = element.getAttribute(ATTRIBUTE_FIELD_TYPE);
-		if (!StringUtils.isEmpty(fieldTypeStr)) {
+		if (!TextUtils.isEmpty(fieldTypeStr)) {
 			if (fieldTypeStr.equals("Boolean")) {
 				fieldType = Field.GlomFieldType.TYPE_BOOLEAN;
 			} else if (fieldTypeStr.equals("Date")) {
@@ -1371,7 +1370,7 @@ public class Document {
 	public Relationship getFieldUsedInRelationshipToOne(final String tableName, final LayoutItemField layoutField) {
 
 		if (layoutField == null) {
-			Log.error("layoutField was null");
+			Log.e("android-glom", "layoutField was null");
 			return null;
 		}
 
@@ -1384,7 +1383,7 @@ public class Document {
 			// if(tableUsed == GLOM_STANDARD_TABLE_PREFS_TABLE_NAME)
 			// return result;
 
-			Log.error("table not found: " + tableUsed);
+			Log.e("android-glom", "table not found: " + tableUsed);
 			return null;
 		}
 
@@ -1393,7 +1392,7 @@ public class Document {
 		for (final Relationship relationship : info.relationshipsMap.values()) {
 			if (relationship != null) {
 				// If the relationship uses the field
-				if (StringUtils.equals(relationship.getFromField(), fieldName)) {
+				if (TextUtils.equals(relationship.getFromField(), fieldName)) {
 					// if the to_table is not hidden:
 					if (!getTableIsHidden(relationship.getToTable())) {
 						// TODO_Performance: The use of this convenience method means we get the full relationship
@@ -1435,7 +1434,7 @@ public class Document {
 	public Relationship getRelationship(final String tableName, final String relationshipName) {
 		final TableInfo info = getTableInfo(tableName);
 		if (info == null) {
-			Log.error("table not found: " + tableName);
+			Log.e("android-glom", "table not found: " + tableName);
 			return null;
 		}
 
@@ -1473,17 +1472,17 @@ public class Document {
 			navigationTableName = directlyRelatedTableName;
 		}
 
-		if (StringUtils.isEmpty(navigationTableName)) {
+		if (TextUtils.isEmpty(navigationTableName)) {
 			return null;
 		}
 
 		if (this == null) {
-			Log.error("document is null.");
+			Log.e("android-glom", "document is null.");
 			return null;
 		}
 
 		if (getTableIsHidden(navigationTableName)) {
-			Log.error("navigation_table_name indicates a hidden table: " + navigationTableName);
+			Log.e("android-glom", "navigation_table_name indicates a hidden table: " + navigationTableName);
 			return null;
 		}
 
@@ -1573,7 +1572,7 @@ public class Document {
 		// Find the first field that is from a non-hidden related table.
 
 		if (this == null) {
-			Log.error("document is null");
+			Log.e("android-glom", "document is null");
 			return null;
 		}
 
@@ -1587,7 +1586,7 @@ public class Document {
 					final Relationship relationship = getFieldUsedInRelationshipToOne(parent_table_name, field);
 					if (relationship != null) {
 						final String table_name = relationship.getToTable();
-						if (!StringUtils.isEmpty(table_name)) {
+						if (!TextUtils.isEmpty(table_name)) {
 							if (!(getTableIsHidden(table_name))) {
 								return relationship;
 							}
@@ -1606,7 +1605,7 @@ public class Document {
 	 * @return The destination table name for navigation.
 	 */
 	public String getLayoutItemFieldShouldHaveNavigation(final String tableName, final LayoutItemField layoutItem) {
-		if (StringUtils.isEmpty(tableName)) {
+		if (TextUtils.isEmpty(tableName)) {
 			return null;
 		}
 
@@ -1646,271 +1645,6 @@ public class Document {
 		return isExample;
 	}
 
-	/**
-	 * @return
-	 */
-	public boolean save() {
-		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = null;
-		try {
-			documentBuilder = dbf.newDocumentBuilder();
-		} catch (final ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-
-		final org.w3c.dom.Document doc = documentBuilder.newDocument();
-		final Element rootNode = doc.createElement(NODE_ROOT);
-		doc.appendChild(rootNode);
-
-		rootNode.setAttribute(ATTRIBUTE_TITLE, databaseTitle.getTitleOriginal());
-		rootNode.setAttribute(ATTRIBUTE_TRANSLATION_ORIGINAL_LOCALE, translationOriginalLocale);
-		setAttributeAsBoolean(rootNode, ATTRIBUTE_IS_EXAMPLE, isExample);
-
-		String strHostingMode = "";
-		if (hostingMode == HostingMode.HOSTING_MODE_POSTGRES_CENTRAL) {
-			strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_CENTRAL;
-		} else if (hostingMode == HostingMode.HOSTING_MODE_POSTGRES_SELF) {
-			strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_SELF;
-		} else if (hostingMode == HostingMode.HOSTING_MODE_MYSQL_CENTRAL) {
-			strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_MYSQL_CENTRAL;
-		} else if (hostingMode == HostingMode.HOSTING_MODE_MYSQL_SELF) {
-			strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_MYSQL_SELF;
-		} else if (hostingMode == HostingMode.HOSTING_MODE_SQLITE) {
-			strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_SQLITE;
-		} else {
-			strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_SELF;
-		}
-		final Element nodeConnection = createElement(doc, rootNode, NODE_CONNECTION);
-		nodeConnection.setAttribute(ATTRIBUTE_CONNECTION_HOSTING_MODE, strHostingMode);
-		nodeConnection.setAttribute(ATTRIBUTE_CONNECTION_SERVER, connectionServer);
-		nodeConnection.setAttribute(ATTRIBUTE_CONNECTION_DATABASE, connectionDatabase);
-		setAttributeAsDecimal(nodeConnection, ATTRIBUTE_CONNECTION_PORT, connectionPort);
-
-		// for all tables:
-		for (final TableInfo table : tablesMap.values()) {
-			final Element nodeTable = createElement(doc, rootNode, NODE_TABLE);
-			saveTableNodeBasic(doc, nodeTable, table);
-			saveTableLayouts(doc, nodeTable, table);
-		}
-
-		final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		Transformer transformer;
-		try {
-			transformer = transformerFactory.newTransformer();
-		} catch (final TransformerConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-
-		// TODO: This probably distorts text nodes,
-		// so careful when we load/save them. For instance, scripts.
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-		// Make sure that the parent directory exists:
-		final File file = new File(fileURI);
-		try {
-			Files.createParentDirs(file);
-		} catch (final IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-
-		final DOMSource source = new DOMSource(doc);
-		final StreamResult result = new StreamResult(file);
-
-		// Output to console for testing
-		// StreamResult result = new StreamResult(System.out);
-
-		try {
-			transformer.transform(source, result);
-		} catch (final TransformerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * @param doc
-	 * @param nodeTable
-	 * @param table
-	 */
-	private void saveTableLayouts(final org.w3c.dom.Document doc, final Element tableNode, final TableInfo table) {
-
-		final Element layoutsNode = createElement(doc, tableNode, NODE_DATA_LAYOUTS);
-
-		final Element nodeLayoutDetails = createElement(doc, layoutsNode, NODE_DATA_LAYOUT);
-		nodeLayoutDetails.setAttribute(ATTRIBUTE_NAME, LAYOUT_NAME_DETAILS);
-		saveLayoutNode(doc, nodeLayoutDetails, table.layoutGroupsDetails);
-
-		final Element nodeLayoutList = createElement(doc, layoutsNode, NODE_DATA_LAYOUT);
-		nodeLayoutList.setAttribute(ATTRIBUTE_NAME, LAYOUT_NAME_LIST);
-		saveLayoutNode(doc, nodeLayoutList, table.layoutGroupsList);
-
-		final Element reportsNode = createElement(doc, tableNode, NODE_REPORTS);
-		for (final Report report : table.reportsMap.values()) {
-			final Element element = createElement(doc, reportsNode, NODE_REPORT);
-			saveReport(doc, element, report);
-		}
-
-	}
-
-	/**
-	 * @param doc
-	 * @param element
-	 * @param report
-	 */
-	private void saveReport(final org.w3c.dom.Document doc, final Element element, final Report report) {
-		// TODO Auto-generated method stub
-
-	}
-
-	private void saveLayoutNode(final org.w3c.dom.Document doc, final Element element,
-			final List<LayoutGroup> layoutGroups) {
-		final Element elementGroups = createElement(doc, element, NODE_DATA_LAYOUT_GROUPS);
-
-		for (final LayoutGroup layoutGroup : layoutGroups) {
-			if (layoutGroup instanceof LayoutItemNotebook) {
-				final Element elementGroup = createElement(doc, elementGroups, NODE_DATA_LAYOUT_NOTEBOOK);
-				saveDataLayoutGroup(doc, elementGroup, layoutGroup);
-			} else if (layoutGroup instanceof LayoutItemPortal) {
-				final Element elementGroup = createElement(doc, elementGroups, NODE_DATA_LAYOUT_PORTAL);
-				saveDataLayoutPortal(doc, elementGroup, (LayoutItemPortal) layoutGroup);
-			} else {
-				final Element elementGroup = createElement(doc, elementGroups, NODE_DATA_LAYOUT_GROUP);
-				saveDataLayoutGroup(doc, elementGroup, layoutGroup);
-			}
-		}
-
-	}
-
-	/**
-	 * @param doc
-	 * @param elementGroup
-	 * @param layoutGroup
-	 */
-	private void saveDataLayoutPortal(final org.w3c.dom.Document doc, final Element element,
-			final LayoutItemPortal portal) {
-		saveUsesRelationship(element, portal);
-		saveDataLayoutGroup(doc, element, portal);
-
-		final Element elementNavigation = createElement(doc, element, NODE_DATA_LAYOUT_PORTAL_NAVIGATIONRELATIONSHIP);
-		String navigationTypeAsString = "";
-		switch (portal.getNavigationType()) {
-		case NAVIGATION_AUTOMATIC:
-			navigationTypeAsString = ATTRIBUTE_PORTAL_NAVIGATION_TYPE_AUTOMATIC;
-			break;
-		case NAVIGATION_NONE:
-			navigationTypeAsString = ATTRIBUTE_PORTAL_NAVIGATION_TYPE_NONE;
-			break;
-		case NAVIGATION_SPECIFIC:
-			navigationTypeAsString = ATTRIBUTE_PORTAL_NAVIGATION_TYPE_SPECIFIC;
-			break;
-		default:
-			break;
-		}
-		elementNavigation.setAttribute(ATTRIBUTE_PORTAL_NAVIGATION_TYPE, navigationTypeAsString);
-
-		if (navigationTypeAsString.equals(ATTRIBUTE_PORTAL_NAVIGATION_TYPE_SPECIFIC)) {
-			// Write the specified relationship name:
-			saveUsesRelationship(elementNavigation, portal.getNavigationRelationshipSpecific());
-		}
-	}
-
-	/**
-	 * @param doc
-	 * @param elementGroup
-	 * @param layoutGroup
-	 */
-	private void saveDataLayoutGroup(final org.w3c.dom.Document doc, final Element nodeGroup, final LayoutGroup group) {
-		saveTitle(doc, nodeGroup, group);
-
-		// Write the column count:
-		setAttributeAsDecimal(nodeGroup, ATTRIBUTE_LAYOUT_GROUP_COLUMNS_COUNT, group.getColumnCount());
-
-		// Write the child items:
-		for (final LayoutItem layoutItem : group.getItems()) {
-			if (layoutItem instanceof LayoutItemPortal) {
-				final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_PORTAL);
-				saveDataLayoutPortal(doc, element, (LayoutItemPortal) layoutItem);
-			} else if (layoutItem instanceof LayoutItemNotebook) {
-				final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_NOTEBOOK);
-				saveDataLayoutGroup(doc, element, (LayoutItemNotebook) layoutItem);
-			} else if (layoutItem instanceof LayoutGroup) {
-				final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_GROUP);
-				saveDataLayoutGroup(doc, element, (LayoutGroup) layoutItem);
-			} else if (layoutItem instanceof LayoutItemField) {
-				final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_ITEM);
-				saveDataLayoutItemField(doc, element, (LayoutItemField) layoutItem);
-			} else if (layoutItem instanceof LayoutItemGroupBy) {
-				final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_ITEM_GROUPBY);
-				saveDataLayoutItemGroupBy(doc, element, (LayoutItemGroupBy) layoutItem);
-			}
-		}
-	}
-
-	/**
-	 * @param doc
-	 * @param element
-	 * @param layoutItem
-	 */
-	private void saveDataLayoutItemGroupBy(final org.w3c.dom.Document doc, final Element element,
-			final LayoutItemGroupBy item) {
-		saveDataLayoutGroup(doc, element, item);
-
-		final Element elementGroupBy = createElement(doc, element, NODE_GROUPBY);
-		saveDataLayoutItemField(doc, elementGroupBy, item.getFieldGroupBy());
-
-		final Element elementSecondaryFields = createElement(doc, element, NODE_SECONDARY_FIELDS);
-		final Element elementLayoutGroup = createElement(doc, elementSecondaryFields, NODE_DATA_LAYOUT_GROUP);
-		saveDataLayoutGroup(doc, elementLayoutGroup, item.getSecondaryFields());
-	}
-
-	/**
-	 * @param doc
-	 * @param element
-	 * @param layoutItem
-	 */
-	private void saveDataLayoutItemField(final org.w3c.dom.Document doc, final Element element,
-			final LayoutItemField item) {
-		element.setAttribute(ATTRIBUTE_NAME, item.getName());
-		saveUsesRelationship(element, item);
-
-		final CustomTitle customTitle = item.getCustomTitle();
-		if (customTitle != null) {
-			final Element elementCustomTitle = createElement(doc, element, NODE_CUSTOM_TITLE);
-			setAttributeAsBoolean(elementCustomTitle, ATTRIBUTE_CUSTOM_TITLE_USE_CUSTOM,
-					customTitle.getUseCustomTitle());
-			saveTitle(doc, elementCustomTitle, customTitle); // LayoutItemField doesn't use its own title member.
-		}
-
-		setAttributeAsBoolean(element, ATTRIBUTE_USE_DEFAULT_FORMATTING, item.getUseDefaultFormatting());
-
-		final Element elementFormatting = createElement(doc, element, NODE_FORMATTING);
-		saveFormatting(elementFormatting, item.getFormatting());
-	}
-
-	/**
-	 * @param element
-	 * @param item
-	 */
-	private void saveUsesRelationship(final Element element, final UsesRelationship item) {
-		final Relationship relationship = item.getRelationship();
-		if (relationship != null) {
-			element.setAttribute(ATTRIBUTE_RELATIONSHIP_NAME, relationship.getName());
-		}
-
-		final Relationship relatedRelationship = item.getRelatedRelationship();
-		if (relatedRelationship != null) {
-			element.setAttribute(ATTRIBUTE_RELATED_RELATIONSHIP_NAME, relatedRelationship.getName());
-		}
-	}
 
 	/**
 	 * @param rootNode
@@ -1925,7 +1659,7 @@ public class Document {
 
 	public String getSelfHostedDirectoryPath() {
 		final String uriFile = getFileURI();
-		if (!StringUtils.isEmpty(uriFile)) {
+		if (!TextUtils.isEmpty(uriFile)) {
 			final File file = new File(uriFile);
 			final File parent = file.getParentFile();
 			if (parent == null) {
@@ -2003,18 +1737,18 @@ public class Document {
 			final String tableName, final String layoutName, final String layoutPath) throws IOException {
 		final List<LayoutGroup> listLayoutGroups = getDataLayoutGroups(layoutName, tableName);
 		if(listLayoutGroups == null) {
-			Log.error("The layout with the specified name was not found. tableName=" + tableName + ", layoutName=" + layoutName);
+			Log.e("android-glom", "The layout with the specified name was not found. tableName=" + tableName + ", layoutName=" + layoutName);
 			return null;
 		}
 
 		if(listLayoutGroups.isEmpty()) {
-			Log.error("The layout was empty. attrTableName=" + tableName + ", layoutName=" + layoutName);
+			Log.e("android-glom", "The layout was empty. attrTableName=" + tableName + ", layoutName=" + layoutName);
 			return null;
 		}
 		
 		final int[] indices = Utils.parseLayoutPath(layoutPath);
 		if((indices == null) || (indices.length == 0)) {
-			Log.error("The layout path was empty or could not be parsed. layoutPath=" + layoutPath);
+			Log.e("android-glom", "The layout path was empty or could not be parsed. layoutPath=" + layoutPath);
 			return null;
 		}
 	
@@ -2022,7 +1756,7 @@ public class Document {
 		int depth = 0;
 		for(int index:indices) {
 			if(index < 0) {
-				Log.error("An index in the layout path was negative, at depth=" + depth + ", layoutPath=" + layoutPath);
+				Log.e("android-glom", "An index in the layout path was negative, at depth=" + depth + ", layoutPath=" + layoutPath);
 				return null;
 			}
 
@@ -2031,7 +1765,7 @@ public class Document {
 				if(index < listLayoutGroups.size()) {
 					item = listLayoutGroups.get(index);
 				} else {
-					Log.error("An index in the layout path is larger than the number of child items, at depth=" + depth + ", layoutPath=" + layoutPath);
+					Log.e("android-glom", "An index in the layout path is larger than the number of child items, at depth=" + depth + ", layoutPath=" + layoutPath);
 					return null;
 				}
 			} else {
@@ -2041,11 +1775,11 @@ public class Document {
 					if(index < items.size()) {
 						item = items.get(index);
 					} else {
-						Log.error("An index in the layout path is larger than the number of child items, at depth=" + depth + ", layoutPath=" + layoutPath);
+						Log.e("android-glom", "An index in the layout path is larger than the number of child items, at depth=" + depth + ", layoutPath=" + layoutPath);
 						return null;
 					}
 				} else {
-					Log.error("An intermediate item in the layout path is not a layout group, at depth=" + depth + ", layoutPath=" + layoutPath);
+					Log.e("android-glom", "An intermediate item in the layout path is not a layout group, at depth=" + depth + ", layoutPath=" + layoutPath);
 					return null;
 				}
 			}
@@ -2054,27 +1788,9 @@ public class Document {
 		}
 		
 		if(item == null) {
-			Log.error("The item specifed by the layout path could not be found. layoutPath=" + layoutPath);
+			Log.e("android-glom", "The item specifed by the layout path could not be found. layoutPath=" + layoutPath);
 			return null;
 		}
 		return item;
-	}
-
-	/**
-	 * @return
-	 */
-	public SQLDialect getSqlDialect() {
-		switch (hostingMode) {
-		case HOSTING_MODE_POSTGRES_SELF:
-		case HOSTING_MODE_POSTGRES_CENTRAL:
-			return SQLDialect.POSTGRES;
-		case HOSTING_MODE_MYSQL_SELF:
-		case HOSTING_MODE_MYSQL_CENTRAL:
-			return SQLDialect.MYSQL;
-		case HOSTING_MODE_SQLITE:
-			return SQLDialect.SQLITE;
-		default:
-			return null;
-		}
 	}
 }

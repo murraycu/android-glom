@@ -1,11 +1,11 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
+
+import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.Serializable;
 
-import org.glom.web.client.StringUtils;
-import org.glom.web.shared.libglom.NumericFormat;
-
-import com.google.gwt.core.shared.GWT;
+import org.glom.app.libglom.NumericFormat;
 
 public class Formatting implements Serializable {
 
@@ -128,7 +128,7 @@ public class Formatting implements Serializable {
 	 * significant 8-bits in each channel.
 	 */
 	private static String convertGdkColorToHtmlColor(final String gdkColor) {
-		if (StringUtils.isEmpty(gdkColor)) {
+		if (TextUtils.isEmpty(gdkColor)) {
 			return "";
 		}
 
@@ -136,10 +136,10 @@ public class Formatting implements Serializable {
 			return gdkColor.substring(0, 3) + gdkColor.substring(5, 7) + gdkColor.substring(9, 11);
 		} else if (gdkColor.length() == 7) {
 			// This shouldn't happen but let's deal with it if it does.
-			GWT.log("Expected a 13 character string but received a 7 character string. Returning received string.");
+			Log.e("android-glom", "Expected a 13 character string but received a 7 character string. Returning received string.");
 			return gdkColor;
 		} else {
-			GWT.log("Did not receive a 13 or 7 character string. Returning black HTML color code.");
+            Log.e("android-glom", "Did not receive a 13 or 7 character string. Returning black HTML color code.");
 			return "#000000";
 		}
 	}

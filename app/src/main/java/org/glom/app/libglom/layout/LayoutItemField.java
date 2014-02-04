@@ -1,10 +1,10 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
-import org.glom.web.client.StringUtils;
-import org.glom.web.shared.libglom.CustomTitle;
-import org.glom.web.shared.libglom.Field;
-import org.glom.web.shared.libglom.Field.GlomFieldType;
-import org.glom.web.shared.libglom.Relationship;
+import android.text.TextUtils;
+import org.glom.app.libglom.CustomTitle;
+import org.glom.app.libglom.Field;
+import org.glom.app.libglom.Field.GlomFieldType;
+import org.glom.app.libglom.Relationship;
 
 public class LayoutItemField extends LayoutItemWithFormatting implements UsesRelationship {
 
@@ -76,7 +76,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#get_table_used(java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#get_table_used(java.lang.String)
 	 */
 	@Override
 	public String getTableUsed(final String tableName) {
@@ -126,7 +126,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.glom.web.shared.libglom.layout.UsesRelationship#setRelationship(org.glom.web.shared.libglom.Relationship)
+	 * org.glom.app.libglom.layout.UsesRelationship#setRelationship(org.glom.app.libglom.Relationship)
 	 */
 	@Override
 	public void setRelationship(final Relationship relationship) {
@@ -136,7 +136,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getRelationship()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getRelationship()
 	 */
 	@Override
 	public Relationship getRelationship() {
@@ -146,7 +146,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getHasRelationshipName()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getHasRelationshipName()
 	 */
 	@Override
 	public boolean getHasRelationshipName() {
@@ -157,7 +157,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.glom.web.shared.libglom.layout.UsesRelationship#setRelatedRelationship(org.glom.web.shared.libglom.Relationship
+	 * org.glom.app.libglom.layout.UsesRelationship#setRelatedRelationship(org.glom.app.libglom.Relationship
 	 * )
 	 */
 	@Override
@@ -168,7 +168,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getRelatedRelationship()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getRelatedRelationship()
 	 */
 	@Override
 	public Relationship getRelatedRelationship() {
@@ -178,7 +178,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getHasRelatedRelationshipName()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getHasRelatedRelationshipName()
 	 */
 	@Override
 	public boolean getHasRelatedRelationshipName() {
@@ -188,7 +188,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getSqlJoinAliasName()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getSqlJoinAliasName()
 	 */
 	@Override
 	public String getSqlJoinAliasName() {
@@ -212,7 +212,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getSqlTableOrJoinAliasName(java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getSqlTableOrJoinAliasName(java.lang.String)
 	 */
 	@Override
 	public String getSqlTableOrJoinAliasName(final String tableName) {
@@ -234,7 +234,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getRelationshipNameUsed()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getRelationshipNameUsed()
 	 */
 	@Override
 	public String getRelationshipNameUsed() {
@@ -267,7 +267,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 		}
 
 		// Fallback to the field's original title:
-		if (StringUtils.isEmpty(title) && (field != null)) {
+		if (TextUtils.isEmpty(title) && (field != null)) {
 			title = field.getTitleOriginal();
 		}
 
@@ -296,7 +296,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getTitleUsed(java.lang.String, java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getTitleUsed(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public String getTitleUsed(final String parentTableTitle, final String locale) {

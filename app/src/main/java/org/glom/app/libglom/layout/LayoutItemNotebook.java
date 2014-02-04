@@ -1,4 +1,4 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
 public class LayoutItemNotebook extends LayoutGroup {
 

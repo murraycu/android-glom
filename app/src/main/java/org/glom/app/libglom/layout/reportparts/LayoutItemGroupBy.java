@@ -1,8 +1,8 @@
-package org.glom.web.shared.libglom.layout.reportparts;
+package org.glom.app.libglom.layout.reportparts;
 
-import org.glom.web.client.StringUtils;
-import org.glom.web.shared.libglom.layout.LayoutGroup;
-import org.glom.web.shared.libglom.layout.LayoutItemField;
+import android.text.TextUtils;
+import org.glom.app.libglom.layout.LayoutGroup;
+import org.glom.app.libglom.layout.LayoutItemField;
 
 public class LayoutItemGroupBy extends LayoutGroup {
 
@@ -18,7 +18,7 @@ public class LayoutItemGroupBy extends LayoutGroup {
 			return false;
 		}
 
-		return !StringUtils.isEmpty(fieldGroupBy.getName());
+		return !TextUtils.isEmpty(fieldGroupBy.getName());
 	}
 
 	/**

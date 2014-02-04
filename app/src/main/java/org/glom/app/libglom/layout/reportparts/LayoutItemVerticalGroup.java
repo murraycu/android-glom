@@ -1,6 +1,6 @@
-package org.glom.web.shared.libglom.layout.reportparts;
+package org.glom.app.libglom.layout.reportparts;
 
-import org.glom.web.shared.libglom.layout.LayoutGroup;
+import org.glom.app.libglom.layout.LayoutGroup;
 
 public class LayoutItemVerticalGroup extends LayoutGroup {
 

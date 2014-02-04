@@ -17,11 +17,11 @@
  * along with GWT-Glom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
 import java.io.Serializable;
 
-import org.glom.web.shared.libglom.Relationship;
+import org.glom.app.libglom.Relationship;
 
 /**
  * @author Murray Cumming <murrayc@openismus.com>

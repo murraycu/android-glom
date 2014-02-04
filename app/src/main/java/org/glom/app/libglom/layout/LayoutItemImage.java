@@ -1,6 +1,6 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
-import org.glom.web.shared.DataItem;
+import org.glom.app.libglom.DataItem;
 
 public class LayoutItemImage extends LayoutItemWithFormatting {
 	private static final long serialVersionUID = 4444361032544941368L;

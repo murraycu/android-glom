@@ -1,9 +1,9 @@
-package org.glom.web.shared.libglom;
+package org.glom.app.libglom;
+
+import android.text.TextUtils;
 
 import java.io.Serializable;
 import java.util.HashMap;
-
-import org.glom.web.client.StringUtils;
 
 public class Translatable implements Serializable {
 
@@ -49,7 +49,7 @@ public class Translatable implements Serializable {
 	}
 
 	public String getTitle(final String locale) {
-		if (StringUtils.isEmpty(locale)) {
+		if (TextUtils.isEmpty(locale)) {
 			return getTitleOriginal();
 		}
 
@@ -68,7 +68,7 @@ public class Translatable implements Serializable {
 	 */
 	public String getTitleOrName(final String locale) {
 		final String title = getTitle(locale);
-		if (StringUtils.isEmpty(title)) {
+		if (TextUtils.isEmpty(title)) {
 			return getName();
 		}
 
@@ -97,7 +97,7 @@ public class Translatable implements Serializable {
 	 * @param locale
 	 */
 	public void setTitle(final String title, final String locale) {
-		if (StringUtils.isEmpty(locale)) {
+		if (TextUtils.isEmpty(locale)) {
 			setTitleOriginal(title);
 			return;
 		}

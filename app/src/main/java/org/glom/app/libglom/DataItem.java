@@ -17,12 +17,12 @@
  * along with GWT-Glom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.glom.web.shared;
+package org.glom.app.libglom;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import org.glom.web.shared.libglom.Field;
+import org.glom.app.libglom.Field;
 
 /**
  * This Data Transfer Object (DTO) is used to send a data item between the client and the server.

@@ -1,7 +1,8 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
-import org.glom.web.client.StringUtils;
-import org.glom.web.shared.libglom.Relationship;
+import android.text.TextUtils;
+
+import org.glom.app.libglom.Relationship;
 
 public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	private static final long serialVersionUID = 4952677991725269830L;
@@ -37,7 +38,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.glom.web.shared.libglom.layout.UsesRelationship#setRelationship(org.glom.web.shared.libglom.Relationship)
+	 * org.glom.app.libglom.layout.UsesRelationship#setRelationship(org.glom.app.libglom.Relationship)
 	 */
 	@Override
 	public void setRelationship(final Relationship relationship) {
@@ -47,7 +48,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getRelationship()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getRelationship()
 	 */
 	@Override
 	public Relationship getRelationship() {
@@ -57,7 +58,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getHasRelationshipName()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getHasRelationshipName()
 	 */
 	@Override
 	public boolean getHasRelationshipName() {
@@ -68,7 +69,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.glom.web.shared.libglom.layout.UsesRelationship#setRelatedRelationship(org.glom.web.shared.libglom.Relationship
+	 * org.glom.app.libglom.layout.UsesRelationship#setRelatedRelationship(org.glom.app.libglom.Relationship
 	 * )
 	 */
 	@Override
@@ -79,7 +80,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getRelatedRelationship()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getRelatedRelationship()
 	 */
 	@Override
 	public Relationship getRelatedRelationship() {
@@ -89,7 +90,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getHasRelatedRelationshipName()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getHasRelatedRelationshipName()
 	 */
 	@Override
 	public boolean getHasRelatedRelationshipName() {
@@ -99,7 +100,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#get_sql_join_alias_name()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#get_sql_join_alias_name()
 	 */
 	@Override
 	public String getSqlJoinAliasName() {
@@ -109,7 +110,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#get_sql_table_or_join_alias_name(java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#get_sql_table_or_join_alias_name(java.lang.String)
 	 */
 	@Override
 	public String getSqlTableOrJoinAliasName(final String tableName) {
@@ -119,7 +120,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#get_table_used(java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#get_table_used(java.lang.String)
 	 */
 	@Override
 	public String getTableUsed(final String parentTable) {
@@ -162,7 +163,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getRelationshipNameUsed()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getRelationshipNameUsed()
 	 */
 	@Override
 	public String getRelationshipNameUsed() {
@@ -172,7 +173,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	@Override
 	public String getTitleOriginal() {
 		String title = getTitleUsed("" /* parent table - not relevant */, "" /* locale */);
-		if (StringUtils.isEmpty(title)) {
+		if (TextUtils.isEmpty(title)) {
 			title = "Undefined Table";
 		}
 
@@ -182,7 +183,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	@Override
 	public String getTitle(final String locale) {
 		String title = getTitleUsed("" /* parent table - not relevant */, locale);
-		if (StringUtils.isEmpty(title)) {
+		if (TextUtils.isEmpty(title)) {
 			title = "Undefined Table";
 		}
 
@@ -192,11 +193,11 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	@Override
 	public String getTitleOrName(final String locale) {
 		String title = getTitleUsed("" /* parent table - not relevant */, locale);
-		if (StringUtils.isEmpty(title)) {
+		if (TextUtils.isEmpty(title)) {
 			title = getRelationshipNameUsed();
 		}
 
-		if (StringUtils.isEmpty(title)) {
+		if (TextUtils.isEmpty(title)) {
 			title = "Undefined Table";
 		}
 
@@ -206,7 +207,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getTitleUsed(java.lang.String, java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getTitleUsed(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public String getTitleUsed(final String parentTableTitle, final String locale) {

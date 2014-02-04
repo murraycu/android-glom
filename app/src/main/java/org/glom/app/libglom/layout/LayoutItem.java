@@ -1,6 +1,6 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
-import org.glom.web.shared.libglom.Translatable;
+import org.glom.app.libglom.Translatable;
 
 public class LayoutItem extends Translatable {
 

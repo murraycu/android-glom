@@ -1,7 +1,7 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
-import org.glom.web.client.StringUtils;
-import org.glom.web.shared.libglom.Relationship;
+import android.text.TextUtils;
+import org.glom.app.libglom.Relationship;
 
 public class UsesRelationshipImpl implements UsesRelationship {
 	private static final long serialVersionUID = -3778108396526473307L;
@@ -37,7 +37,7 @@ public class UsesRelationshipImpl implements UsesRelationship {
 			return false;
 		}
 
-		if (StringUtils.isEmpty(relationship.getName())) {
+		if (TextUtils.isEmpty(relationship.getName())) {
 			return false;
 		}
 
@@ -50,7 +50,7 @@ public class UsesRelationshipImpl implements UsesRelationship {
 			return false;
 		}
 
-		if (StringUtils.isEmpty(relatedRelationship.getName())) {
+		if (TextUtils.isEmpty(relatedRelationship.getName())) {
 			return false;
 		}
 
@@ -149,7 +149,7 @@ public class UsesRelationshipImpl implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#get_table_used(java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#get_table_used(java.lang.String)
 	 */
 	@Override
 	public String getTableUsed(final String parentTableName) {
@@ -159,11 +159,11 @@ public class UsesRelationshipImpl implements UsesRelationship {
 			result = relatedRelationship.getToTable();
 		}
 
-		if (StringUtils.isEmpty(result) && (relationship != null)) {
+		if (TextUtils.isEmpty(result) && (relationship != null)) {
 			result = relationship.getToTable();
 		}
 
-		if (StringUtils.isEmpty(result)) {
+		if (TextUtils.isEmpty(result)) {
 			result = parentTableName;
 		}
 
@@ -173,13 +173,13 @@ public class UsesRelationshipImpl implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#get_sql_table_or_join_alias_name(java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#get_sql_table_or_join_alias_name(java.lang.String)
 	 */
 	@Override
 	public String getSqlTableOrJoinAliasName(final String parent_table) {
 		if (getHasRelationshipName() || getHasRelatedRelationshipName()) {
 			final String result = getSqlJoinAliasName();
-			if (StringUtils.isEmpty(result)) {
+			if (TextUtils.isEmpty(result)) {
 				// Non-linked-fields relationship:
 				return getTableUsed(parent_table);
 			} else {
@@ -193,7 +193,7 @@ public class UsesRelationshipImpl implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getRelationshipNameUsed()
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getRelationshipNameUsed()
 	 */
 	@Override
 	public String getRelationshipNameUsed() {
@@ -209,7 +209,7 @@ public class UsesRelationshipImpl implements UsesRelationship {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.glom.web.shared.libglom.layout.UsesRelationship#getTitleUsed(java.lang.String, java.lang.String)
+	 * @see org.glom.app.libglom.layout.UsesRelationship#getTitleUsed(java.lang.String, java.lang.String)
 	 */
 	@Override
 	public String getTitleUsed(final String parentTableTitle, final String locale) {

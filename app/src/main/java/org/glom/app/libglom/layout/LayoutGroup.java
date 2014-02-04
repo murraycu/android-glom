@@ -1,4 +1,4 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
-package org.glom.web.shared.libglom;
+package org.glom.app.libglom;
 
-import org.glom.web.shared.libglom.layout.Formatting;
+import org.glom.app.libglom.layout.Formatting;
 
 public class Field extends Translatable {
 

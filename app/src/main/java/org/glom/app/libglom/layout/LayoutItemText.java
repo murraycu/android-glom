@@ -1,4 +1,4 @@
-package org.glom.web.shared.libglom.layout;
+package org.glom.app.libglom.layout;
 
 public class LayoutItemText extends LayoutItemWithFormatting {
 	private static final long serialVersionUID = -4628381213105506497L;

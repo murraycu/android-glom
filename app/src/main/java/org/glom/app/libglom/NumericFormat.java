@@ -1,4 +1,4 @@
-package org.glom.web.shared.libglom;
+package org.glom.app.libglom;
 
 import java.io.Serializable;
 
