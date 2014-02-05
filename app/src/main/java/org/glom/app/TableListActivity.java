@@ -50,9 +50,26 @@ public class TableListActivity extends FragmentActivity
                     .setActivateOnItemClick(true);
         }
 
+        final Intent intent = getIntent();
+        final Uri uri = intent.getData();
+        if (uri != null) {
+            mDocument = new Document();
+
+            InputStream inputStream = null;
+            try {
+                inputStream = getContentResolver().openInputStream(uri);
+            } catch (final FileNotFoundException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            if(!mDocument.load(inputStream)) {
+                Log.e("android-glom", "Document.load() failed for URI: " + uri);
+            }
+        }
+
         //This lets us know what MIME Type to mention in the intent filter in the manifeset file,
         //as long as we cannot register a more specific MIME type.
-        //Intent intent = getIntent();
         //String type = intent.getType();
         //Log.v("glomdebug", "type=" + type);
         // TODO: If exposing deep links into your app, handle intents here.

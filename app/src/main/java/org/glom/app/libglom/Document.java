@@ -17,13 +17,15 @@
  * along with GWT-Glom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.glom.web.server.libglom;
+package org.glom.app.libglom;
 
 //import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 //import java.io.InputStream;
 //import java.net.URLConnection;
+import java.io.InputStream;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -48,6 +50,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
+
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 //import org.glom.web.server.Log;
@@ -111,7 +115,6 @@ public class Document {
 		public int[] indices = new int[1];
 	}
 
-	private String fileURI = "";
 	private org.w3c.dom.Document xmlDocument = null;
 
 	private final Translatable databaseTitle = new Translatable();
@@ -213,20 +216,12 @@ public class Document {
 		this.documentID = documentID;
 	}
 
-	public void setFileURI(final String fileURI) {
-		this.fileURI = fileURI;
-	}
-
-	public String getFileURI() {
-		return fileURI;
-	}
-
 	// TODO: Make sure these have the correct values.
 	public enum LoadFailureCodes {
 		LOAD_FAILURE_CODE_NONE, LOAD_FAILURE_CODE_NOT_FOUND, LOAD_FAILURE_CODE_FILE_VERSION_TOO_NEW
 	};
 
-	public boolean load() {
+	public boolean load(final InputStream inputStream) {
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder documentBuilder = null;
 		try {
@@ -238,7 +233,7 @@ public class Document {
 		}
 
 		try {
-			xmlDocument = documentBuilder.parse(fileURI);
+			xmlDocument = documentBuilder.parse(inputStream);
 		} catch (final SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -250,7 +245,7 @@ public class Document {
 		}
 
 		final Element rootNode = xmlDocument.getDocumentElement();
-		if (rootNode.getNodeName() != NODE_ROOT) {
+		if (!TextUtils.equals(rootNode.getNodeName(), NODE_ROOT)) {
 			Log.v("android-glom", "Unexpected XML root node name found: " + rootNode.getNodeName());
 			return false;
 		}
@@ -1380,7 +1375,7 @@ public class Document {
 		final TableInfo info = getTableInfo(tableUsed);
 		if (info == null) {
 			// This table is special. We would not create a relationship to it using a field:
-			// if(tableUsed == GLOM_STANDARD_TABLE_PREFS_TABLE_NAME)
+			// if(TextUtils.equals(tableUsed, GLOM_STANDARD_TABLE_PREFS_TABLE_NAME))
 			// return result;
 
 			Log.e("android-glom", "table not found: " + tableUsed);
@@ -1655,47 +1650,6 @@ public class Document {
 		final Element node = doc.createElement(name);
 		parentNode.appendChild(node);
 		return node;
-	}
-
-	public String getSelfHostedDirectoryPath() {
-		final String uriFile = getFileURI();
-		if (!TextUtils.isEmpty(uriFile)) {
-			final File file = new File(uriFile);
-			final File parent = file.getParentFile();
-			if (parent == null) {
-				// TODO: Warn.
-				return "";
-			}
-
-			File dataDir = null;
-			switch (hostingMode) {
-			case HOSTING_MODE_POSTGRES_SELF:
-				dataDir = new File(parent, "glom_postgres_data");
-				break;
-			case HOSTING_MODE_POSTGRES_CENTRAL:
-				dataDir = parent;
-				break;
-			case HOSTING_MODE_MYSQL_SELF:
-				dataDir = new File(parent, "glom_mysql_data");
-				break;
-			case HOSTING_MODE_MYSQL_CENTRAL:
-				dataDir = parent;
-				break;
-			case HOSTING_MODE_SQLITE:
-				dataDir = parent;
-				break;
-			default:
-				// TODO: Warn.
-				break;
-			}
-
-			if (dataDir != null) {
-				return dataDir.getPath();
-			}
-		}
-
-		// TODO: std::cerr << G_STRFUNC << ": returning empty string." << std::endl;
-		return "";
 	}
 
 	/**
