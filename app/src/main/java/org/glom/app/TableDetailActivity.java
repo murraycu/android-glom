@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
+import org.glom.app.libglom.Document;
+
 /**
  * An activity representing a single Table detail screen. This
  * activity is only used on handset devices. On tablet-size devices,
@@ -15,11 +17,17 @@ import android.view.MenuItem;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link TableDetailFragment}.
  */
-public class TableDetailActivity extends FragmentActivity {
+public class TableDetailActivity extends DocumentActivity {
+
+    String mTableName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final Intent intent = getIntent();
+        mTableName = intent.getStringExtra(TableDetailFragment.ARG_TABLE_NAME);
+
         setContentView(R.layout.activity_table_detail);
 
         // Show the Up button in the action bar.
@@ -38,8 +46,8 @@ public class TableDetailActivity extends FragmentActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(TableDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(TableDetailFragment.ARG_ITEM_ID));
+            arguments.putString(TableDetailFragment.ARG_TABLE_NAME,
+                    mTableName);
             TableDetailFragment fragment = new TableDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

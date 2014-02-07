@@ -6,8 +6,10 @@ import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import org.glom.app.libglom.Document;
 
-import org.glom.app.dummy.DummyContent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A list fragment representing a list of Tables. This fragment
@@ -41,12 +43,22 @@ public class TableListFragment extends ListFragment {
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item
      * selections.
+     *
+     * This is the recommended way for activities and fragments to communicate,
+     * presumably because, unlike a direct function call, it still keeps the
+     * fragment and activity implementations separate.
+     * http://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
      */
     public interface Callbacks {
         /**
          * Callback for when an item has been selected.
          */
         public void onItemSelected(String id);
+
+        /**
+         * Callback to get the list of table names from the activity's document, if any.
+         */
+        public List<TableListItem> getTableNames();
     }
 
     /**
@@ -56,6 +68,11 @@ public class TableListFragment extends ListFragment {
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
         public void onItemSelected(String id) {
+        }
+
+        @Override
+        public List<TableListItem> getTableNames() {
+            return null;
         }
     };
 
@@ -70,12 +87,22 @@ public class TableListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
+        update();
+    }
+
+    private void update() {
+        List<TableListItem> tables = mCallbacks.getTableNames();
+
+        //For instance, if the app was started directly, instead of via a view intent.
+        if(tables == null) {
+            tables = new ArrayList<TableListItem>();
+        }
+
+        setListAdapter(new ArrayAdapter<TableListItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                DummyContent.ITEMS));
+                tables));
     }
 
     @Override
@@ -113,9 +140,11 @@ public class TableListFragment extends ListFragment {
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
+        final TableListItem table = (TableListItem) getListView().getItemAtPosition(position);
+
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        mCallbacks.onItemSelected(table.tableName);
     }
 
     @Override

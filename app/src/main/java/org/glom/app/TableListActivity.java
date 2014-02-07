@@ -1,9 +1,17 @@
 package org.glom.app;
 
+import org.glom.app.libglom.Document;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.ViewGroup;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -22,7 +30,7 @@ import android.util.Log;
  * {@link TableListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class TableListActivity extends FragmentActivity
+public class TableListActivity extends DocumentActivity
         implements TableListFragment.Callbacks {
 
     /**
@@ -49,30 +57,6 @@ public class TableListActivity extends FragmentActivity
                     .findFragmentById(R.id.table_list))
                     .setActivateOnItemClick(true);
         }
-
-        final Intent intent = getIntent();
-        final Uri uri = intent.getData();
-        if (uri != null) {
-            mDocument = new Document();
-
-            InputStream inputStream = null;
-            try {
-                inputStream = getContentResolver().openInputStream(uri);
-            } catch (final FileNotFoundException e) {
-                e.printStackTrace();
-                return;
-            }
-
-            if(!mDocument.load(inputStream)) {
-                Log.e("android-glom", "Document.load() failed for URI: " + uri);
-            }
-        }
-
-        //This lets us know what MIME Type to mention in the intent filter in the manifeset file,
-        //as long as we cannot register a more specific MIME type.
-        //String type = intent.getType();
-        //Log.v("glomdebug", "type=" + type);
-        // TODO: If exposing deep links into your app, handle intents here.
     }
 
     /**
@@ -86,7 +70,7 @@ public class TableListActivity extends FragmentActivity
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(TableDetailFragment.ARG_ITEM_ID, id);
+            arguments.putString(TableDetailFragment.ARG_TABLE_NAME, id);
             TableDetailFragment fragment = new TableDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -97,8 +81,29 @@ public class TableListActivity extends FragmentActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, TableDetailActivity.class);
-            detailIntent.putExtra(TableDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.setData(mUri);
+            detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, id);
             startActivity(detailIntent);
         }
     }
+
+    @Override
+    public List<TableListItem> getTableNames() {
+        if(mDocument == null)
+            return null;
+
+        final List<String> tableNames = mDocument.getTableNames();
+
+        // Put the table names in a list of TableListItem,
+        // so that ArrayAdapter will call TableListItem.toString() to get the titles.
+        List<TableListItem> tables = new ArrayList<TableListItem>();
+        for(final String tableName : tableNames) {
+            final TableListItem item = new TableListItem(tableName,
+                    mDocument.getTableTitle(tableName, "" /* TODO */));
+            tables.add(item);
+        }
+
+        return tables;
+    }
+
 }
