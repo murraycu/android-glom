@@ -115,8 +115,6 @@ public class Document {
 		public int[] indices = new int[1];
 	}
 
-	private org.w3c.dom.Document xmlDocument = null;
-
 	private final Translatable databaseTitle = new Translatable();
 	private String translationOriginalLocale = "";
 	private final List<String> translationAvailableLocales = new ArrayList<String>();
@@ -231,6 +229,8 @@ public class Document {
 			e.printStackTrace();
 			return false;
 		}
+
+        org.w3c.dom.Document xmlDocument = null;
 
 		try {
 			xmlDocument = documentBuilder.parse(inputStream);
