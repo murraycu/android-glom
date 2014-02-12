@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 /**
  * A fragment representing a single Table detail screen.
- * This fragment is either contained in a {@link TableListActivity}
+ * This fragment is either contained in a {@link TableNavActivity}
  * in two-pane mode (on tablets) or a {@link TableDetailActivity}
  * on handsets.
  */

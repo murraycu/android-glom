@@ -22,7 +22,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class TableListFragment extends ListFragment {
+public class TableNavFragment extends ListFragment {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -60,7 +60,7 @@ public class TableListFragment extends ListFragment {
         /**
          * Callback to get the list of table names from the activity's document, if any.
          */
-        public List<TableListItem> getTableNames();
+        public List<TableNavItem> getTableNames();
     }
 
     /**
@@ -73,7 +73,7 @@ public class TableListFragment extends ListFragment {
         }
 
         @Override
-        public List<TableListItem> getTableNames() {
+        public List<TableNavItem> getTableNames() {
             return null;
         }
     };
@@ -82,7 +82,7 @@ public class TableListFragment extends ListFragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public TableListFragment() {
+    public TableNavFragment() {
     }
 
     @Override
@@ -93,16 +93,16 @@ public class TableListFragment extends ListFragment {
     }
 
     private void update() {
-        List<TableListItem> tables = mCallbacks.getTableNames();
+        List<TableNavItem> tables = mCallbacks.getTableNames();
 
         //For instance, if the app was started directly, instead of via a view intent.
         if(tables == null) {
-            tables = new ArrayList<TableListItem>();
+            tables = new ArrayList<TableNavItem>();
         }
 
         //Sort by the human-visible title:
-        Collections.sort(tables, new Comparator<TableListItem>() {
-            public int compare(final TableListItem a, final TableListItem b) {
+        Collections.sort(tables, new Comparator<TableNavItem>() {
+            public int compare(final TableNavItem a, final TableNavItem b) {
                 //TODO: Use guava to simplify this:
                 if (a == null || b == null) {
                     return (a == null) ? -1 : 1;
@@ -124,7 +124,7 @@ public class TableListFragment extends ListFragment {
             }
         });
 
-        setListAdapter(new ArrayAdapter<TableListItem>(
+        setListAdapter(new ArrayAdapter<TableNavItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
@@ -166,7 +166,7 @@ public class TableListFragment extends ListFragment {
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
-        final TableListItem table = (TableListItem) getListView().getItemAtPosition(position);
+        final TableNavItem table = (TableNavItem) getListView().getItemAtPosition(position);
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.

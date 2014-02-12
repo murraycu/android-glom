@@ -12,7 +12,7 @@ import org.glom.app.libglom.Document;
  * An activity representing a single Table detail screen. This
  * activity is only used on handset devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link TableListActivity}.
+ * in a {@link TableNavActivity}.
  * <p>
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link TableDetailFragment}.
@@ -67,7 +67,7 @@ public class TableDetailActivity extends DocumentActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            NavUtils.navigateUpTo(this, new Intent(this, TableListActivity.class));
+            NavUtils.navigateUpTo(this, new Intent(this, TableNavActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

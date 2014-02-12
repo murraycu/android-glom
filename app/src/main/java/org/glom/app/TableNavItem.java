@@ -9,11 +9,11 @@ import java.util.Map;
  * This is just something to give to ArrayAdaptor
  * so it can call toString() on something to get a human-readable title (table title) for an ID (table name).
  */
-public class TableListItem {
+public class TableNavItem {
     public String tableName;
     public String tableTitle;
 
-    public TableListItem(final String tableName, final String tableTitle) {
+    public TableNavItem(final String tableName, final String tableTitle) {
         this.tableName = tableName;
         this.tableTitle = tableTitle;
     }

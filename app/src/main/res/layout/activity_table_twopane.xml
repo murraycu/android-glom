@@ -8,7 +8,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="org.glom.app.TableListActivity">
+    tools:context="org.glom.app.TableNavActivity">
 
     <!--
     This layout is a two-pane layout for the Tables
@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/table_list"
-        android:name="org.glom.app.TableListFragment"
+        android:name="org.glom.app.TableNavFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"

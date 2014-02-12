@@ -2,14 +2,8 @@ package org.glom.app;
 
 import org.glom.app.libglom.Document;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.ViewGroup;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,15 +17,15 @@ import java.util.List;
  * item details side-by-side using two vertical panes.
  * <p>
  * The activity makes heavy use of fragments. The list of items is a
- * {@link TableListFragment} and the item details
+ * {@link TableNavFragment} and the item details
  * (if present) is a {@link TableDetailFragment}.
  * <p>
  * This activity also implements the required
- * {@link TableListFragment.Callbacks} interface
+ * {@link TableNavFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class TableListActivity extends DocumentActivity
-        implements TableListFragment.Callbacks {
+public class TableNavActivity extends DocumentActivity
+        implements TableNavFragment.Callbacks {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -53,14 +47,14 @@ public class TableListActivity extends DocumentActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((TableListFragment) getSupportFragmentManager()
+            ((TableNavFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.table_list))
                     .setActivateOnItemClick(true);
         }
     }
 
     /**
-     * Callback method from {@link TableListFragment.Callbacks}
+     * Callback method from {@link TableNavFragment.Callbacks}
      * indicating that the item with the given ID was selected.
      */
     @Override
@@ -87,18 +81,18 @@ public class TableListActivity extends DocumentActivity
     }
 
     @Override
-    public List<TableListItem> getTableNames() {
+    public List<TableNavItem> getTableNames() {
         Document document = getDocument();
         if(document == null)
             return null;
 
         final List<String> tableNames = document.getTableNames();
 
-        // Put the table names in a list of TableListItem,
-        // so that ArrayAdapter will call TableListItem.toString() to get the titles.
-        List<TableListItem> tables = new ArrayList<TableListItem>();
+        // Put the table names in a list of TableNavItem,
+        // so that ArrayAdapter will call TableNavItem.toString() to get the titles.
+        List<TableNavItem> tables = new ArrayList<TableNavItem>();
         for(final String tableName : tableNames) {
-            final TableListItem item = new TableListItem(tableName,
+            final TableNavItem item = new TableNavItem(tableName,
                     document.getTableTitle(tableName, "" /* TODO */));
             tables.add(item);
         }
