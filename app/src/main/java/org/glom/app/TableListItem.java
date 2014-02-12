@@ -18,6 +18,10 @@ public class TableListItem {
         this.tableTitle = tableTitle;
     }
 
+    /** This is so we can show a human readable title via ArrayAdapter.
+     *
+     * @return
+     */
     @Override
     public String toString() {
         return tableTitle;

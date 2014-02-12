@@ -9,6 +9,8 @@ import android.widget.ListView;
 import org.glom.app.libglom.Document;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -97,6 +99,30 @@ public class TableListFragment extends ListFragment {
         if(tables == null) {
             tables = new ArrayList<TableListItem>();
         }
+
+        //Sort by the human-visible title:
+        Collections.sort(tables, new Comparator<TableListItem>() {
+            public int compare(final TableListItem a, final TableListItem b) {
+                //TODO: Use guava to simplify this:
+                if (a == null || b == null) {
+                    return (a == null) ? -1 : 1;
+                }
+
+                if (a == null && b == null) {
+                    return 0;
+                }
+
+                if (a.tableTitle == null || b.tableTitle == null) {
+                    return (a.tableTitle == null) ? -1 : 1;
+                }
+
+                if (a.tableTitle == null && b.tableTitle == null) {
+                    return 0;
+                }
+
+                return a.tableTitle.compareTo(b.tableTitle);
+            }
+        });
 
         setListAdapter(new ArrayAdapter<TableListItem>(
                 getActivity(),
