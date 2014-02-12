@@ -17,29 +17,28 @@ import java.io.InputStream;
 public class DocumentActivity extends FragmentActivity
         implements TableDetailFragment.Callbacks {
 
-    protected Uri mUri;
-    protected Document mDocument;
+    protected DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
-        mUri = intent.getData();
-        if (mUri != null) {
-            mDocument = new Document();
-
+        final Uri uri = intent.getData();
+        if (uri != null) {
             InputStream inputStream = null;
             try {
-                inputStream = getContentResolver().openInputStream(mUri);
+                inputStream = getContentResolver().openInputStream(uri);
             } catch (final FileNotFoundException e) {
                 e.printStackTrace();
                 return;
             }
 
-            if(!mDocument.load(inputStream)) {
-                Log.e("android-glom", "Document.load() failed for URI: " + mUri);
+            if(!documentSingleton.load(inputStream)) {
+                Log.e("android-glom", "Document.load() failed for URI: " + uri);
             }
+
+            //TODO: Notify other Activities that the shared document has changed?
         }
 
         //This lets us know what MIME Type to mention in the intent filter in the manifeset file,
@@ -50,9 +49,10 @@ public class DocumentActivity extends FragmentActivity
 
     @Override
     public String getTableTitle(String tableName) {
-        if(mDocument == null)
-            return null;
+        return getDocument().getTableTitle(tableName, "" /* TODO */);
+    }
 
-        return mDocument.getTableTitle(tableName, "" /* TODO */);
+    protected Document getDocument() {
+        return documentSingleton.getDocument();
     }
 }

@@ -81,7 +81,6 @@ public class TableListActivity extends DocumentActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, TableDetailActivity.class);
-            detailIntent.setData(mUri);
             detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, id);
             startActivity(detailIntent);
         }
@@ -89,21 +88,21 @@ public class TableListActivity extends DocumentActivity
 
     @Override
     public List<TableListItem> getTableNames() {
-        if(mDocument == null)
+        Document document = getDocument();
+        if(document == null)
             return null;
 
-        final List<String> tableNames = mDocument.getTableNames();
+        final List<String> tableNames = document.getTableNames();
 
         // Put the table names in a list of TableListItem,
         // so that ArrayAdapter will call TableListItem.toString() to get the titles.
         List<TableListItem> tables = new ArrayList<TableListItem>();
         for(final String tableName : tableNames) {
             final TableListItem item = new TableListItem(tableName,
-                    mDocument.getTableTitle(tableName, "" /* TODO */));
+                    document.getTableTitle(tableName, "" /* TODO */));
             tables.add(item);
         }
 
         return tables;
     }
-
 }
