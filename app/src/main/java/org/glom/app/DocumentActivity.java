@@ -39,6 +39,7 @@ public class DocumentActivity extends FragmentActivity
             }
 
             //TODO: Notify other Activities that the shared document has changed?
+            //And somehow invalidate/close activities those activities if it's a different document?
         }
 
         //This lets us know what MIME Type to mention in the intent filter in the manifeset file,
