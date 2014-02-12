@@ -6,15 +6,15 @@ import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 /**
- * An activity representing a single record of a single Table. This
+ * An activity representing a list of records in a single Table. This
  * activity is only used on handset devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link TableNavActivity}.
+ * in a {@link org.glom.app.TableNavActivity}.
  * <p>
  * This activity is mostly just a 'shell' activity containing nothing
- * more than a {@link TableDetailFragment}.
+ * more than a {@link org.glom.app.TableListFragment}.
  */
-public class TableDetailActivity extends DocumentActivity {
+public class TableListActivity extends DocumentActivity {
 
     String mTableName;
 
@@ -23,9 +23,9 @@ public class TableDetailActivity extends DocumentActivity {
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
-        mTableName = intent.getStringExtra(TableDetailFragment.ARG_TABLE_NAME);
+        mTableName = intent.getStringExtra(TableListFragment.ARG_TABLE_NAME);
 
-        setContentView(R.layout.activity_table_detail);
+        setContentView(R.layout.activity_table_list);
 
         // Show the Up button in the action bar.
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -43,9 +43,9 @@ public class TableDetailActivity extends DocumentActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(TableDetailFragment.ARG_TABLE_NAME,
+            arguments.putString(TableListFragment.ARG_TABLE_NAME,
                     mTableName);
-            TableDetailFragment fragment = new TableDetailFragment();
+            TableListFragment fragment = new TableListFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.table_data_container, fragment)

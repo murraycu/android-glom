@@ -38,7 +38,7 @@ public class TableNavActivity extends DocumentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table_list);
 
-        if (findViewById(R.id.table_detail_container) != null) {
+        if (findViewById(R.id.table_data_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-large and
             // res/values-sw600dp). If this view is present, then the
@@ -68,7 +68,7 @@ public class TableNavActivity extends DocumentActivity
             TableDetailFragment fragment = new TableDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.table_detail_container, fragment)
+                    .replace(R.id.table_data_container, fragment)
                     .commit();
 
         } else {
