@@ -47,7 +47,7 @@ public class TableNavActivity extends DocumentActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((TableNavFragment) getSupportFragmentManager()
+            ((TableNavFragment) getFragmentManager()
                     .findFragmentById(R.id.table_nav))
                     .setActivateOnItemClick(true);
         }
@@ -67,7 +67,7 @@ public class TableNavActivity extends DocumentActivity
             arguments.putString(TableDetailFragment.ARG_TABLE_NAME, id);
             TableDetailFragment fragment = new TableDetailFragment();
             fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .replace(R.id.table_data_container, fragment)
                     .commit();
 

@@ -1,8 +1,9 @@
 package org.glom.app;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.app.Fragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;

@@ -47,7 +47,7 @@ public class TableListActivity extends DocumentActivity {
                     mTableName);
             TableListFragment fragment = new TableListFragment();
             fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.table_data_container, fragment)
                     .commit();
         }

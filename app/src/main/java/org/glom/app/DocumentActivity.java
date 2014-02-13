@@ -1,9 +1,9 @@
 package org.glom.app;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import org.glom.app.libglom.Document;
@@ -14,7 +14,7 @@ import java.io.InputStream;
 /**
  * Created by murrayc on 2/7/14.
  */
-public class DocumentActivity extends FragmentActivity
+public class DocumentActivity extends Activity
         implements TableDetailFragment.Callbacks {
 
     protected DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
