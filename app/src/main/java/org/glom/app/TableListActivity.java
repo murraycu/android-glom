@@ -14,21 +14,13 @@ import android.view.MenuItem;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link org.glom.app.TableListFragment}.
  */
-public class TableListActivity extends DocumentActivity {
-
-    String mTableName;
+public class TableListActivity extends TableDataActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Intent intent = getIntent();
-        mTableName = intent.getStringExtra(TableListFragment.ARG_TABLE_NAME);
-
         setContentView(R.layout.activity_table_list);
-
-        // Show the Up button in the action bar.
-        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -51,22 +43,5 @@ public class TableListActivity extends DocumentActivity {
                     .add(R.id.table_data_container, fragment)
                     .commit();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpTo(this, new Intent(this, TableNavActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
