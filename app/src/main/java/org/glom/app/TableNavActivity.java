@@ -36,7 +36,7 @@ public class TableNavActivity extends DocumentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_table_list);
+        setContentView(R.layout.activity_table_nav);
 
         if (findViewById(R.id.table_data_container) != null) {
             // The detail container view will be present only in the
@@ -48,7 +48,7 @@ public class TableNavActivity extends DocumentActivity
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
             ((TableNavFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.table_list))
+                    .findFragmentById(R.id.table_nav))
                     .setActivateOnItemClick(true);
         }
     }

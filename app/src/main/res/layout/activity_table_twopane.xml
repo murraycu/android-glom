@@ -22,7 +22,7 @@
     -->
 
     <fragment
-        android:id="@+id/table_list"
+        android:id="@+id/table_nav"
         android:name="org.glom.app.TableNavFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
