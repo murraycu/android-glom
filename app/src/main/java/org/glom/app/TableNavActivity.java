@@ -1,6 +1,8 @@
 package org.glom.app;
 
 import org.glom.app.libglom.Document;
+
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -37,6 +39,11 @@ public class TableNavActivity extends DocumentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table_nav);
+
+        //Don't use the action bar on this top-level activity,
+        //though we have it via the shared base class.
+        //TODO: ActionBar actionBar = getActionBar();
+        //actionBar.hide();
 
         if (findViewById(R.id.table_data_container) != null) {
             // The detail container view will be present only in the
