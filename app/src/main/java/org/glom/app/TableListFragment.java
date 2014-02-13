@@ -86,7 +86,7 @@ public class TableListFragment extends Fragment {
         if (mTableName != null) {
             final String title = mCallbacks.getTableTitle(mTableName);
             //TODO: Use a real specific method for this?
-            ((TextView) rootView.findViewById(R.id.table_detail)).setText(title);
+            ((TextView) rootView.findViewById(R.id.table_list)).setText(title);
         }
 
         return rootView;
