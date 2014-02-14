@@ -45,6 +45,8 @@ public class DocumentActivity extends Activity
                 Log.e("android-glom", "Document.load() failed for URI: " + uri);
             }
 
+            showDocumentTitle();
+
             //TODO: Notify other Activities that the shared document has changed?
             //And somehow invalidate/close activities those activities if it's a different document?
         }
@@ -53,6 +55,17 @@ public class DocumentActivity extends Activity
         //as long as we cannot register a more specific MIME type.
         //String type = intent.getType();
         //Log.v("glomdebug", "type=" + type);
+    }
+
+    private void showDocumentTitle() {
+        final String title = String.format("Glom: %s", getDocument().getDatabaseTitle("" /* TODO */));
+        setTitle(title);
+    }
+
+    @Override
+    protected void onResume() {
+        showDocumentTitle();
+        super.onResume();
     }
 
     @Override
