@@ -46,8 +46,8 @@ public class TableDataActivity extends DocumentActivity
             for(final TableNavItem item : tables) {
                 //Create a new ID and add it to our list:
                 mTableActionIDs.put(id, item.tableName);
-
                 menu.add(Menu.NONE, id, Menu.NONE, item.tableTitle);
+                id++;
             }
         }
 
@@ -73,7 +73,15 @@ public class TableDataActivity extends DocumentActivity
             final String tableName = mTableActionIDs.get(id);
             if(tableName != null)
             {
-                //TODO
+                //This activity is only visible in the single-pane mode,
+                //so we don't need code here to deal wth the multi-pane mode.
+
+                // In single-pane mode, simply start the detail activity
+                // for the selected item ID.
+                Intent detailIntent = new Intent(this, TableDetailActivity.class);
+                detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
+                startActivity(detailIntent);
+
                 return true;
             }
         }
