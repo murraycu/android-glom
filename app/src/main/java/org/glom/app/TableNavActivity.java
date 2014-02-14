@@ -65,13 +65,13 @@ public class TableNavActivity extends DocumentActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(String id) {
+    public void onTableSelected(final String tableName) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(TableDetailFragment.ARG_TABLE_NAME, id);
+            arguments.putString(TableDetailFragment.ARG_TABLE_NAME, tableName);
             TableDetailFragment fragment = new TableDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -82,7 +82,7 @@ public class TableNavActivity extends DocumentActivity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, TableDetailActivity.class);
-            detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, id);
+            detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
             startActivity(detailIntent);
         }
     }

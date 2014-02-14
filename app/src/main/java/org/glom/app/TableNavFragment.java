@@ -56,7 +56,7 @@ public class TableNavFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(String id);
+        public void onTableSelected(String tableName);
 
         /**
          * Callback to get the list of table names from the activity's document, if any.
@@ -70,7 +70,7 @@ public class TableNavFragment extends ListFragment {
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(String id) {
+        public void onTableSelected(final String tableName) {
         }
 
         @Override
@@ -171,7 +171,7 @@ public class TableNavFragment extends ListFragment {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(table.tableName);
+        mCallbacks.onTableSelected(table.tableName);
     }
 
     @Override
