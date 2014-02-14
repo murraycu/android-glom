@@ -26,7 +26,7 @@ import java.util.List;
  * to listen for item selections.
  */
 public class TableNavActivity extends DocumentActivity
-        implements TableNavCallbacks {
+        implements TableDataFragment.Callbacks {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -84,6 +84,11 @@ public class TableNavActivity extends DocumentActivity
             detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
             startActivity(detailIntent);
         }
+    }
+
+    @Override
+    public String getTableTitle(String tableName) {
+        return getDocument().getTableTitle(tableName, "" /* TODO */);
     }
 
 
