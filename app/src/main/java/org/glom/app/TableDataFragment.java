@@ -3,6 +3,8 @@ package org.glom.app;
 import android.app.Activity;
 import android.app.Fragment;
 
+import java.util.List;
+
 /**
  * Created by murrayc on 2/14/14.
  */
@@ -22,7 +24,7 @@ public class TableDataFragment extends Fragment {
      * fragment and activity implementations separate.
      * http://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
      */
-    public interface Callbacks {
+    public interface Callbacks extends TableNavCallbacks {
         /**
          * Callback to get title of a table.
          */
@@ -34,6 +36,16 @@ public class TableDataFragment extends Fragment {
      * nothing. Used only when this fragment is not attached to an activity.
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
+
+        @Override
+        public void onTableSelected(final String tableName) {
+        }
+
+        @Override
+        public List<TableNavItem> getTableNames() {
+            return null;
+        }
+
         @Override
         public String getTableTitle(final String tableName) {
             return null;

@@ -13,12 +13,16 @@ import org.glom.app.libglom.Document;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Created by murrayc on 2/7/14.
  */
 public class DocumentActivity extends Activity
-        implements TableDetailFragment.Callbacks {
+        implements TableNavCallbacks {
 
     protected DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
 
@@ -52,8 +56,51 @@ public class DocumentActivity extends Activity
     }
 
     @Override
-    public String getTableTitle(String tableName) {
-        return getDocument().getTableTitle(tableName, "" /* TODO */);
+    public void onTableSelected(final String tableName) {
+    }
+
+    @Override
+    public List<TableNavItem> getTableNames() {
+        Document document = getDocument();
+        if(document == null)
+            return null;
+
+        final List<String> tableNames = document.getTableNames();
+
+        // Put the table names in a list of TableNavItem,
+        // so that ArrayAdapter will call TableNavItem.toString() to get the titles.
+        List<TableNavItem> tables = new ArrayList<TableNavItem>();
+        for(final String tableName : tableNames) {
+            final TableNavItem item = new TableNavItem(tableName,
+                    document.getTableTitle(tableName, "" /* TODO */));
+            tables.add(item);
+        }
+
+        //Sort by the human-visible title:
+        Collections.sort(tables, new Comparator<TableNavItem>() {
+            public int compare(final TableNavItem a, final TableNavItem b) {
+                //TODO: Use guava to simplify this:
+                if (a == null || b == null) {
+                    return (a == null) ? -1 : 1;
+                }
+
+                if (a == null && b == null) {
+                    return 0;
+                }
+
+                if (a.tableTitle == null || b.tableTitle == null) {
+                    return (a.tableTitle == null) ? -1 : 1;
+                }
+
+                if (a.tableTitle == null && b.tableTitle == null) {
+                    return 0;
+                }
+
+                return a.tableTitle.compareTo(b.tableTitle);
+            }
+        });
+
+        return tables;
     }
 
     protected Document getDocument() {

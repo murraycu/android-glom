@@ -2,7 +2,6 @@ package org.glom.app;
 
 import org.glom.app.libglom.Document;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -23,11 +22,11 @@ import java.util.List;
  * (if present) is a {@link TableDetailFragment}.
  * <p>
  * This activity also implements the required
- * {@link TableNavFragment.Callbacks} interface
+ * {@link TableNavCallbacks} interface
  * to listen for item selections.
  */
 public class TableNavActivity extends DocumentActivity
-        implements TableNavFragment.Callbacks {
+        implements TableNavCallbacks {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -61,7 +60,7 @@ public class TableNavActivity extends DocumentActivity
     }
 
     /**
-     * Callback method from {@link TableNavFragment.Callbacks}
+     * Callback method from {@link TableNavCallbacks}
      * indicating that the item with the given ID was selected.
      */
     @Override
@@ -87,23 +86,5 @@ public class TableNavActivity extends DocumentActivity
         }
     }
 
-    @Override
-    public List<TableNavItem> getTableNames() {
-        Document document = getDocument();
-        if(document == null)
-            return null;
 
-        final List<String> tableNames = document.getTableNames();
-
-        // Put the table names in a list of TableNavItem,
-        // so that ArrayAdapter will call TableNavItem.toString() to get the titles.
-        List<TableNavItem> tables = new ArrayList<TableNavItem>();
-        for(final String tableName : tableNames) {
-            final TableNavItem item = new TableNavItem(tableName,
-                    document.getTableTitle(tableName, "" /* TODO */));
-            tables.add(item);
-        }
-
-        return tables;
-    }
 }

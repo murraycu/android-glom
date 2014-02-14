@@ -3,11 +3,9 @@ package org.glom.app;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import org.glom.app.libglom.Document;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +18,7 @@ import java.util.List;
  * 'activated' state upon selection. This helps indicate which item is
  * currently being viewed in a {@link TableDetailFragment}.
  * <p>
- * Activities containing this fragment MUST implement the {@link Callbacks}
+ * Activities containing this fragment MUST implement the {@link TableNavCallbacks}
  * interface.
  */
 public class TableNavFragment extends ListFragment {
@@ -35,7 +33,7 @@ public class TableNavFragment extends ListFragment {
      * The fragment's current callback object, which is notified of list item
      * clicks.
      */
-    private Callbacks mCallbacks = sDummyCallbacks;
+    private TableNavCallbacks mCallbacks = sDummyCallbacks;
 
     /**
      * The current activated item position. Only used on tablets.
@@ -43,32 +41,10 @@ public class TableNavFragment extends ListFragment {
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
     /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     *
-     * This is the recommended way for activities and fragments to communicate,
-     * presumably because, unlike a direct function call, it still keeps the
-     * fragment and activity implementations separate.
-     * http://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
-     */
-    public interface Callbacks {
-        /**
-         * Callback for when an item has been selected.
-         */
-        public void onTableSelected(String tableName);
-
-        /**
-         * Callback to get the list of table names from the activity's document, if any.
-         */
-        public List<TableNavItem> getTableNames();
-    }
-
-    /**
-     * A dummy implementation of the {@link Callbacks} interface that does
+     * A dummy implementation of the {@link TableNavCallbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
      */
-    private static Callbacks sDummyCallbacks = new Callbacks() {
+    private static TableNavCallbacks sDummyCallbacks = new TableNavCallbacks() {
         @Override
         public void onTableSelected(final String tableName) {
         }
@@ -101,30 +77,6 @@ public class TableNavFragment extends ListFragment {
             tables = new ArrayList<TableNavItem>();
         }
 
-        //Sort by the human-visible title:
-        Collections.sort(tables, new Comparator<TableNavItem>() {
-            public int compare(final TableNavItem a, final TableNavItem b) {
-                //TODO: Use guava to simplify this:
-                if (a == null || b == null) {
-                    return (a == null) ? -1 : 1;
-                }
-
-                if (a == null && b == null) {
-                    return 0;
-                }
-
-                if (a.tableTitle == null || b.tableTitle == null) {
-                    return (a.tableTitle == null) ? -1 : 1;
-                }
-
-                if (a.tableTitle == null && b.tableTitle == null) {
-                    return 0;
-                }
-
-                return a.tableTitle.compareTo(b.tableTitle);
-            }
-        });
-
         setListAdapter(new ArrayAdapter<TableNavItem>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
@@ -148,11 +100,11 @@ public class TableNavFragment extends ListFragment {
         super.onAttach(activity);
 
         // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callbacks)) {
+        if (!(activity instanceof TableNavCallbacks)) {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
         }
 
-        mCallbacks = (Callbacks) activity;
+        mCallbacks = (TableNavCallbacks) activity;
     }
 
     @Override

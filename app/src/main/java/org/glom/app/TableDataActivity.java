@@ -7,11 +7,18 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Created by murrayc on 2/13/14.
  */
-public class TableDataActivity extends DocumentActivity {
+public class TableDataActivity extends DocumentActivity
+        implements TableDataFragment.Callbacks {
+
     String mTableName;
+    HashMap<Integer, String> mTableActionIDs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,33 +34,56 @@ public class TableDataActivity extends DocumentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_activity_actions, menu);
+
+        List<TableNavItem> tables = getTableNames();
+
+        menu.clear();
+        mTableActionIDs = new HashMap<Integer, String>();
+
+        //For instance, if the app was started directly, instead of via a view intent.
+        int id = 0;
+        if(tables != null) {
+            for(final TableNavItem item : tables) {
+                //Create a new ID and add it to our list:
+                mTableActionIDs.put(id, item.tableName);
+
+                menu.add(Menu.NONE, id, Menu.NONE, item.tableTitle);
+            }
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // This ID represents the Home or Up button. In the case of this
-                // activity, the Up button is shown. Use NavUtils to allow users
-                // to navigate up one level in the application structure. For
-                // more details, see the Navigation pattern on Android Design:
-                //
-                // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-                //
-                NavUtils.navigateUpTo(this, new Intent(this, TableNavActivity.class));
-                return true;
-            case R.id.action_details:
+        final int id = item.getItemId();
+
+        if(id == android.R.id.home) {
+            // This ID represents the Home or Up button. In the case of this
+            // activity, the Up button is shown. Use NavUtils to allow users
+            // to navigate up one level in the application structure. For
+            // more details, see the Navigation pattern on Android Design:
+            //
+            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+            //
+            NavUtils.navigateUpTo(this, new Intent(this, TableNavActivity.class));
+            return true;
+        } else {
+            final String tableName = mTableActionIDs.get(id);
+            if(tableName != null)
+            {
                 //TODO
                 return true;
-            case R.id.action_list:
-                //TODO
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            }
         }
+
+        return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public String getTableTitle(String tableName) {
+        return getDocument().getTableTitle(tableName, "" /* TODO */);
+    }
+
 }
