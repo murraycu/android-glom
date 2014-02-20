@@ -66,7 +66,7 @@ public class TableNavFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        update();
+        //TableNavActivity will call update() when document loading has finished.
     }
 
     public void update() {

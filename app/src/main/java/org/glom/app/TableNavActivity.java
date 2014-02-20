@@ -57,16 +57,29 @@ public class TableNavActivity extends DocumentActivity
                     .findFragmentById(R.id.table_nav))
                     .setActivateOnItemClick(true);
         }
+
+        if(!hasUri()) {
+            //Show an empty list,
+            //instead of the "Loading ..." progress bar.
+            //Otherwise, this will happen in onDocumentLoadingFinished
+            final TableNavFragment fragment = getTableNavFragment();
+            if(fragment != null)
+                fragment.update();
+        }
     }
 
     protected void onDocumentLoadingFinished(Boolean result) {
         super.onDocumentLoadingFinished(result);
 
         //Tell the list of tables to show the contents of the document:
-        TableNavFragment fragment = ((TableNavFragment) getFragmentManager()
-            .findFragmentById(R.id.table_nav));
+        TableNavFragment fragment = getTableNavFragment();
         if(fragment != null)
             fragment.update();
+    }
+
+    private TableNavFragment getTableNavFragment() {
+        return ((TableNavFragment) getFragmentManager()
+                .findFragmentById(R.id.table_nav));
     }
 
     /**

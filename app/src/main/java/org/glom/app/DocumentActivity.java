@@ -26,7 +26,7 @@ public class DocumentActivity extends Activity
 
     protected DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
 
-    private Uri mUri; //Just for logging.
+    private Uri mUri;
 
     //This loads the document in an AsyncTask because it can take a noticeably long time,
     //and we don't want to make the UI unresponsive.
@@ -34,6 +34,7 @@ public class DocumentActivity extends Activity
 
         @Override
         protected Boolean doInBackground(final InputStream... params) {
+
             if(params.length > 0) {
                 return documentSingleton.load(params[0]);
             }
@@ -43,12 +44,18 @@ public class DocumentActivity extends Activity
 
         @Override
         protected void onProgressUpdate(final Integer... progress) {
+            super.onProgressUpdate();
+
             showDocumentLoadProgress();
 
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+
+            showDocumentTitle();
+
             onDocumentLoadingFinished(result);
         }
     }
@@ -64,6 +71,7 @@ public class DocumentActivity extends Activity
         //TODO: Notify other Activities that the shared document has changed?
         //And somehow invalidate/close activities those activities if it's a different document?
     }
+
 
 
     @Override
@@ -156,5 +164,12 @@ public class DocumentActivity extends Activity
 
     protected Document getDocument() {
         return documentSingleton.getDocument();
+    }
+
+    /**
+     * Whether we have a URI that is (or is being) parsed as a document.
+     */
+    protected boolean hasUri() {
+        return mUri != null;
     }
 }
