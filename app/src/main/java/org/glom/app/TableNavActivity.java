@@ -59,6 +59,16 @@ public class TableNavActivity extends DocumentActivity
         }
     }
 
+    protected void onDocumentLoadingFinished(Boolean result) {
+        super.onDocumentLoadingFinished(result);
+
+        //Tell the list of tables to show the contents of the document:
+        TableNavFragment fragment = ((TableNavFragment) getFragmentManager()
+            .findFragmentById(R.id.table_nav));
+        if(fragment != null)
+            fragment.update();
+    }
+
     /**
      * Callback method from {@link TableNavCallbacks}
      * indicating that the item with the given ID was selected.

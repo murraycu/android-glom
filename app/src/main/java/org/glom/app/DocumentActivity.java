@@ -1,13 +1,12 @@
 package org.glom.app;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import org.glom.app.libglom.Document;
 
@@ -17,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by murrayc on 2/7/14.
@@ -26,29 +26,67 @@ public class DocumentActivity extends Activity
 
     protected DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
 
+    private Uri mUri; //Just for logging.
+
+    //This loads the document in an AsyncTask because it can take a noticeably long time,
+    //and we don't want to make the UI unresponsive.
+    private class DocumentLoadTask extends AsyncTask<InputStream, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(final InputStream... params) {
+            if(params.length > 0) {
+                return documentSingleton.load(params[0]);
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onProgressUpdate(final Integer... progress) {
+            showDocumentLoadProgress();
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            onDocumentLoadingFinished(result);
+        }
+    }
+
+    private void showDocumentLoadProgress() {
+    }
+
+    protected void onDocumentLoadingFinished(Boolean result) {
+        if(!result) {
+            Log.e("android-glom", "Document.load() failed for URI: " + mUri);
+        }
+
+        //TODO: Notify other Activities that the shared document has changed?
+        //And somehow invalidate/close activities those activities if it's a different document?
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
-        final Uri uri = intent.getData();
-        if (uri != null) {
+        mUri = intent.getData();
+        if (mUri != null) {
             InputStream inputStream = null;
             try {
-                inputStream = getContentResolver().openInputStream(uri);
+                inputStream = getContentResolver().openInputStream(mUri);
             } catch (final FileNotFoundException e) {
                 e.printStackTrace();
                 return;
             }
 
-            if(!documentSingleton.load(inputStream)) {
-                Log.e("android-glom", "Document.load() failed for URI: " + uri);
-            }
+            //Load the document asynchronously.
+            //We respond when it finishes in onDocumentLoadingFinished.
+            final DocumentLoadTask task = new DocumentLoadTask();
+            task.execute(inputStream);
 
             showDocumentTitle();
-
-            //TODO: Notify other Activities that the shared document has changed?
-            //And somehow invalidate/close activities those activities if it's a different document?
         }
 
         //This lets us know what MIME Type to mention in the intent filter in the manifeset file,

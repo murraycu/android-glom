@@ -69,7 +69,7 @@ public class TableNavFragment extends ListFragment {
         update();
     }
 
-    private void update() {
+    public void update() {
         List<TableNavItem> tables = mCallbacks.getTableNames();
 
         //For instance, if the app was started directly, instead of via a view intent.
