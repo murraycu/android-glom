@@ -3,12 +3,12 @@ package org.glom.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,7 +18,7 @@ public class TableDataActivity extends DocumentActivity
         implements TableDataFragment.Callbacks {
 
     String mTableName;
-    HashMap<Integer, String> mTableActionIDs;
+    SparseArray<String> mTableActionIDs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class TableDataActivity extends DocumentActivity
         List<TableNavItem> tables = getTableNames();
 
         menu.clear();
-        mTableActionIDs = new HashMap<Integer, String>();
+        mTableActionIDs = new SparseArray<String>();
 
         //For instance, if the app was started directly, instead of via a view intent.
         int id = 0;
