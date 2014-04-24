@@ -37,12 +37,9 @@ public class UsesRelationshipImpl implements UsesRelationship {
 			return false;
 		}
 
-		if (TextUtils.isEmpty(relationship.getName())) {
-			return false;
-		}
+        return !TextUtils.isEmpty(relationship.getName());
 
-		return true;
-	}
+    }
 
 	@Override
 	public boolean getHasRelatedRelationshipName() {
@@ -50,12 +47,9 @@ public class UsesRelationshipImpl implements UsesRelationship {
 			return false;
 		}
 
-		if (TextUtils.isEmpty(relatedRelationship.getName())) {
-			return false;
-		}
+        return !TextUtils.isEmpty(relatedRelationship.getName());
 
-		return true;
-	}
+    }
 
 	@Override
 	public String getSqlJoinAliasName() {
@@ -132,11 +126,7 @@ public class UsesRelationshipImpl implements UsesRelationship {
 	 */
 	private static boolean relationshipEquals(final Relationship a, final Relationship b) {
 		if (a == null) {
-			if (b == null) {
-				return true;
-			} else {
-				return false;
-			}
+            return b == null;
 		}
 
 		if (b == null) {

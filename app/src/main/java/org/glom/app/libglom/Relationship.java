@@ -102,11 +102,8 @@ public class Relationship extends Translatable {
 			return false;
 		}
 
-		if (!TextUtils.equals(this.toField, b.toField)) {
-			return false;
-		}
+        return TextUtils.equals(this.toField, b.toField);
 
-		return true;
-	}
+    }
 
 }

@@ -1299,12 +1299,8 @@ public class Document {
 
 	public boolean getTableIsKnown(final String tableName) {
 		final TableInfo info = getTableInfo(tableName);
-		if (info == null) {
-			return false;
-		}
-
-		return true;
-	}
+        return info != null;
+    }
 
 	public List<Field> getTableFields(final String tableName) {
 		final TableInfo info = getTableInfo(tableName);
