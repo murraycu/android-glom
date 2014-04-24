@@ -217,7 +217,7 @@ public class Document {
 	// TODO: Make sure these have the correct values.
 	public enum LoadFailureCodes {
 		LOAD_FAILURE_CODE_NONE, LOAD_FAILURE_CODE_NOT_FOUND, LOAD_FAILURE_CODE_FILE_VERSION_TOO_NEW
-	};
+	}
 
 	public boolean load(final InputStream inputStream) {
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -1214,7 +1214,7 @@ public class Document {
 
 	public enum HostingMode {
 		HOSTING_MODE_POSTGRES_CENTRAL, HOSTING_MODE_POSTGRES_SELF, HOSTING_MODE_SQLITE, HOSTING_MODE_MYSQL_CENTRAL, HOSTING_MODE_MYSQL_SELF
-	};
+	}
 
 	public String getDatabaseTitle(final String locale) {
 		return databaseTitle.getTitle(locale);
