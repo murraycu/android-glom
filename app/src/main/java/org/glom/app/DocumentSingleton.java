@@ -1,11 +1,7 @@
 package org.glom.app;
 
-import android.net.Uri;
-import android.util.Log;
-
 import org.glom.app.libglom.Document;
 
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 /**

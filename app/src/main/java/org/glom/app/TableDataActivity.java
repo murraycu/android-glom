@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.SparseArray;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

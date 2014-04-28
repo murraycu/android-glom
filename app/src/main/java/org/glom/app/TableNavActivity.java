@@ -1,12 +1,7 @@
 package org.glom.app;
 
-import org.glom.app.libglom.Document;
-
 import android.content.Intent;
 import android.os.Bundle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**

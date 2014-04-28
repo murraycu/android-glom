@@ -20,12 +20,10 @@
 package org.glom.app.libglom;
 
 //import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 //import java.io.InputStream;
 //import java.net.URLConnection;
 import java.io.InputStream;
-import java.net.URI;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -41,17 +39,9 @@ import java.util.Map.Entry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
 
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 //import org.glom.web.server.Log;
