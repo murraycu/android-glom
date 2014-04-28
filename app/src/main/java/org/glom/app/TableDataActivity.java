@@ -20,7 +20,7 @@ public class TableDataActivity extends DocumentActivity
         implements TableDataFragment.Callbacks {
 
     String mTableName;
-    SparseArray<String> mTableActionIDs;
+    private SparseArray<String> mTableActionIDs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

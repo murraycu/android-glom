@@ -32,7 +32,7 @@ public class LayoutGroup extends LayoutItem {
 		this.columnCount = columnCount;
 	}
 
-	static protected class LayoutItemList extends ArrayList<LayoutItem> {
+	private static class LayoutItemList extends ArrayList<LayoutItem> {
 		private static final long serialVersionUID = 8610424318876440333L;
 	}
 

@@ -20,7 +20,7 @@ public class Field extends Translatable {
 	 */
 	private/* final */boolean uniqueKey = false;
 
-	Formatting formatting = new Formatting(); // Not null, so we have some default formatting.
+	private Formatting formatting = new Formatting(); // Not null, so we have some default formatting.
 
 	/**
 	 * @return the formatting

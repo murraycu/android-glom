@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 public class DocumentActivity extends Activity
         implements TableNavCallbacks {
 
-    protected DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
+    private DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
 
     private Uri mUri;
 
