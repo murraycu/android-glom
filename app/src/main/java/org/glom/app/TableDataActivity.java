@@ -1,6 +1,7 @@
 package org.glom.app;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -28,7 +29,11 @@ public class TableDataActivity extends DocumentActivity
         mTableName = intent.getStringExtra(TableDetailFragment.ARG_TABLE_NAME);
 
         // Show the Up button in the action bar.
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        final ActionBar actionBar = getActionBar();
+        if (actionBar == null)
+            return;
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

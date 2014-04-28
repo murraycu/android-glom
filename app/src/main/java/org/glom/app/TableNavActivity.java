@@ -1,5 +1,6 @@
 package org.glom.app;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -48,9 +49,11 @@ public class TableNavActivity extends DocumentActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((TableNavFragment) getFragmentManager()
-                    .findFragmentById(R.id.table_nav))
-                    .setActivateOnItemClick(true);
+            final FragmentManager fragmentManager = getFragmentManager();
+            TableNavFragment fragment = ((TableNavFragment) fragmentManager.findFragmentById(R.id.table_nav));
+            if (fragment != null) {
+                fragment.setActivateOnItemClick(true);
+            }
         }
 
         if(!hasUri()) {

@@ -75,8 +75,12 @@ public class TableNavFragment extends ListFragment {
             tables = new ArrayList<TableNavItem>();
         }
 
+        final Activity activity = getActivity();
+        if(activity == null)
+            return;
+
         setListAdapter(new ArrayAdapter<TableNavItem>(
-                getActivity(),
+                activity,
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 tables));
@@ -117,7 +121,9 @@ public class TableNavFragment extends ListFragment {
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
-        final TableNavItem table = (TableNavItem) getListView().getItemAtPosition(position);
+        final TableNavItem table = (TableNavItem) listView.getItemAtPosition(position);
+        if(table == null)
+            return;
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
@@ -140,16 +146,24 @@ public class TableNavFragment extends ListFragment {
     public void setActivateOnItemClick(boolean activateOnItemClick) {
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
-        getListView().setChoiceMode(activateOnItemClick
+        final ListView listView = getListView();
+        if(listView == null)
+            return;
+
+        listView.setChoiceMode(activateOnItemClick
                 ? ListView.CHOICE_MODE_SINGLE
                 : ListView.CHOICE_MODE_NONE);
     }
 
     private void setActivatedPosition(int position) {
+        final ListView listView = getListView();
+        if(listView == null)
+            return;
+
         if (position == ListView.INVALID_POSITION) {
-            getListView().setItemChecked(mActivatedPosition, false);
+            listView.setItemChecked(mActivatedPosition, false);
         } else {
-            getListView().setItemChecked(position, true);
+            listView.setItemChecked(position, true);
         }
 
         mActivatedPosition = position;

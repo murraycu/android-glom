@@ -25,7 +25,8 @@ public class TableDetailFragment extends TableDataFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_TABLE_NAME)) {
+        final Bundle bundle = getArguments();
+        if ((bundle != null) && bundle.containsKey(ARG_TABLE_NAME)) {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
@@ -37,6 +38,7 @@ public class TableDetailFragment extends TableDataFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_table_detail, container, false);
+        assert rootView != null;
 
         // Show the dummy content as text in a TextView.
         if (mTableName != null) {
