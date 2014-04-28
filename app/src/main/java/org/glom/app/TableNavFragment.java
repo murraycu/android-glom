@@ -42,7 +42,7 @@ public class TableNavFragment extends ListFragment {
      * A dummy implementation of the {@link TableNavCallbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
      */
-    private static TableNavCallbacks sDummyCallbacks = new TableNavCallbacks() {
+    private static final TableNavCallbacks sDummyCallbacks = new TableNavCallbacks() {
         @Override
         public void onTableSelected(final String tableName) {
         }

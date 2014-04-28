@@ -18,7 +18,7 @@ public class Field extends Translatable {
 	 * Don't make this final, because that breaks GWT serialization. See
 	 * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
 	 */
-	private/* final */boolean uniqueKey = false;
+	private final/* final */boolean uniqueKey = false;
 
 	private Formatting formatting = new Formatting(); // Not null, so we have some default formatting.
 

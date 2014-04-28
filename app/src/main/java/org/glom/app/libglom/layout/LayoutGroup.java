@@ -40,7 +40,7 @@ public class LayoutGroup extends LayoutItem {
      * Don't make this final, because that breaks GWT serialization. See
      * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
      */
-	private/* final */LayoutItemList items = new LayoutItemList();
+	private final/* final */LayoutItemList items = new LayoutItemList();
 
 	/**
 	 * @return

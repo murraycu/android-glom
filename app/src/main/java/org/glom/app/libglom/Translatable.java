@@ -19,7 +19,7 @@ public class Translatable implements Serializable {
 	private String titleOriginal = "";
 
 	// A map of localeID to title:
-	private TranslationsMap translationsMap = new TranslationsMap();
+	private final TranslationsMap translationsMap = new TranslationsMap();
 
 	/**
 	 * @return the translationsMap

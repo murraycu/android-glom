@@ -24,7 +24,7 @@ import java.util.List;
 public class DocumentActivity extends Activity
         implements TableNavCallbacks {
 
-    private DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
+    private final DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
 
     private Uri mUri;
 

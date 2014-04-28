@@ -15,14 +15,14 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
 	 * Don't make this final, because that breaks GWT compilation. See
 	 * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
 	 */
-	private/* final */UsesRelationship usesRel = new UsesRelationshipImpl();
+	private final/* final */UsesRelationship usesRel = new UsesRelationshipImpl();
 	private boolean useDefaultFormatting = true;
 
 	/*
 	 * Don't make this final, because that breaks GWT serialization. See
 	 * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
 	 */
-	private/* final */CustomTitle customTitle = new CustomTitle();
+	private final/* final */CustomTitle customTitle = new CustomTitle();
 
 	// Extras:
 	private String navigationTableName = null; // If any.

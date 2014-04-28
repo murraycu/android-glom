@@ -11,7 +11,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
 	 * Don't make this final, because that breaks GWT serialization. See
 	 * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
 	 */
-	private/* final */UsesRelationship usesRel = new UsesRelationshipImpl();
+	private final/* final */UsesRelationship usesRel = new UsesRelationshipImpl();
 
 	public enum NavigationType {
 		NAVIGATION_NONE, NAVIGATION_AUTOMATIC, NAVIGATION_SPECIFIC

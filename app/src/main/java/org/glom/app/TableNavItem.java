@@ -5,8 +5,8 @@ package org.glom.app;
  * so it can call toString() on something to get a human-readable title (table title) for an ID (table name).
  */
 public class TableNavItem {
-    public String tableName;
-    public String tableTitle;
+    public final String tableName;
+    public final String tableTitle;
 
     public TableNavItem(final String tableName, final String tableTitle) {
         this.tableName = tableName;

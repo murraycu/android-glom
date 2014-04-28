@@ -16,7 +16,7 @@ public class DocumentSingleton {
     //Don't let this ever be null, so we can avoid always checking getDocument() for null.
     private Document mDocument = new Document();
 
-    private static DocumentSingleton ourInstance = new DocumentSingleton();
+    private static final DocumentSingleton ourInstance = new DocumentSingleton();
 
     public static DocumentSingleton getInstance() {
         return ourInstance;
