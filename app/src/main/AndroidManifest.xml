@@ -34,6 +34,14 @@
             android:parentActivityName="org.glom.app.TableNavActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.glom.app.TableListActivity" />
+        </activity>
+        <activity
+            android:name="org.glom.app.TableListActivity"
+            android:label="@string/title_table_list"
+            android:parentActivityName="org.glom.app.TableListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.glom.app.TableNavActivity" />
         </activity>
     </application>
