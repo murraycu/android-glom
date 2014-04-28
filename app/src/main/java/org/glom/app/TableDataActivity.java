@@ -1,5 +1,6 @@
 package org.glom.app;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -14,6 +15,7 @@ import java.util.List;
 /**
  * Created by murrayc on 2/13/14.
  */
+@SuppressLint("Registered") //This is a base class for other Activities.
 public class TableDataActivity extends DocumentActivity
         implements TableDataFragment.Callbacks {
 

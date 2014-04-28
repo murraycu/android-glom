@@ -1,5 +1,6 @@
 package org.glom.app;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by murrayc on 2/7/14.
  */
+@SuppressLint("Registered") //This is a base class for other Activities.
 public class DocumentActivity extends Activity
         implements TableNavCallbacks {
 
