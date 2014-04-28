@@ -138,21 +138,21 @@ public class DocumentActivity extends Activity
         //Sort by the human-visible title:
         Collections.sort(tables, new Comparator<TableNavItem>() {
             public int compare(final TableNavItem a, final TableNavItem b) {
+                if (a == null && b == null) {
+                    return 0;
+                }
+
                 //TODO: Use guava to simplify this:
                 if (a == null || b == null) {
                     return (a == null) ? -1 : 1;
                 }
 
-                if (a == null && b == null) {
+                if (a.tableTitle == null && b.tableTitle == null) {
                     return 0;
                 }
 
                 if (a.tableTitle == null || b.tableTitle == null) {
                     return (a.tableTitle == null) ? -1 : 1;
-                }
-
-                if (a.tableTitle == null && b.tableTitle == null) {
-                    return 0;
                 }
 
                 return a.tableTitle.compareTo(b.tableTitle);
