@@ -97,7 +97,7 @@ public class DocumentActivity extends Activity
             showDocumentTitle();
         }
 
-        //This lets us know what MIME Type to mention in the intent filter in the manifeset file,
+        //This lets us know what MIME Type to mention in the intent filter in the manifest file,
         //as long as we cannot register a more specific MIME type.
         //String type = intent.getType();
         //Log.v("glomdebug", "type=" + type);
