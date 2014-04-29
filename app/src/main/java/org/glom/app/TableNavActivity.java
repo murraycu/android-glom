@@ -12,11 +12,11 @@ import android.os.Bundle;
  * lead to a {@link TableDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
- * <p>
+ * <p/>
  * The activity makes heavy use of fragments. The list of items is a
  * {@link TableNavFragment} and the item details
  * (if present) is a {@link TableDetailFragment}.
- * <p>
+ * <p/>
  * This activity also implements the required
  * {@link TableNavCallbacks} interface
  * to listen for item selections.
@@ -56,12 +56,12 @@ public class TableNavActivity extends DocumentActivity
             }
         }
 
-        if(!hasUri()) {
+        if (!hasUri()) {
             //Show an empty list,
             //instead of the "Loading ..." progress bar.
             //Otherwise, this will happen in onDocumentLoadingFinished
             final TableNavFragment fragment = getTableNavFragment();
-            if(fragment != null)
+            if (fragment != null)
                 fragment.update();
         }
     }
@@ -71,7 +71,7 @@ public class TableNavActivity extends DocumentActivity
 
         //Tell the list of tables to show the contents of the document:
         TableNavFragment fragment = getTableNavFragment();
-        if(fragment != null)
+        if (fragment != null)
             fragment.update();
     }
 

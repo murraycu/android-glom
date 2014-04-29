@@ -13,7 +13,8 @@ public class TableNavItem {
         this.tableTitle = tableTitle;
     }
 
-    /** This is so we can show a human readable title via ArrayAdapter.
+    /**
+     * This is so we can show a human readable title via ArrayAdapter.
      *
      * @return
      */

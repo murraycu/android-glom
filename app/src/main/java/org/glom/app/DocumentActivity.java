@@ -28,51 +28,17 @@ public class DocumentActivity extends Activity
 
     private Uri mUri;
 
-    //This loads the document in an AsyncTask because it can take a noticeably long time,
-    //and we don't want to make the UI unresponsive.
-    private class DocumentLoadTask extends AsyncTask<InputStream, Integer, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(final InputStream... params) {
-
-            if(params.length > 0) {
-                return documentSingleton.load(params[0]);
-            }
-
-            return false;
-        }
-
-        @Override
-        protected void onProgressUpdate(final Integer... progress) {
-            super.onProgressUpdate();
-
-            showDocumentLoadProgress();
-
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-
-            showDocumentTitle();
-
-            onDocumentLoadingFinished(result);
-        }
-    }
-
     private void showDocumentLoadProgress() {
     }
 
     protected void onDocumentLoadingFinished(Boolean result) {
-        if(!result) {
+        if (!result) {
             Log.e("android-glom", "Document.load() failed for URI: " + mUri);
         }
 
         //TODO: Notify other Activities that the shared document has changed?
         //And somehow invalidate/close activities those activities if it's a different document?
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +87,7 @@ public class DocumentActivity extends Activity
     @Override
     public List<TableNavItem> getTableNames() {
         Document document = getDocument();
-        if(document == null)
+        if (document == null)
             return null;
 
         final List<String> tableNames = document.getTableNames();
@@ -129,7 +95,7 @@ public class DocumentActivity extends Activity
         // Put the table names in a list of TableNavItem,
         // so that ArrayAdapter will call TableNavItem.toString() to get the titles.
         List<TableNavItem> tables = new ArrayList<TableNavItem>();
-        for(final String tableName : tableNames) {
+        for (final String tableName : tableNames) {
             final TableNavItem item = new TableNavItem(tableName,
                     document.getTableTitle(tableName, "" /* TODO */));
             tables.add(item);
@@ -171,5 +137,37 @@ public class DocumentActivity extends Activity
      */
     protected boolean hasUri() {
         return mUri != null;
+    }
+
+    //This loads the document in an AsyncTask because it can take a noticeably long time,
+    //and we don't want to make the UI unresponsive.
+    private class DocumentLoadTask extends AsyncTask<InputStream, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(final InputStream... params) {
+
+            if (params.length > 0) {
+                return documentSingleton.load(params[0]);
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onProgressUpdate(final Integer... progress) {
+            super.onProgressUpdate();
+
+            showDocumentLoadProgress();
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+
+            showDocumentTitle();
+
+            onDocumentLoadingFinished(result);
+        }
     }
 }

@@ -47,8 +47,8 @@ public class TableDataActivity extends DocumentActivity
 
         //For instance, if the app was started directly, instead of via a view intent.
         int id = 0;
-        if(tables != null) {
-            for(final TableNavItem item : tables) {
+        if (tables != null) {
+            for (final TableNavItem item : tables) {
                 //Create a new ID and add it to our list:
                 mTableActionIDs.put(id, item.tableName);
                 menu.add(Menu.NONE, id, Menu.NONE, item.tableTitle);
@@ -64,7 +64,7 @@ public class TableDataActivity extends DocumentActivity
         // Handle presses on the action bar items
         final int id = item.getItemId();
 
-        if(id == android.R.id.home) {
+        if (id == android.R.id.home) {
             // This ID represents the Home or Up button. In the case of this
             // activity, the Up button is shown. Use NavUtils to allow users
             // to navigate up one level in the application structure. For
@@ -76,8 +76,7 @@ public class TableDataActivity extends DocumentActivity
             return true;
         } else {
             final String tableName = mTableActionIDs.get(id);
-            if(tableName != null)
-            {
+            if (tableName != null) {
                 //This activity is only visible in the single-pane mode,
                 //so we don't need code here to deal wth the multi-pane mode.
 

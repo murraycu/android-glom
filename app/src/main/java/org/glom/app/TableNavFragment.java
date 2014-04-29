@@ -15,7 +15,7 @@ import java.util.List;
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
  * currently being viewed in a {@link TableDetailFragment}.
- * <p>
+ * <p/>
  * Activities containing this fragment MUST implement the {@link TableNavCallbacks}
  * interface.
  */
@@ -26,18 +26,6 @@ public class TableNavFragment extends ListFragment {
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-
-    /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
-     */
-    private TableNavCallbacks mCallbacks = sDummyCallbacks;
-
-    /**
-     * The current activated item position. Only used on tablets.
-     */
-    private int mActivatedPosition = ListView.INVALID_POSITION;
-
     /**
      * A dummy implementation of the {@link TableNavCallbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
@@ -52,6 +40,15 @@ public class TableNavFragment extends ListFragment {
             return null;
         }
     };
+    /**
+     * The fragment's current callback object, which is notified of list item
+     * clicks.
+     */
+    private TableNavCallbacks mCallbacks = sDummyCallbacks;
+    /**
+     * The current activated item position. Only used on tablets.
+     */
+    private int mActivatedPosition = ListView.INVALID_POSITION;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -71,12 +68,12 @@ public class TableNavFragment extends ListFragment {
         List<TableNavItem> tables = mCallbacks.getTableNames();
 
         //For instance, if the app was started directly, instead of via a view intent.
-        if(tables == null) {
+        if (tables == null) {
             tables = new ArrayList<TableNavItem>();
         }
 
         final Activity activity = getActivity();
-        if(activity == null)
+        if (activity == null)
             return;
 
         setListAdapter(new ArrayAdapter<TableNavItem>(
@@ -122,7 +119,7 @@ public class TableNavFragment extends ListFragment {
         super.onListItemClick(listView, view, position, id);
 
         final TableNavItem table = (TableNavItem) listView.getItemAtPosition(position);
-        if(table == null)
+        if (table == null)
             return;
 
         // Notify the active callbacks interface (the activity, if the
@@ -147,7 +144,7 @@ public class TableNavFragment extends ListFragment {
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
         final ListView listView = getListView();
-        if(listView == null)
+        if (listView == null)
             return;
 
         listView.setChoiceMode(activateOnItemClick
@@ -157,7 +154,7 @@ public class TableNavFragment extends ListFragment {
 
     private void setActivatedPosition(int position) {
         final ListView listView = getListView();
-        if(listView == null)
+        if (listView == null)
             return;
 
         if (position == ListView.INVALID_POSITION) {

@@ -7,101 +7,99 @@ import java.util.HashMap;
 
 public class Translatable implements Serializable {
 
-	private static final long serialVersionUID = 700462080795724363L;
+    private static final long serialVersionUID = 700462080795724363L;
+    // A map of localeID to title:
+    private final TranslationsMap translationsMap = new TranslationsMap();
+    private String name = "";
+    private String titleOriginal = "";
 
-	// We use HashMap instead of Hashtable or TreeMap because GWT only supports HashMap.
-	public static class TranslationsMap extends HashMap<String, String> {
+    /**
+     * @return the translationsMap
+     */
+    public TranslationsMap getTranslationsMap() {
+        return translationsMap;
+    }
 
-		private static final long serialVersionUID = 1275019181399622213L;
-	}
+    public String getName() {
+        return name;
+    }
 
-	private String name = "";
-	private String titleOriginal = "";
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	// A map of localeID to title:
-	private final TranslationsMap translationsMap = new TranslationsMap();
+    public String getTitleOriginal() {
+        return titleOriginal;
+    }
 
-	/**
-	 * @return the translationsMap
-	 */
-	public TranslationsMap getTranslationsMap() {
-		return translationsMap;
-	}
+    public void setTitleOriginal(final String title) {
+        this.titleOriginal = title;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getTitle() {
+        return getTitleOriginal();
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public String getTitle(final String locale) {
+        if (TextUtils.isEmpty(locale)) {
+            return getTitleOriginal();
+        }
 
-	public String getTitleOriginal() {
-		return titleOriginal;
-	}
+        final String title = translationsMap.get(locale);
+        if (title != null) {
+            return title;
+        }
 
-	public void setTitleOriginal(final String title) {
-		this.titleOriginal = title;
-	}
+        // Fall back to the original (usually English) if there is no translation.
+        return getTitleOriginal();
+    }
 
-	public String getTitle() {
-		return getTitleOriginal();
-	}
+    /**
+     * @param locale
+     * @return
+     */
+    public String getTitleOrName(final String locale) {
+        final String title = getTitle(locale);
+        if (TextUtils.isEmpty(title)) {
+            return getName();
+        }
 
-	public String getTitle(final String locale) {
-		if (TextUtils.isEmpty(locale)) {
-			return getTitleOriginal();
-		}
+        return title;
+    }
 
-		final String title = translationsMap.get(locale);
-		if (title != null) {
-			return title;
-		}
-
-		// Fall back to the original (usually English) if there is no translation.
-		return getTitleOriginal();
-	}
-
-	/**
-	 * @param locale
-	 * @return
-	 */
-	public String getTitleOrName(final String locale) {
-		final String title = getTitle(locale);
-		if (TextUtils.isEmpty(title)) {
-			return getName();
-		}
-
-		return title;
-	}
-
-	/**
-	 * Make sure that getTitle() or getTitleOriginal() returns the specified translation. And discard all translations.
-	 * You should probably only call this on a clone()ed item.
-	 * 
-	 * @param locale
-	 */
-	public void makeTitleOriginal(final String locale) {
-		final String title = getTitle(locale);
-		translationsMap.clear();
-		setTitleOriginal(title);
+    /**
+     * Make sure that getTitle() or getTitleOriginal() returns the specified translation. And discard all translations.
+     * You should probably only call this on a clone()ed item.
+     *
+     * @param locale
+     */
+    public void makeTitleOriginal(final String locale) {
+        final String title = getTitle(locale);
+        translationsMap.clear();
+        setTitleOriginal(title);
 
 		/*
-		 * This will fail anyway, because setTitle() does not really work on LayoutItemField, because the getTitle()
+         * This will fail anyway, because setTitle() does not really work on LayoutItemField, because the getTitle()
 		 * might have come from the field. if(getTitle() != title) { GWT.log("makeTitleOriginal(): failed."); }
 		 */
-	}
+    }
 
-	/**
-	 * @param translatedTitle
-	 * @param locale
-	 */
-	public void setTitle(final String title, final String locale) {
-		if (TextUtils.isEmpty(locale)) {
-			setTitleOriginal(title);
-			return;
-		}
+    /**
+     * @param translatedTitle
+     * @param locale
+     */
+    public void setTitle(final String title, final String locale) {
+        if (TextUtils.isEmpty(locale)) {
+            setTitleOriginal(title);
+            return;
+        }
 
-		translationsMap.put(locale, title);
-	}
+        translationsMap.put(locale, title);
+    }
+
+    // We use HashMap instead of Hashtable or TreeMap because GWT only supports HashMap.
+    public static class TranslationsMap extends HashMap<String, String> {
+
+        private static final long serialVersionUID = 1275019181399622213L;
+    }
 }

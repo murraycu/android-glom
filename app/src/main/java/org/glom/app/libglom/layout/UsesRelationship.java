@@ -19,45 +19,44 @@
 
 package org.glom.app.libglom.layout;
 
-import java.io.Serializable;
-
 import org.glom.app.libglom.Relationship;
+
+import java.io.Serializable;
 
 /**
  * @author Murray Cumming <murrayc@openismus.com>
- * 
  */
 public interface UsesRelationship extends Serializable {
 
-	public abstract void setRelationship(final Relationship relationship);
+    public abstract Relationship getRelationship();
 
-	public abstract Relationship getRelationship();
+    public abstract void setRelationship(final Relationship relationship);
 
-	/**
-	 * @return
-	 */
-	public abstract boolean getHasRelationshipName();
+    /**
+     * @return
+     */
+    public abstract boolean getHasRelationshipName();
 
-	/**
-	 * @param get_related_relationship
-	 */
-	public abstract void setRelatedRelationship(final Relationship relationship);
+    public abstract Relationship getRelatedRelationship();
 
-	public abstract Relationship getRelatedRelationship();
+    /**
+     * @param get_related_relationship
+     */
+    public abstract void setRelatedRelationship(final Relationship relationship);
 
-	public abstract boolean getHasRelatedRelationshipName();
+    public abstract boolean getHasRelatedRelationshipName();
 
-	public abstract String getSqlJoinAliasName();
+    public abstract String getSqlJoinAliasName();
 
-	public abstract String getSqlTableOrJoinAliasName(String tableName);
+    public abstract String getSqlTableOrJoinAliasName(String tableName);
 
-	/**
-	 * @param string
-	 * @return
-	 */
-	public abstract String getTableUsed(String string);
+    /**
+     * @param string
+     * @return
+     */
+    public abstract String getTableUsed(String string);
 
-	public abstract String getRelationshipNameUsed();
+    public abstract String getRelationshipNameUsed();
 
-	public abstract String getTitleUsed(String parentTableTitle, String locale);
+    public abstract String getTitleUsed(String parentTableTitle, String locale);
 }

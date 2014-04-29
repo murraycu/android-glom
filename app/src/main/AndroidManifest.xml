@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.glom.app" >
+    package="org.glom.app">
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name="org.glom.app.TableNavActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,20 +18,20 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.EDIT" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <!-- TODO: Is there any way to register a new MIME-type in Android?
                 Then we could specify application/x-glom instead of application/* -->
                 <data
-                    android:mimeType="text/plain"
                     android:host="*"
-                    android:pathPattern=".*\\.glom"
-                    />
+                    android:mimeType="text/plain"
+                    android:pathPattern=".*\\.glom" />
             </intent-filter>
         </activity>
         <activity
             android:name="org.glom.app.TableDetailActivity"
             android:label="@string/title_table_detail"
-            android:parentActivityName="org.glom.app.TableNavActivity" >
+            android:parentActivityName="org.glom.app.TableNavActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.glom.app.TableListActivity" />
@@ -39,7 +39,7 @@
         <activity
             android:name="org.glom.app.TableListActivity"
             android:label="@string/title_table_list"
-            android:parentActivityName="org.glom.app.TableListActivity" >
+            android:parentActivityName="org.glom.app.TableListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.glom.app.TableNavActivity" />

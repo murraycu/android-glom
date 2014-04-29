@@ -21,11 +21,12 @@ package org.glom.app.libglom.layout;
 
 import org.glom.app.libglom.Translatable;
 
-/** The text of a LayoutItemText layout item.
+/**
+ * The text of a LayoutItemText layout item.
  * The (optional) title is in the LayoutItemText itself.
  *
  * @author Murray Cumming <murrayc@murrayc.com>
  */
 public class StaticText extends Translatable {
-	private static final long serialVersionUID = -2841723294651514059L;
+    private static final long serialVersionUID = -2841723294651514059L;
 }

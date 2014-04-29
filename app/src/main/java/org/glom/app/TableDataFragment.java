@@ -14,23 +14,6 @@ public class TableDataFragment extends Fragment {
      * represents.
      */
     public static final String ARG_TABLE_NAME = "table_name";
-
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement.
-     *
-     * This is the recommended way for activities and fragments to communicate,
-     * presumably because, unlike a direct function call, it still keeps the
-     * fragment and activity implementations separate.
-     * http://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
-     */
-    public interface Callbacks extends TableNavCallbacks {
-        /**
-         * Callback to get title of a table.
-         */
-        public String getTableTitle(final String tableName);
-    }
-
     /**
      * A dummy implementation of the {@link Callbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
@@ -51,12 +34,10 @@ public class TableDataFragment extends Fragment {
             return null;
         }
     };
-
     /**
      * The fragment's current callback object.
      */
     protected Callbacks mCallbacks = sDummyCallbacks;
-
     /**
      * The content this fragment is presenting.
      */
@@ -80,5 +61,21 @@ public class TableDataFragment extends Fragment {
 
         // Reset the active callbacks interface to the dummy implementation.
         mCallbacks = sDummyCallbacks;
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement.
+     * <p/>
+     * This is the recommended way for activities and fragments to communicate,
+     * presumably because, unlike a direct function call, it still keeps the
+     * fragment and activity implementations separate.
+     * http://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
+     */
+    public interface Callbacks extends TableNavCallbacks {
+        /**
+         * Callback to get title of a table.
+         */
+        public String getTableTitle(final String tableName);
     }
 }
