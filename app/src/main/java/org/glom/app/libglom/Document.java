@@ -211,7 +211,7 @@ public class Document {
 
 	public boolean load(final InputStream inputStream) {
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = null;
+		DocumentBuilder documentBuilder;
 		try {
 			documentBuilder = dbf.newDocumentBuilder();
 		} catch (final ParserConfigurationException e) {
@@ -220,7 +220,7 @@ public class Document {
 			return false;
 		}
 
-        org.w3c.dom.Document xmlDocument = null;
+        org.w3c.dom.Document xmlDocument;
 
 		try {
 			xmlDocument = documentBuilder.parse(inputStream);
@@ -532,7 +532,7 @@ public class Document {
 		final String str = element.getTextContent();
 
 		// Unescape "" to ", because to_file_format() escaped ", as specified by the CSV RFC:
-		String unescaped = "";
+		String unescaped;
 		if (type == GlomFieldType.TYPE_IMAGE) {
 			unescaped = str; // binary data does not have quote characters so we do not bother to escape or unescape it.
 		} else {
@@ -1430,7 +1430,7 @@ public class Document {
 	 *            TODO
 	 */
 	public TableToViewDetails getPortalSuitableTableToViewDetails(final LayoutItemPortal portal) {
-		UsesRelationship navigationRelationship = null;
+		UsesRelationship navigationRelationship;
 
 		// Check whether a relationship was specified:
 		if (portal.getNavigationType() == NavigationType.NAVIGATION_AUTOMATIC) {

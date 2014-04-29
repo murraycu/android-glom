@@ -81,7 +81,7 @@ public class DocumentActivity extends Activity
         final Intent intent = getIntent();
         mUri = intent.getData();
         if (mUri != null) {
-            InputStream inputStream = null;
+            InputStream inputStream;
             try {
                 inputStream = getContentResolver().openInputStream(mUri);
             } catch (final FileNotFoundException e) {
