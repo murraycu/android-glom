@@ -143,6 +143,7 @@ public class Document {
 	private static final String NODE_VALUE = "value";
 	private static final String ATTRIBUTE_COLUMN = "column";
 	private static final String ATTRIBUTE_PRIMARY_KEY = "primary_key";
+    private static final String ATTRIBUTE_UNIQUE = "unique";
 	private static final String ATTRIBUTE_FIELD_TYPE = "type";
 	private static final String NODE_FORMATTING = "formatting";
 	// private static final String ATTRIBUTE_TEXT_FORMAT_MULTILINE = "format_text_multiline";
@@ -726,6 +727,7 @@ public class Document {
 		element.setAttribute(ATTRIBUTE_FIELD_TYPE, fieldTypeStr);
 
 		setAttributeAsBoolean(element, ATTRIBUTE_PRIMARY_KEY, field.getPrimaryKey());
+        setAttributeAsBoolean(element, ATTRIBUTE_UNIQUE, field.getUniqueKey());
 
 		final Element elementFormatting = createElement(doc, element, NODE_FORMATTING);
 		saveFormatting(elementFormatting, field.getFormatting());
@@ -1145,6 +1147,7 @@ public class Document {
 		field.setGlomFieldType(fieldType);
 
 		field.setPrimaryKey(getAttributeAsBoolean(element, ATTRIBUTE_PRIMARY_KEY));
+        field.setUniqueKey(getAttributeAsBoolean(element, ATTRIBUTE_UNIQUE));
 
 		final Element elementFormatting = getElementByName(element, NODE_FORMATTING);
 		if (elementFormatting != null) {

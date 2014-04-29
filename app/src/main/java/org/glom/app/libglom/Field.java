@@ -6,19 +6,15 @@ public class Field extends Translatable {
 
 	private static final long serialVersionUID = 5297785500678189743L;
 
-	public enum GlomFieldType {
+
+
+    public enum GlomFieldType {
 		TYPE_INVALID, TYPE_NUMERIC, TYPE_TEXT, TYPE_DATE, TYPE_TIME, TYPE_BOOLEAN, TYPE_IMAGE
 	}
 
 	private GlomFieldType glomFieldType; // TODO: = glom_field_type.TYPE_INVALID;
 	private boolean primaryKey = false;
-
-	// TODO: Add a setter, and remove final.
-	/*
-	 * Don't make this final, because that breaks GWT serialization. See
-	 * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
-	 */
-	private final/* final */boolean uniqueKey = false;
+	private boolean uniqueKey = false;
 
 	private Formatting formatting = new Formatting(); // Not null, so we have some default formatting.
 
@@ -65,6 +61,10 @@ public class Field extends Translatable {
 	public boolean getUniqueKey() {
 		return uniqueKey;
 	}
+
+    public void setUniqueKey(boolean uniqueKey) {
+        this.uniqueKey = uniqueKey;
+    }
 
 	public enum SqlDialect {
 		POSTGRESQL,
