@@ -74,12 +74,6 @@ public class TableDataActivity extends DocumentActivity
             //
             NavUtils.navigateUpTo(this, new Intent(this, TableNavActivity.class));
             return true;
-        } else if (id == R.id.option_menu_item_details) {
-            //This activity is only visible in the single-pane mode,
-            //so we don't need code here to deal wth the multi-pane mode.
-            Intent intent = new Intent(this, TableDetailActivity.class);
-            intent.putExtra(TableDetailFragment.ARG_TABLE_NAME, mTableName);
-            startActivity(intent);
         } else if (id == R.id.option_menu_item_list) {
             //This activity is only visible in the single-pane mode,
             //so we don't need code here to deal wth the multi-pane mode.
