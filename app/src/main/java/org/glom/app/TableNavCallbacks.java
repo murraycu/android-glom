@@ -21,5 +21,5 @@ public interface TableNavCallbacks {
     /**
      * Callback to get the list of table names from the activity's document, if any.
      */
-    public List<TableNavItem> getTableNames();
+    public List<TableNavItem> getMainTableNames();
 }

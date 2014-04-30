@@ -85,7 +85,7 @@ public class DocumentActivity extends Activity
     }
 
     @Override
-    public List<TableNavItem> getTableNames() {
+    public List<TableNavItem> getMainTableNames() {
         Document document = getDocument();
         if (document == null)
             return null;
@@ -96,6 +96,10 @@ public class DocumentActivity extends Activity
         // so that ArrayAdapter will call TableNavItem.toString() to get the titles.
         List<TableNavItem> tables = new ArrayList<TableNavItem>();
         for (final String tableName : tableNames) {
+            if(document.getTableIsHidden(tableName)) {
+                continue;
+            }
+
             final TableNavItem item = new TableNavItem(tableName,
                     document.getTableTitleOrName(tableName, "" /* TODO */));
             tables.add(item);

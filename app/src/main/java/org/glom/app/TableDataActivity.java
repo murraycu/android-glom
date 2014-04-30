@@ -40,7 +40,7 @@ public class TableDataActivity extends DocumentActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
 
-        List<TableNavItem> tables = getTableNames();
+        List<TableNavItem> tables = getMainTableNames();
 
         menu.clear();
         mTableActionIDs = new SparseArray<String>();

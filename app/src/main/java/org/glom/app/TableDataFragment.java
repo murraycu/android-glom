@@ -25,7 +25,7 @@ public class TableDataFragment extends Fragment {
         }
 
         @Override
-        public List<TableNavItem> getTableNames() {
+        public List<TableNavItem> getMainTableNames() {
             return null;
         }
 
