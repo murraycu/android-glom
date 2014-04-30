@@ -5,6 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuInflater;
 
 /**
  * A fragment representing a single Table detail screen.
@@ -31,6 +34,8 @@ public class TableListFragment extends TableDataFragment {
             // to load content from a content provider.
             mTableName = getArguments().getString(ARG_TABLE_NAME);
         }
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -46,6 +51,16 @@ public class TableListFragment extends TableDataFragment {
             ((TextView) rootView.findViewById(R.id.table_list)).setText(title);
         }
 
+        setHasOptionsMenu(true);
+
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+        final MenuItem menuItem = menu.add(Menu.NONE, R.id.option_menu_item_details, Menu.NONE, R.string.action_details);
+        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

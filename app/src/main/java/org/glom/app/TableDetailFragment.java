@@ -2,6 +2,9 @@ package org.glom.app;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -32,6 +35,8 @@ public class TableDetailFragment extends TableDataFragment {
             // to load content from a content provider.
             mTableName = getArguments().getString(ARG_TABLE_NAME);
         }
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -47,8 +52,17 @@ public class TableDetailFragment extends TableDataFragment {
             ((TextView) rootView.findViewById(R.id.table_detail)).setText(title);
         }
 
+        setHasOptionsMenu(true);
+
         return rootView;
     }
 
+    @Override
+    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+        final MenuItem menuItem = menu.add(Menu.NONE, R.id.option_menu_item_list, Menu.NONE, R.string.action_list);
+        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
 }

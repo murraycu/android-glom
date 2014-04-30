@@ -74,6 +74,18 @@ public class TableDataActivity extends DocumentActivity
             //
             NavUtils.navigateUpTo(this, new Intent(this, TableNavActivity.class));
             return true;
+        } else if (id == R.id.option_menu_item_details) {
+            //This activity is only visible in the single-pane mode,
+            //so we don't need code here to deal wth the multi-pane mode.
+            Intent intent = new Intent(this, TableDetailActivity.class);
+            intent.putExtra(TableDetailFragment.ARG_TABLE_NAME, mTableName);
+            startActivity(intent);
+        } else if (id == R.id.option_menu_item_list) {
+            //This activity is only visible in the single-pane mode,
+            //so we don't need code here to deal wth the multi-pane mode.
+            Intent intent = new Intent(this, TableListActivity.class);
+            intent.putExtra(TableListFragment.ARG_TABLE_NAME, mTableName);
+            startActivity(intent);
         } else {
             final String tableName = mTableActionIDs.get(id);
             if (tableName != null) {
@@ -82,9 +94,11 @@ public class TableDataActivity extends DocumentActivity
 
                 // In single-pane mode, simply start the detail activity
                 // for the selected item ID.
-                Intent detailIntent = new Intent(this, TableDetailActivity.class);
-                detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
-                startActivity(detailIntent);
+                //TODO: Use the appropriate list or details activity (and fragment)
+                //depending on which one this currently is?
+                Intent intent = new Intent(this, TableDetailActivity.class);
+                intent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
+                startActivity(intent);
 
                 return true;
             }
