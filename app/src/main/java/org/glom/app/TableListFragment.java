@@ -36,7 +36,7 @@ public class TableListFragment extends TableDataFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_table_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_table_list, container, false);
         assert rootView != null;
 
         // Show the dummy content as text in a TextView.
