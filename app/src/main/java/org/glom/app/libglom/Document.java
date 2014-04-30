@@ -1233,6 +1233,15 @@ public class Document {
         return info.getTitle(locale);
     }
 
+    public String getTableTitleOrName(final String tableName, final String locale) {
+        final TableInfo info = getTableInfo(tableName);
+        if (info == null) {
+            return "";
+        }
+
+        return info.getTitleOrName(locale);
+    }
+
     public List<Map<String, DataItem>> getExampleRows(final String tableName) {
         final TableInfo info = getTableInfo(tableName);
         if (info == null) {

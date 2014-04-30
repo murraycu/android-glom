@@ -97,7 +97,7 @@ public class DocumentActivity extends Activity
         List<TableNavItem> tables = new ArrayList<TableNavItem>();
         for (final String tableName : tableNames) {
             final TableNavItem item = new TableNavItem(tableName,
-                    document.getTableTitle(tableName, "" /* TODO */));
+                    document.getTableTitleOrName(tableName, "" /* TODO */));
             tables.add(item);
         }
 
