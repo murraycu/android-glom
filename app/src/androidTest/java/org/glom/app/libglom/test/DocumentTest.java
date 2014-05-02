@@ -86,13 +86,13 @@ public class DocumentTest  extends AndroidTestCase {
 
 	public void testLocales() {
 		final List<String> localeIDs = document.getTranslationAvailableLocales();
-		assertEquals(11, localeIDs.size());
+		assertEquals(15, localeIDs.size());
 
 		String tables = localeIDs.get(0);
 		for (int i = 1; i < localeIDs.size(); i++) {
 			tables += ", " + localeIDs.get(i);
 		}
-		assertEquals("cs, de, el, es, fr, gl, id, lv, pt_BR, sl, en", tables);
+		assertEquals("cs, de, el, es, fr, gl, hu, id, lv, pt_BR, sl, sr, sr@latin, zh_CN, en", tables);
 	}
 
 	public void testReadTableNames() {
