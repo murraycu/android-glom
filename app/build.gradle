@@ -26,8 +26,8 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:+'
-    compile 'com.android.support:support-v4:19.0.0'
+    compile 'com.android.support:support-v4:19.1.0'
     compile 'commons-codec:commons-codec:1.8'
     compile 'org.jooq:jooq:2.6.4'
-    compile 'com.google.guava:guava:12.0'
+    compile 'com.google.guava:guava:17.0'
 }
