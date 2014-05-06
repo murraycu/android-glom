@@ -80,7 +80,7 @@ public class Field extends Translatable {
                 default:
                     return "unknowntype";
             }
-        } else { // MYSQL
+        } else if(sqlDialect == SqlDialect.MYSQL) {
             // This is based on what Glom actually uses with MySQL.
             switch (getGlomType()) {
                 case TYPE_NUMERIC:
@@ -96,7 +96,23 @@ public class Field extends Translatable {
                 default:
                     return "unknowntype";
             }
+        } else { // SQLITE
+        // This is based on what Glom actually uses with SQLite.
+        switch (getGlomType()) {
+            case TYPE_NUMERIC:
+                return "double";
+            case TYPE_TEXT:
+                return "varchar(255)";
+            case TYPE_DATE:
+                return "date";
+            case TYPE_TIME:
+                return "time with time zone";
+            case TYPE_IMAGE:
+                return "blob";
+            default:
+                return "unknowntype";
         }
+    }
     }
 
     public enum GlomFieldType {
@@ -105,6 +121,7 @@ public class Field extends Translatable {
 
     public enum SqlDialect {
         POSTGRESQL,
-        MYSQL
+        MYSQL,
+        SQLITE
     }
 }

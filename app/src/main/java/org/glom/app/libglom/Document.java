@@ -24,6 +24,8 @@ package org.glom.app.libglom;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.common.io.Files;
+
 import org.apache.commons.codec.binary.Base64;
 import org.glom.app.libglom.Field.GlomFieldType;
 import org.glom.app.libglom.layout.Formatting;
@@ -45,6 +47,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -62,17 +65,22 @@ import java.util.Map.Entry;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-//import java.io.InputStream;
-//import java.net.URLConnection;
-//import org.glom.web.server.Log;
-//import org.glom.web.server.Utils;
 
 /**
  * @author Murray Cumming <murrayc@openismus.com>
  */
 public class Document {
 
+    public static final String LAYOUT_NAME_DETAILS = "details";
+    public static final String LAYOUT_NAME_LIST = "list";
     private static final String NODE_ROOT = "glom_document";
     private static final String ATTRIBUTE_IS_EXAMPLE = "is_example";
     private static final String ATTRIBUTE_TRANSLATION_ORIGINAL_LOCALE = "translation_original_locale";
@@ -135,8 +143,6 @@ public class Document {
     private static final String NODE_GROUPBY = "groupby";
     private static final String NODE_SECONDARY_FIELDS = "secondary_fields";
     private static final String ATTRIBUTE_USE_DEFAULT_FORMATTING = "use_default_formatting";
-    public static final String LAYOUT_NAME_DETAILS = "details";
-    public static final String LAYOUT_NAME_LIST = "list";
     private static final String QUOTE_FOR_FILE_FORMAT = "\"";
     private static final String ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_CENTRAL = "postgres_central";
     private static final String ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_SELF = "postgres_self";
@@ -483,8 +489,8 @@ public class Document {
     }
 
     /**
-     * @param elementValue
-     * @param glomType
+     * @param element
+     * @param type
      * @return
      */
     private DataItem getNodeTextChildAsValue(final Element element, final GlomFieldType type) {
@@ -601,6 +607,268 @@ public class Document {
         element.setTextContent(escaped);
     }
 
+    public boolean save(final String fileURI) {
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = null;
+        try {
+            documentBuilder = dbf.newDocumentBuilder();
+        } catch (final ParserConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+
+        final org.w3c.dom.Document doc = documentBuilder.newDocument();
+        final Element rootNode = doc.createElement(NODE_ROOT);
+        doc.appendChild(rootNode);
+
+        rootNode.setAttribute(ATTRIBUTE_TITLE, databaseTitle.getTitleOriginal());
+        rootNode.setAttribute(ATTRIBUTE_TRANSLATION_ORIGINAL_LOCALE, translationOriginalLocale);
+        setAttributeAsBoolean(rootNode, ATTRIBUTE_IS_EXAMPLE, isExample);
+
+        String strHostingMode = "";
+        if (hostingMode == HostingMode.HOSTING_MODE_POSTGRES_CENTRAL) {
+            strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_CENTRAL;
+        } else if (hostingMode == HostingMode.HOSTING_MODE_POSTGRES_SELF) {
+            strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_SELF;
+        } else if (hostingMode == HostingMode.HOSTING_MODE_MYSQL_CENTRAL) {
+            strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_MYSQL_CENTRAL;
+        } else if (hostingMode == HostingMode.HOSTING_MODE_MYSQL_SELF) {
+            strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_MYSQL_SELF;
+        } else if (hostingMode == HostingMode.HOSTING_MODE_SQLITE) {
+            strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_SQLITE;
+        } else {
+            strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_SELF;
+        }
+        final Element nodeConnection = createElement(doc, rootNode, NODE_CONNECTION);
+        nodeConnection.setAttribute(ATTRIBUTE_CONNECTION_HOSTING_MODE, strHostingMode);
+        nodeConnection.setAttribute(ATTRIBUTE_CONNECTION_SERVER, connectionServer);
+        nodeConnection.setAttribute(ATTRIBUTE_CONNECTION_DATABASE, connectionDatabase);
+        setAttributeAsDecimal(nodeConnection, ATTRIBUTE_CONNECTION_PORT, connectionPort);
+
+        // for all tables:
+        for (final TableInfo table : tablesMap.values()) {
+            final Element nodeTable = createElement(doc, rootNode, NODE_TABLE);
+            saveTableNodeBasic(doc, nodeTable, table);
+            saveTableLayouts(doc, nodeTable, table);
+        }
+
+        final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer;
+        try {
+            transformer = transformerFactory.newTransformer();
+        } catch (final TransformerConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+
+        // TODO: This probably distorts text nodes,
+        // so careful when we load/save them. For instance, scripts.
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+        // Make sure that the parent directory exists:
+        final File file = new File(fileURI);
+        try {
+            Files.createParentDirs(file);
+        } catch (final IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        final DOMSource source = new DOMSource(doc);
+        final StreamResult result = new StreamResult(file);
+
+        // Output to console for testing
+        // StreamResult result = new StreamResult(System.out);
+
+        try {
+            transformer.transform(source, result);
+        } catch (final TransformerException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param doc
+     * @param tableNode
+     * @param table
+     */
+    private void saveTableLayouts(final org.w3c.dom.Document doc, final Element tableNode, final TableInfo table) {
+
+        final Element layoutsNode = createElement(doc, tableNode, NODE_DATA_LAYOUTS);
+
+        final Element nodeLayoutDetails = createElement(doc, layoutsNode, NODE_DATA_LAYOUT);
+        nodeLayoutDetails.setAttribute(ATTRIBUTE_NAME, LAYOUT_NAME_DETAILS);
+        saveLayoutNode(doc, nodeLayoutDetails, table.layoutGroupsDetails);
+
+        final Element nodeLayoutList = createElement(doc, layoutsNode, NODE_DATA_LAYOUT);
+        nodeLayoutList.setAttribute(ATTRIBUTE_NAME, LAYOUT_NAME_LIST);
+        saveLayoutNode(doc, nodeLayoutList, table.layoutGroupsList);
+
+        final Element reportsNode = createElement(doc, tableNode, NODE_REPORTS);
+        for (final Report report : table.reportsMap.values()) {
+            final Element element = createElement(doc, reportsNode, NODE_REPORT);
+            saveReport(doc, element, report);
+        }
+    }
+
+    /**
+     * @param doc
+     * @param element
+     * @param report
+     */
+    private void saveReport(final org.w3c.dom.Document doc, final Element element, final Report report) {
+        // TODO Auto-generated method stub
+
+    }
+
+    private void saveLayoutNode(final org.w3c.dom.Document doc, final Element element,
+                                final List<LayoutGroup> layoutGroups) {
+        final Element elementGroups = createElement(doc, element, NODE_DATA_LAYOUT_GROUPS);
+
+        for (final LayoutGroup layoutGroup : layoutGroups) {
+            if (layoutGroup instanceof LayoutItemNotebook) {
+                final Element elementGroup = createElement(doc, elementGroups, NODE_DATA_LAYOUT_NOTEBOOK);
+                saveDataLayoutGroup(doc, elementGroup, layoutGroup);
+            } else if (layoutGroup instanceof LayoutItemPortal) {
+                final Element elementGroup = createElement(doc, elementGroups, NODE_DATA_LAYOUT_PORTAL);
+                saveDataLayoutPortal(doc, elementGroup, (LayoutItemPortal) layoutGroup);
+            } else {
+                final Element elementGroup = createElement(doc, elementGroups, NODE_DATA_LAYOUT_GROUP);
+                saveDataLayoutGroup(doc, elementGroup, layoutGroup);
+            }
+        }
+
+    }
+
+    /**
+     * @param doc
+     * @param nodeGroup
+     * @param group
+     */
+    private void saveDataLayoutGroup(final org.w3c.dom.Document doc, final Element nodeGroup, final LayoutGroup group) {
+        saveTitle(doc, nodeGroup, group);
+
+        // Write the column count:
+        setAttributeAsDecimal(nodeGroup, ATTRIBUTE_LAYOUT_GROUP_COLUMNS_COUNT, group.getColumnCount());
+
+        // Write the child items:
+        for (final LayoutItem layoutItem : group.getItems()) {
+            if (layoutItem instanceof LayoutItemPortal) {
+                final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_PORTAL);
+                saveDataLayoutPortal(doc, element, (LayoutItemPortal) layoutItem);
+            } else if (layoutItem instanceof LayoutItemNotebook) {
+                final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_NOTEBOOK);
+                saveDataLayoutGroup(doc, element, (LayoutItemNotebook) layoutItem);
+            } else if (layoutItem instanceof LayoutGroup) {
+                final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_GROUP);
+                saveDataLayoutGroup(doc, element, (LayoutGroup) layoutItem);
+            } else if (layoutItem instanceof LayoutItemField) {
+                final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_ITEM);
+                saveDataLayoutItemField(doc, element, (LayoutItemField) layoutItem);
+            } else if (layoutItem instanceof LayoutItemGroupBy) {
+                final Element element = createElement(doc, nodeGroup, NODE_DATA_LAYOUT_ITEM_GROUPBY);
+                saveDataLayoutItemGroupBy(doc, element, (LayoutItemGroupBy) layoutItem);
+            }
+        }
+    }
+
+    /**
+     * @param doc
+     * @param element
+     * @param item
+     */
+    private void saveDataLayoutItemField(final org.w3c.dom.Document doc, final Element element,
+                                         final LayoutItemField item) {
+        element.setAttribute(ATTRIBUTE_NAME, item.getName());
+        saveUsesRelationship(element, item);
+
+        final CustomTitle customTitle = item.getCustomTitle();
+        if (customTitle != null) {
+            final Element elementCustomTitle = createElement(doc, element, NODE_CUSTOM_TITLE);
+            setAttributeAsBoolean(elementCustomTitle, ATTRIBUTE_CUSTOM_TITLE_USE_CUSTOM,
+                    customTitle.getUseCustomTitle());
+            saveTitle(doc, elementCustomTitle, customTitle); // LayoutItemField doesn't use its own title member.
+        }
+
+        setAttributeAsBoolean(element, ATTRIBUTE_USE_DEFAULT_FORMATTING, item.getUseDefaultFormatting());
+
+        final Element elementFormatting = createElement(doc, element, NODE_FORMATTING);
+        saveFormatting(elementFormatting, item.getFormatting());
+    }
+
+    /**
+     * @param doc
+     * @param element
+     * @param item
+     */
+    private void saveDataLayoutItemGroupBy(final org.w3c.dom.Document doc, final Element element,
+                                           final LayoutItemGroupBy item) {
+        saveDataLayoutGroup(doc, element, item);
+
+        final Element elementGroupBy = createElement(doc, element, NODE_GROUPBY);
+        saveDataLayoutItemField(doc, elementGroupBy, item.getFieldGroupBy());
+
+        final Element elementSecondaryFields = createElement(doc, element, NODE_SECONDARY_FIELDS);
+        final Element elementLayoutGroup = createElement(doc, elementSecondaryFields, NODE_DATA_LAYOUT_GROUP);
+        saveDataLayoutGroup(doc, elementLayoutGroup, item.getSecondaryFields());
+    }
+
+    /**
+     * @param doc
+     * @param element
+     * @param portal
+     */
+    private void saveDataLayoutPortal(final org.w3c.dom.Document doc, final Element element,
+                                      final LayoutItemPortal portal) {
+        saveUsesRelationship(element, portal);
+        saveDataLayoutGroup(doc, element, portal);
+
+        final Element elementNavigation = createElement(doc, element, NODE_DATA_LAYOUT_PORTAL_NAVIGATIONRELATIONSHIP);
+        String navigationTypeAsString = "";
+        switch (portal.getNavigationType()) {
+            case NAVIGATION_AUTOMATIC:
+                navigationTypeAsString = ATTRIBUTE_PORTAL_NAVIGATION_TYPE_AUTOMATIC;
+                break;
+            case NAVIGATION_NONE:
+                navigationTypeAsString = ATTRIBUTE_PORTAL_NAVIGATION_TYPE_NONE;
+                break;
+            case NAVIGATION_SPECIFIC:
+                navigationTypeAsString = ATTRIBUTE_PORTAL_NAVIGATION_TYPE_SPECIFIC;
+                break;
+            default:
+                break;
+        }
+        elementNavigation.setAttribute(ATTRIBUTE_PORTAL_NAVIGATION_TYPE, navigationTypeAsString);
+
+        if (navigationTypeAsString.equals(ATTRIBUTE_PORTAL_NAVIGATION_TYPE_SPECIFIC)) {
+            // Write the specified relationship name:
+            saveUsesRelationship(elementNavigation, portal.getNavigationRelationshipSpecific());
+        }
+    }
+
+    /**
+     * @param element
+     * @param item
+     */
+    private void saveUsesRelationship(final Element element, final UsesRelationship item) {
+        final Relationship relationship = item.getRelationship();
+        if (relationship != null) {
+            element.setAttribute(ATTRIBUTE_RELATIONSHIP_NAME, relationship.getName());
+        }
+
+        final Relationship relatedRelationship = item.getRelatedRelationship();
+        if (relatedRelationship != null) {
+            element.setAttribute(ATTRIBUTE_RELATED_RELATIONSHIP_NAME, relatedRelationship.getName());
+        }
+    }
+
     private void saveTableNodeBasic(final org.w3c.dom.Document doc, final Element tableNode, final TableInfo info) {
         saveTitle(doc, tableNode, info);
 
@@ -694,7 +962,7 @@ public class Document {
     }
 
     /**
-     * @param elementFormatting
+     * @param element
      * @param formatting
      */
     private void saveFormatting(final Element element, final Formatting formatting) {
@@ -814,7 +1082,7 @@ public class Document {
     /**
      * @param element
      * @param tableName
-     * @param portal
+     * @param item
      */
     private void loadUsesRelationship(final Element element, final String tableName, final UsesRelationship item) {
         if (element == null) {
@@ -854,8 +1122,8 @@ public class Document {
     /**
      * getElementsByTagName() is recursive, but we do not want that.
      *
-     * @param node
-     * @param
+     * @param parentNode
+     * @param tagName
      * @return
      */
     private List<Node> getChildrenByTagName(final Element parentNode, final String tagName) {
@@ -879,7 +1147,7 @@ public class Document {
     }
 
     /**
-     * @param element
+     * @param nodeGroup
      * @param group
      */
     private void loadDataLayoutGroup(final Element nodeGroup, final LayoutGroup group, final String tableName, final Path path) {
@@ -1054,7 +1322,7 @@ public class Document {
 
     /**
      * @param element
-     * @param childGroup
+     * @param portal
      */
     private void loadDataLayoutPortal(final Element element, final LayoutItemPortal portal, final String tableName, final Path path) {
         loadUsesRelationship(element, tableName, portal);
@@ -1142,7 +1410,7 @@ public class Document {
 
     /**
      * @param element
-     * @param reportNode
+     * @param report
      */
     private void loadReport(final Element element, final Report report, final String tableName) {
         report.setName(element.getAttribute(ATTRIBUTE_NAME));
@@ -1319,7 +1587,7 @@ public class Document {
 
     /**
      * @param tableName
-     * @param field
+     * @param layoutField
      * @return
      */
     public Relationship getFieldUsedInRelationshipToOne(final String tableName, final LayoutItemField layoutField) {
@@ -1397,11 +1665,6 @@ public class Document {
         return info.relationshipsMap.get(relationshipName);
     }
 
-    /**
-     * @param tableName    Output parameter
-     * @param relationship
-     * @param portal       TODO
-     */
     public TableToViewDetails getPortalSuitableTableToViewDetails(final LayoutItemPortal portal) {
         UsesRelationship navigationRelationship;
 
@@ -1502,11 +1765,6 @@ public class Document {
         return result;
     }
 
-    /**
-     * @param used_in_relationship
-     * @param portal               TODO
-     * @return
-     */
     private Relationship getPortalFieldIdentifiesNonHiddenRelatedRecord(final LayoutItemPortal portal) {
         // Find the first field that is from a non-hidden related table.
 
@@ -1579,11 +1837,6 @@ public class Document {
         this.isExample = isExample;
     }
 
-    /**
-     * @param rootNode
-     * @param nodeConnection
-     * @return
-     */
     private Element createElement(final org.w3c.dom.Document doc, final Element parentNode, final String name) {
         final Element node = doc.createElement(name);
         parentNode.appendChild(node);
@@ -1610,8 +1863,6 @@ public class Document {
     }
 
     /**
-     * @param resp
-     * @param attrDocumentID
      * @param tableName
      * @param layoutName
      * @param layoutPath

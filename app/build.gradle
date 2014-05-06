@@ -16,10 +16,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+    // This is to avoid the "Duplicate files copied in APK META-INF/LICENSE.txt" error
+    // which happens with jooq.
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+    }
 }
 
 dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile 'com.android.support:support-v4:19.0.0'
     compile 'commons-codec:commons-codec:1.8'
+    compile 'org.jooq:jooq:2.6.4'
+    compile 'com.google.guava:guava:12.0'
 }
