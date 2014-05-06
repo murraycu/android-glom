@@ -55,16 +55,17 @@ public class SelfHostExampleTest extends AndroidTestCase {
 	/* This is really a test of our test utility code. */
 	public void testSelfHosterEscapeIDSame() {
 		final String id = "something";
-		assertEquals("\"" + id + "\"", SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.POSTGRES));
-		assertEquals("`" + id + "`", SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.MYSQL));
+		//assertEquals("\"" + id + "\"", SelfHosterPostgreSQL.quoteAndEscapeSqlId(id, SQLDialect.POSTGRES));
+		//assertEquals("`" + id + "`", SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.MYSQL));
+        assertEquals("`" + id + "`", SelfHosterSqlite.quoteAndEscapeSqlId(id, SQLDialect.SQLITE));
 	}
 
 	/* This is really a test of our test utility code. */
 	public void testSelfHosterEscapeIDNotSame() {
 		final String id = "something with a \" and a ` char";
-		assertFalse(SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.POSTGRES).equals("\"" + id + "\""));
-		assertFalse(SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.MYSQL).equals("`" + id + "`"));
-        assertFalse(SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.SQLITE).equals("`" + id + "`"));
+		//assertFalse(SelfHosterPostgreSQL.quoteAndEscapeSqlId(id, SQLDialect.POSTGRES).equals("\"" + id + "\""));
+		//ssertFalse(SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.MYSQL).equals("`" + id + "`"));
+        assertFalse(SelfHosterSqlite.quoteAndEscapeSqlId(id, SQLDialect.SQLITE).equals("`" + id + "`"));
 	}
 
 	/**
@@ -78,11 +79,7 @@ public class SelfHostExampleTest extends AndroidTestCase {
 		final Document document = new Document();
 		assertTrue(document.load(inputStream));
 
-		if (hostingMode == Document.HostingMode.HOSTING_MODE_POSTGRES_SELF) {
-			selfHoster = new SelfHosterPostgreSQL(document);
-		} else if (hostingMode == Document.HostingMode.HOSTING_MODE_MYSQL_SELF) {
-			selfHoster = new SelfHosterMySQL(document);
-        } else if (hostingMode == Document.HostingMode.HOSTING_MODE_SQLITE) {
+		if (hostingMode == Document.HostingMode.HOSTING_MODE_SQLITE) {
             selfHoster = new SelfHosterSqlite(document, getContext());
 		} else {
 			// TODO: std::cerr << G_STRFUNC << ": This test function does not support the specified hosting_mode: " <<
