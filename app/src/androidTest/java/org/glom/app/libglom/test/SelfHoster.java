@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Map.Entry;
 
+import org.glom.app.Log;
 import org.glom.app.SqlUtils;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.DataItem;
@@ -73,7 +74,7 @@ public class SelfHoster {
 	
 	public boolean createAndSelfHostFromExample() {
 		if (!createAndSelfHostNewEmpty()) {
-			// std::cerr << G_STRFUNC << ": test_create_and_selfhost_new_empty() failed." << std::endl;
+            Log.error("createAndSelfHostFromExample(): createAndSelfHostNewEmpty() failed.");
 			return false;
 		}
 

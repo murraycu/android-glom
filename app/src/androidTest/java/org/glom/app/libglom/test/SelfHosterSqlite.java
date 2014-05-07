@@ -26,6 +26,7 @@ import android.text.TextUtils;
 
 import com.google.common.io.Files;
 
+import org.glom.app.Log;
 import org.glom.app.SqlUtils;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;
@@ -33,15 +34,11 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.Factory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * @author Murray Cumming <murrayc@murrayc.com>
@@ -67,13 +64,13 @@ public class SelfHosterSqlite extends SelfHoster {
 
 		// Create the self-hosting files:
 		if (!initialize()) {
-			System.out.println("createAndSelfHostNewEmpty(): initialize failed.");
+			Log.error("createAndSelfHostNewEmpty(): initialize failed.");
 			// TODO: Delete directory.
 		}
 
 		// Check that it really created some files:
 		if (!tempDir.exists()) {
-			System.out.println("createAndSelfHostNewEmpty(): tempDir does not exist.");
+            Log.error("createAndSelfHostNewEmpty(): tempDir does not exist.");
 			// TODO: Delete directory.
 		}
 
@@ -87,8 +84,9 @@ public class SelfHosterSqlite extends SelfHoster {
 		// TODO: m_network_shared = network_shared;
 
 		if (getSelfHostingActive()) {
-			// TODO: std::cerr << G_STRFUNC << ": Already started." << std::endl;
-			return false; // STARTUPERROR_NONE; //Just do it once.
+            Log.error("selfHost(): getSelfHostingActive() failed.");
+
+            return false; // STARTUPERROR_NONE; //Just do it once.
 		}
 
 		final String dbDirData = getSelfHostingDataPath(false);
@@ -100,7 +98,7 @@ public class SelfHosterSqlite extends SelfHoster {
 			 * ": There is no data, but there is backup data." << std::endl; //Let the caller convert the backup to real
 			 * data and then try again: return false; // STARTUPERROR_FAILED_NO_DATA_HAS_BACKUP_DATA; } else {
 			 */
-			// TODO: std::cerr << "ConnectionPool::create_self_hosting(): The data sub-directory could not be found." <<
+            Log.error("selfHost(): The data sub-directory could not be found: " + dbDirData);
 			// dbdir_data_uri << std::endl;
 			return false; // STARTUPERROR_FAILED_NO_DATA;
 			// }
