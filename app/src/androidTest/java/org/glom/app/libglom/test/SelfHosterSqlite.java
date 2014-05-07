@@ -187,51 +187,13 @@ public class SelfHosterSqlite extends SelfHoster {
 			return false;
 		}
 
-		document.setConnectionDatabase(dbName);
-		Connection connection = createConnection(true);
-		if (connection != null) {
-			// Connection to the database succeeded, so the database
-			// exists already.
-			try {
-				connection.close();
-			} catch (final SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return false;
-		}
-
 		// Create the database:
 		progress();
-		document.setConnectionDatabase("");
-
-		connection = createConnection(false);
-		if (connection == null) {
-			System.out.println("recreatedDatabase(): createConnection() failed, before creating the database.");
-			return false;
-		}
-
-		final boolean dbCreated = createDatabase(connection, dbName);
-
-		if (!dbCreated) {
-			return false;
-		}
-
-		progress();
-
-		// Check that we can connect:
-		try {
-			connection.close();
-		} catch (final SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		connection = null;
 
 		document.setConnectionDatabase(dbName);
-		connection = createConnection(false);
+		final Connection connection = createConnection(false);
 		if (connection == null) {
-			System.out.println("recreatedDatabase(): createConnection() failed, after creating the database.");
+			Log.error("recreatedDatabase(): createConnection() failed,.");
 			return false;
 		}
 
@@ -307,11 +269,12 @@ public class SelfHosterSqlite extends SelfHoster {
 			return null;
 		}
 
-		Connection conn = null;
+		Connection conn ;
 		try {
 			DriverManager.setLoginTimeout(10);
 			conn = DriverManager.getConnection(details.jdbcURL, null);
 		} catch (final SQLException e) {
+            //TODO: Catch "No suitable driver" exceptions always
 			if(!failureExpected) {
 				e.printStackTrace();
 			}
@@ -386,18 +349,6 @@ public class SelfHosterSqlite extends SelfHoster {
 	 */
 	private static String quoteAndEscapeSqlId(final String name) {
 		return quoteAndEscapeSqlId(name, SQLDialect.SQLITE);
-	}
-
-	/**
-	 * @return
-	 */
-	private static boolean createDatabase(final Connection connection, final String databaseName) {
-		final String query = "CREATE DATABASE " + quoteAndEscapeSqlId(databaseName);
-		final Factory factory = new Factory(connection, SQLDialect.SQLITE);
-
-		factory.execute(query);
-
-		return true;
 	}
 
 	/**
