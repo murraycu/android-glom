@@ -90,7 +90,7 @@ public class SelfHosterSqlite extends SelfHoster {
 		}
 
 		final String dbDirData = getSelfHostingDataPath(false);
-		if (TextUtils.isEmpty(dbDirData) || !SelfHoster.fileExists(dbDirData)) {
+		if (TextUtils.isEmpty(dbDirData)) { //Either it doesn't actually exist yet, or we don't have permission, so we don't check: || !SelfHoster.fileExists(dbDirData)) {
 			/*
 			 * final String dbDirBackup = dbDir + File.separator + FILENAME_BACKUP;
 			 * 
