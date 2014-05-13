@@ -386,7 +386,7 @@ public class SelfHoster {
                     dataDir = parent;
                     break;
                 case HOSTING_MODE_SQLITE:
-                    dataDir = parent;
+                    dataDir = new File(parent, "glom_sqlite_data");
                     break;
                 default:
                     // TODO: Warn.

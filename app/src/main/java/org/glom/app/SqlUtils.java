@@ -131,8 +131,9 @@ public class SqlUtils {
     private static void fillBasicJdbcConnectionDetails(final Document.HostingMode hostingMode, final JdbcConnectionDetails details) {
         switch (hostingMode) {
             case HOSTING_MODE_SQLITE: {
-                details.driverClass = "org.sqlite.JDBC";
-                details.jdbcURL = "jdbc:sqlite:";
+                // See https://github.com/SQLDroid/SQLDroid/wiki/Quick-Start
+                details.driverClass = "org.sqldroid.SQLDroidDriver"; //Android doesn't seem to find this: "org.sqlite.JDBC";
+                details.jdbcURL = "jdbc:sqldroid:"; //"jdbc:sqlite:";
                 break;
             }
             case HOSTING_MODE_POSTGRES_CENTRAL:

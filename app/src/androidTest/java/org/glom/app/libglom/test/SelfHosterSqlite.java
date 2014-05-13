@@ -21,7 +21,6 @@ package org.glom.app.libglom.test;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import com.google.common.io.Files;
@@ -39,6 +38,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
+
+import org.sqldroid.SQLDroidDriver;
 
 /**
  * @author Murray Cumming <murrayc@murrayc.com>
@@ -46,14 +48,13 @@ import java.util.List;
  */
 public class SelfHosterSqlite extends SelfHoster {
     private final Context context; //Needed by SQLiteOpenHelper.
-    private SQLiteDatabase sqliteDatabase;
 
     SelfHosterSqlite(final Document document, Context context) {
 		super(document);
         this.context = context;
 	}
 
-	private static final String FILENAME_DATA = "data";
+	private static final String FILENAME_DATA = "data.db";
 
 	/**
 	 * @Override
@@ -89,8 +90,9 @@ public class SelfHosterSqlite extends SelfHoster {
             return false; // STARTUPERROR_NONE; //Just do it once.
 		}
 
-		final String dbDirData = getSelfHostingDataPath(false);
-		if (TextUtils.isEmpty(dbDirData)) { //Either it doesn't actually exist yet, or we don't have permission, so we don't check: || !SelfHoster.fileExists(dbDirData)) {
+		final String dbPath = getSelfHostingDataPath();
+
+		if (TextUtils.isEmpty(dbPath)) { // The file doesn't exist until sqlite first tries to use it || !SelfHoster.fileExists(dbPath)) {
 			/*
 			 * final String dbDirBackup = dbDir + File.separator + FILENAME_BACKUP;
 			 * 
@@ -98,7 +100,7 @@ public class SelfHosterSqlite extends SelfHoster {
 			 * ": There is no data, but there is backup data." << std::endl; //Let the caller convert the backup to real
 			 * data and then try again: return false; // STARTUPERROR_FAILED_NO_DATA_HAS_BACKUP_DATA; } else {
 			 */
-            Log.error("selfHost(): The data sub-directory could not be found: " + dbDirData);
+            Log.error("selfHost(): The data file could not be found: " + dbPath);
 			// dbdir_data_uri << std::endl;
 			return false; // STARTUPERROR_FAILED_NO_DATA;
 			// }
@@ -114,19 +116,19 @@ public class SelfHosterSqlite extends SelfHoster {
 
 	private String getSelfHostingPath(final String subpath, final boolean create) {
 		final String dbDir = getSelfHostedDirectoryPath();
-		if (TextUtils.isEmpty(subpath)) {
-			return dbDir;
-		}
 
-		final String dbDirData = dbDir + File.separator + subpath;
-		final File file = new File(dbDirData);
+		String dbDirData = dbDir;
+        if(!TextUtils.isEmpty(subpath)) {
+            dbDirData += File.separator + subpath;
+        }
 
 		// Return the path regardless of whether it exists:
 		if (!create) {
 			return dbDirData;
 		}
 
-		if (!file.exists()) {
+        final File file = new File(dbDirData);
+        if (!file.exists()) {
 			try {
 				Files.createParentDirs(file);
 			} catch (final IOException e) {
@@ -143,10 +145,12 @@ public class SelfHosterSqlite extends SelfHoster {
 		return dbDirData;
 	}
 
-	private String getSelfHostingDataPath(final boolean create) {
-		return getSelfHostingPath(FILENAME_DATA, create);
-	}
+	private String getSelfHostingDataPath() {
+        //Return the path to the sqlite database file, but do not try to create the file.
+		return getSelfHostingPath("", true /* create the directorties */) + File.separator + FILENAME_DATA;
+    }
 
+    /*
     private class Helper extends SQLiteOpenHelper {
 
         Helper(final Context context, final String databaseName) {
@@ -163,13 +167,21 @@ public class SelfHosterSqlite extends SelfHoster {
             //This is not necessary in this test code.
         }
     }
+    */
 
 	/**
 	 */
 	private boolean initialize() {
-        //TODO: Can we do this without deriving a SQLiteOpenHelper?
+        /*
         final Helper helper = new Helper(context, "tempName");
         sqliteDatabase = helper.getWritableDatabase();
+        */
+
+        //Make sure that the sqlite file (or something else at that path) doesn't exist yet:
+        final File f = new File(getSelfHostingDataPath());
+        if(f.exists()) {
+            f.delete();
+        }
 
 		return true;
 
@@ -264,21 +276,29 @@ public class SelfHosterSqlite extends SelfHoster {
 		//We don't just use SqlUtils.tryUsernameAndPassword() because it uses ComboPooledDataSource,
 		//which does not automatically close its connections,
 		//leading to errors because connections are already open.
-		final SqlUtils.JdbcConnectionDetails details = SqlUtils.getJdbcConnectionDetailsForSqlite(document, sqliteDatabase.getPath());
+		final SqlUtils.JdbcConnectionDetails details = SqlUtils.getJdbcConnectionDetailsForSqlite(document, getSelfHostingDataPath());
 		if (details == null) {
 			return null;
 		}
 
-		Connection conn ;
+        Connection conn = null;
 		try {
 			DriverManager.setLoginTimeout(10);
-			conn = DriverManager.getConnection(details.jdbcURL, null);
+
+            Properties properties = new Properties();
+            properties.put(SQLDroidDriver.ADDITONAL_DATABASE_FLAGS, SQLiteDatabase.CREATE_IF_NECESSARY | SQLiteDatabase.OPEN_READWRITE);
+
+            conn = new org.sqldroid.SQLDroidDriver().connect(details.jdbcURL, properties);
+			//This fails with a "No suitable driver" exception: conn = DriverManager.getConnection(details.jdbcURL, properties);
 		} catch (final SQLException e) {
-            //TODO: Catch "No suitable driver" exceptions always
-			if(!failureExpected) {
-				e.printStackTrace();
-			}
-			return null;
+            if (e != null) { //TODO: Surely this shouldn't be happening? See https://github.com/SQLDroid/SQLDroid/issues/42
+                //TODO: Catch "No suitable driver" exceptions always
+                if (!failureExpected) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
 		}
 
 		return conn;
