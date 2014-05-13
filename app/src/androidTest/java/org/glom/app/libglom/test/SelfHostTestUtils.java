@@ -70,7 +70,7 @@ public class SelfHostTestUtils {
 	  final Connection conn = selfHoster.createConnection(false);
 	  assertTrue(conn != null);
 	  
-	  final Statement st = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+	  final Statement st = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY); //TODO: Passing ResultSet.TYPE_SCROLL_INSENSITIVE causes it to return a null Statement.
       //st.setFetchSize(length);
 	  final ResultSet rs = st.executeQuery(sqlQuery);
 	  assertTrue(rs != null);
