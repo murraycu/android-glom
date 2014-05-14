@@ -29,8 +29,8 @@ import org.glom.app.Log;
 import org.glom.app.SqlUtils;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;
+import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
-import org.jooq.impl.Factory;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +40,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
+import org.jooq.impl.DSL;
 import org.sqldroid.SQLDroidDriver;
 
 /**
@@ -353,7 +354,7 @@ public class SelfHosterSqlite extends SelfHoster {
 
 		// Actually create the table
 		final String query = "CREATE TABLE " + quoteAndEscapeSqlId(tableName) + " (" + sqlFields + ");";
-		final Factory factory = new Factory(connection, getSqlDialect());
+		final DSLContext factory = DSL.using(connection, getSqlDialect());
 		factory.execute(query);
 		tableCreationSucceeded = true;
 		if (!tableCreationSucceeded) {

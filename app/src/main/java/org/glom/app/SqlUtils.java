@@ -44,6 +44,8 @@ import org.glom.app.libglom.layout.UsesRelationship;
 import org.glom.app.libglom.layout.UsesRelationshipImpl;
 import org.jooq.AggregateFunction;
 import org.jooq.Condition;
+import org.jooq.Configuration;
+import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SQLDialect;
 import org.jooq.SelectFinalStep;
@@ -53,7 +55,7 @@ import org.jooq.Table;
 import org.jooq.conf.RenderKeywordStyle;
 import org.jooq.conf.RenderNameStyle;
 import org.jooq.conf.Settings;
-import org.jooq.impl.Factory;
+import org.jooq.impl.DSL;
 
 /**
  * @author Murray Cumming <murrayc@openismus.com>
@@ -302,12 +304,14 @@ public class SqlUtils {
 	}
 
 	private static SelectSelectStep createSelect(final SQLDialect sqlDialect) {
-		final Factory factory = new Factory(sqlDialect);
-		final Settings settings = factory.getSettings();
+		final DSLContext dslContext = DSL.using(sqlDialect);
+
+        final Configuration configuration = dslContext.configuration();
+		final Settings settings = configuration.settings();
 		settings.setRenderNameStyle(RenderNameStyle.QUOTED); // TODO: This doesn't seem to have any effect.
 		settings.setRenderKeywordStyle(RenderKeywordStyle.UPPER); // TODO: Just to make debugging nicer.
 
-		return factory.select();
+		return dslContext.select();
 	}
 
 	private static SelectFinalStep buildSqlSelectStepWithWhereClause(final String tableName,
@@ -319,7 +323,7 @@ public class SqlUtils {
 		final List<UsesRelationship> listRelationships = buildSqlSelectAddFieldsToGet(selectStep, tableName,
 				fieldsToGet, sortClause, false /* extraJoin */);
 
-		final Table<Record> table = Factory.tableByName(tableName);
+		final Table<Record> table = DSL.tableByName(tableName);
 		final SelectJoinStep joinStep = selectStep.from(table);
 
 		// LEFT OUTER JOIN will get the field values from the other tables,
@@ -352,8 +356,8 @@ public class SqlUtils {
 		// TODO: Find a way to do this with the jOOQ API:
 		final SelectSelectStep select = createSelect(sqlDialect);
 
-		final org.jooq.Field<?> field = Factory.field("*");
-		final AggregateFunction<?> count = Factory.count(field);
+		final org.jooq.Field<?> field = DSL.field("*");
+		final AggregateFunction<?> count = DSL.count(field);
 		select.select(count).from(selectInner);
 		return select.getQuery().getSQL(true);
 		// return "SELECT COUNT(*) FROM (" + query + ") AS glomarbitraryalias";
@@ -430,7 +434,7 @@ public class SqlUtils {
 			return null;
 		}
 
-		return Factory.fieldByName(tableName, fieldName);
+		return DSL.fieldByName(tableName, fieldName);
 	}
 
 	private static org.jooq.Field<Object> createField(final String tableName, final LayoutItemField layoutField) {
@@ -510,7 +514,7 @@ public class SqlUtils {
 			if (relationship.getHasToTable()) {
 				// It is a relationship that only specifies the table, without specifying linking fields:
 
-				// Table<Record> toTable = Factory.tableByName(relationship.getToTable());
+				// Table<Record> toTable = DSL.tableByName(relationship.getToTable());
 				// TODO: stepResult = step.from(toTable);
 			}
 
@@ -531,7 +535,7 @@ public class SqlUtils {
 			final Condition condition = fieldFrom.equal(fieldTo);
 
 			// Note that LEFT JOIN (used in libglom/GdaSqlBuilder) is apparently the same as LEFT OUTER JOIN.
-			final Table<Record> toTable = Factory.tableByName(relationship.getToTable());
+			final Table<Record> toTable = DSL.tableByName(relationship.getToTable());
 			step = step.leftOuterJoin(toTable.as(aliasName)).on(condition);
 		} else {
 			final UsesRelationship parentRelationship = new UsesRelationshipImpl();
@@ -544,7 +548,7 @@ public class SqlUtils {
 			final Condition condition = fieldFrom.equal(fieldTo);
 
 			// Note that LEFT JOIN (used in libglom/GdaSqlBuilder) is apparently the same as LEFT OUTER JOIN.
-			final Table<Record> toTable = Factory.tableByName(relatedRelationship.getToTable());
+			final Table<Record> toTable = DSL.tableByName(relatedRelationship.getToTable());
 			step = step.leftOuterJoin(toTable.as(aliasName)).on(condition);
 		}
 	}
