@@ -62,8 +62,6 @@ public class SelfHoster {
 
 	protected boolean selfHostingActive = false;
 	protected Document document = null;
-	protected String username = "";
-	protected String password = "";
     private String filePath;
 
     /**
@@ -112,14 +110,6 @@ public class SelfHoster {
 	public boolean cleanup() {
 		//Derived classes should implement this.
 		return false;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public String getPassword() {
-		return password;
 	}
 
 	/**

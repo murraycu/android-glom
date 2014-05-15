@@ -72,7 +72,7 @@ public class SelfHostExampleTest extends AndroidTestCase {
 	 * @param hostingMode 
 	 * @throws SQLException
 	 */
-	private void doTest(Document.HostingMode hostingMode) throws SQLException {
+	private void doTest(Document.HostingMode hostingMode) {
 		final InputStream inputStream = SelfHostExampleTest.class.getClassLoader().getResourceAsStream("example_music_collection.glom");
 		assertNotNull(inputStream);
 

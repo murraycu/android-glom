@@ -53,8 +53,8 @@ import org.glom.app.libglom.layout.reportparts.LayoutItemGroupBy;
 public class DocumentTest  extends AndroidTestCase {
 
 	private static Document document;
-	private static String defaultLocale = "";
-	private static String germanLocale = "de";
+	private static final String defaultLocale = "";
+	private static final String germanLocale = "de";
 	static InputStream inputStreamMusicCollection; //TODO: Do not reuse this.
 	static InputStream inputStreamFilmManager;
 
