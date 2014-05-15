@@ -1,5 +1,7 @@
 package org.glom.app;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,7 +17,13 @@ import android.widget.TextView;
  * in two-pane mode (on tablets) or a {@link TableDetailActivity}
  * on handsets.
  */
-public class TableDetailFragment extends TableDataFragment {
+public class TableDetailFragment extends Fragment implements TableDataFragment {
+    private String mTableName;
+
+    /**
+     * The fragment's current callback object.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -33,7 +41,7 @@ public class TableDetailFragment extends TableDataFragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mTableName = getArguments().getString(ARG_TABLE_NAME);
+            setTableName(getArguments().getString(ARG_TABLE_NAME));
         }
 
         setHasOptionsMenu(true);
@@ -46,11 +54,9 @@ public class TableDetailFragment extends TableDataFragment {
         assert rootView != null;
 
         // Show the dummy content as text in a TextView.
-        if (mTableName != null) {
-            final String title = mCallbacks.getTableTitle(mTableName);
-            //TODO: Use a real specific method for this?
-            ((TextView) rootView.findViewById(R.id.table_detail)).setText(title);
-        }
+        final String title = mCallbacks.getTableTitle(mTableName);
+        //TODO: Use a real specific method for this?
+        ((TextView) rootView.findViewById(R.id.table_detail)).setText(title);
 
         setHasOptionsMenu(true);
 
@@ -58,11 +64,40 @@ public class TableDetailFragment extends TableDataFragment {
     }
 
     @Override
-    public void onCreateOptionsMenu (Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         final MenuItem menuItem = menu.add(Menu.NONE, R.id.option_menu_item_list, Menu.NONE, R.string.action_list);
         menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public String getTableName() {
+        return mTableName;
+    }
+
+    @Override
+    public void setTableName(String tableName) {
+        mTableName = tableName;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Activities containing this fragment must implement its callbacks.
+        if (!(activity instanceof Callbacks)) {
+            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        }
+
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        // Reset the active callbacks interface to the dummy implementation.
+        mCallbacks = sDummyCallbacks;
+    }
 }

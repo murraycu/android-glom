@@ -1,24 +1,26 @@
 package org.glom.app;
 
-import android.app.Activity;
-import android.app.Fragment;
-
 import java.util.List;
 
 /**
  * Created by murrayc on 2/14/14.
  */
-public class TableDataFragment extends Fragment {
+public interface TableDataFragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
     public static final String ARG_TABLE_NAME = "table_name";
+
+    public String getTableName();
+
+    public void setTableName(final String tableName);
+
     /**
      * A dummy implementation of the {@link Callbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
      */
-    private static final Callbacks sDummyCallbacks = new Callbacks() {
+    static final Callbacks sDummyCallbacks = new Callbacks() {
 
         @Override
         public void onTableSelected(final String tableName) {
@@ -34,34 +36,7 @@ public class TableDataFragment extends Fragment {
             return null;
         }
     };
-    /**
-     * The fragment's current callback object.
-     */
-    protected Callbacks mCallbacks = sDummyCallbacks;
-    /**
-     * The content this fragment is presenting.
-     */
-    protected String mTableName;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
-
-        mCallbacks = (Callbacks) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        // Reset the active callbacks interface to the dummy implementation.
-        mCallbacks = sDummyCallbacks;
-    }
 
     /**
      * A callback interface that all activities containing this fragment must

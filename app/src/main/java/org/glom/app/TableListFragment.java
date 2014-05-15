@@ -1,13 +1,16 @@
 package org.glom.app;
 
+import android.app.Activity;
+import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuInflater;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a single Table detail screen.
@@ -15,7 +18,14 @@ import android.view.MenuInflater;
  * in two-pane mode (on tablets) or a {@link org.glom.app.TableDetailActivity}
  * on handsets.
  */
-public class TableListFragment extends TableDataFragment {
+public class TableListFragment extends ListFragment implements TableDataFragment {
+    private String mTableName;
+
+    /**
+     * The fragment's current callback object.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -32,7 +42,7 @@ public class TableListFragment extends TableDataFragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mTableName = getArguments().getString(ARG_TABLE_NAME);
+            setTableName(getArguments().getString(ARG_TABLE_NAME));
         }
     }
 
@@ -43,14 +53,42 @@ public class TableListFragment extends TableDataFragment {
         assert rootView != null;
 
         // Show the dummy content as text in a TextView.
-        if (mTableName != null) {
-            final String title = mCallbacks.getTableTitle(mTableName);
-            //TODO: Use a real specific method for this?
-            ((TextView) rootView.findViewById(R.id.table_list)).setText(title);
-        }
+        final String title = mCallbacks.getTableTitle(getTableName());
+        //TODO: Use a real specific method for this?
+        ((TextView) rootView.findViewById(R.id.table_list)).setText(title);
 
         setHasOptionsMenu(true);
 
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Activities containing this fragment must implement its callbacks.
+        if (!(activity instanceof Callbacks)) {
+            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        }
+
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        // Reset the active callbacks interface to the dummy implementation.
+        mCallbacks = sDummyCallbacks;
+    }
+
+    @Override
+    public String getTableName() {
+        return mTableName;
+    }
+
+    @Override
+    public void setTableName(String tableName) {
+        mTableName = tableName;
     }
 }

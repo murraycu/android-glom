@@ -3,6 +3,7 @@ package org.glom.app;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -134,6 +135,10 @@ public class DocumentActivity extends Activity
 
     protected Document getDocument() {
         return documentSingleton.getDocument();
+    }
+
+    protected SQLiteDatabase getDatabase() {
+        return documentSingleton.getDatabase();
     }
 
     /**
