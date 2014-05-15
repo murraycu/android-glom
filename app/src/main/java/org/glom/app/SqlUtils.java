@@ -20,11 +20,10 @@
 package org.glom.app;
 
 import android.text.TextUtils;
+import android.database.Cursor;
 
-import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
@@ -63,189 +62,6 @@ import org.jooq.impl.DSL;
  */
 public class SqlUtils {
 
-	/**
-	 * @param document
-	 * @return
-	 */
-	private static Connection createAndSetupDataSource(final Document document, final String username, final String password) {
-		return createAndSetupDataSource(document.getHostingMode(), document.getConnectionServer(), document.getConnectionPort(), document.getConnectionDatabase(), username, password);
-	}
-	
-	public static class JdbcConnectionDetails {
-		String driverClass = null;
-		public String jdbcURL = null;
-	}
-
-	public static JdbcConnectionDetails getJdbcConnectionDetails(final Document document) {
-		return getJdbcConnectionDetails(document.getHostingMode(), document.getConnectionServer(), document.getConnectionPort(), document.getConnectionDatabase());
-	}
-
-    public static JdbcConnectionDetails getJdbcConnectionDetailsForSqlite(final Document document, final String path) {
-        final JdbcConnectionDetails details = new JdbcConnectionDetails();
-        fillBasicJdbcConnectionDetails(Document.HostingMode.HOSTING_MODE_SQLITE, details);
-
-        details.jdbcURL += path;
-
-        return details;
-    }
-
-	public static JdbcConnectionDetails getJdbcConnectionDetails(final Document.HostingMode hostingMode, final String serverHost, int serverPort, final String database) {
-		final JdbcConnectionDetails details = new JdbcConnectionDetails();
-        fillBasicJdbcConnectionDetails(hostingMode, details);
-
-		String defaultDatabase = null;
-		switch (hostingMode) {
-            case HOSTING_MODE_SQLITE: {
-                break;
-            }
-			case HOSTING_MODE_POSTGRES_CENTRAL:
-			case HOSTING_MODE_POSTGRES_SELF: {
-				defaultDatabase = "template1";
-				break;
-			}
-			case HOSTING_MODE_MYSQL_CENTRAL:
-			case HOSTING_MODE_MYSQL_SELF: {
-				defaultDatabase = "INFORMATION_SCHEMA";
-				break;
-			}
-			default: {
-				// TODO: We allow self-hosting here, for testing,
-				// but maybe the startup of self-hosting should happen here.
-				Log.fatal("Error configuring the database connection." + " Only PostgreSQL, MYSQL and SQLite hosting are supported.");
-				// FIXME: Throw exception?
-				return null;
-			}
-		}
-			
-		// setup the JDBC driver for the current glom document
-		details.jdbcURL += serverHost + ":" + serverPort;
-
-		String db = database;
-		if (TextUtils.isEmpty(db)) {
-			// Use the default PostgreSQL database, because Connection.connect() fails otherwise.
-			db = defaultDatabase;
-		}
-		details.jdbcURL += "/" + db; // TODO: Quote the database name?
-		
-		return details;
-	}
-
-    private static void fillBasicJdbcConnectionDetails(final Document.HostingMode hostingMode, final JdbcConnectionDetails details) {
-        switch (hostingMode) {
-            case HOSTING_MODE_SQLITE: {
-                // See https://github.com/SQLDroid/SQLDroid/wiki/Quick-Start
-                details.driverClass = "org.sqldroid.SQLDroidDriver"; //Android doesn't seem to find this: "org.sqlite.JDBC";
-                details.jdbcURL = "jdbc:sqldroid:"; //"jdbc:sqlite:";
-                break;
-            }
-            case HOSTING_MODE_POSTGRES_CENTRAL:
-            case HOSTING_MODE_POSTGRES_SELF: {
-                details.driverClass = "org.postgresql.Driver";
-                details.jdbcURL = "jdbc:postgresql://";
-                break;
-            }
-            case HOSTING_MODE_MYSQL_CENTRAL:
-            case HOSTING_MODE_MYSQL_SELF: {
-                details.driverClass = "com.mysql.jdbc.Driver";
-                details.jdbcURL = "jdbc:mysql://";
-                break;
-            }
-            default: {
-                // TODO: We allow self-hosting here, for testing,
-                // but maybe the startup of self-hosting should happen here.
-                Log.fatal("Error configuring the database connection." + " Only PostgreSQL and MYSQL hosting are supported.");
-                // FIXME: Throw exception?
-            }
-        }
-    }
-
-    private static Connection createAndSetupDataSource(final Document.HostingMode hostingMode, final String serverHost, int serverPort, final String database, final String username, final String password) {
-		final Connection conn;
-
-		final JdbcConnectionDetails details = getJdbcConnectionDetails(hostingMode, serverHost, serverPort, database);
-		if (details == null) {
-			return null;
-		}
-
-        try {
-            conn = DriverManager.getConnection(details.jdbcURL, username, password);
-        } catch (Exception e) { //TODO: Catch a more specific exception?
-            e.printStackTrace();
-            return null;
-        }
-
-		return conn;
-	}
-
-	/**
-	 * Sets the username and password for the database associated with the Glom document.
-	 * 
-	 * @return true if the username and password works, false otherwise
-	 */
-	public static Connection tryUsernameAndPassword(final Document document, final String username, final String password) throws SQLException {
-        Connection conn = createAndSetupDataSource(document, username, password);
-		if (conn == null)
-			return null;
-		
-		/* Do not bother trying if there are no credentials. */
-		if(TextUtils.isEmpty(username) && TextUtils.isEmpty(password)) {
-			return null;
-		}
-
-		//conn.setUser(username);
-		//conn.setPassword(password);
-
-		//final int acquireRetryAttempts = conn.getAcquireRetryAttempts();
-		//conn.setAcquireRetryAttempts(1);
-		try {
-			// FIXME find a better way to check authentication
-			// it's possible that the connection could be failing for another reason
-			
-			//Change the timeout, because it otherwise takes ages to fail sometimes when the details are not setup.
-			//This is more than enough.
-			DriverManager.setLoginTimeout(5); 
-
-			return conn;
-		} catch (final Exception e) { //TODO: Catch a more specific exception?
-			Log.info(document.getDatabaseTitle(""), e.getMessage());
-			Log.info(document.getDatabaseTitle(""),
-					"Connection Failed. Maybe the username or password is not correct.");
-			return null;
-		} finally {
-			if (conn != null) {
-				conn.close();
-			}
-			//conn.setAcquireRetryAttempts(acquireRetryAttempts);
-		}
-	}
-
-	public static ResultSet executeQuery(final Connection conn, final String query, int expectedLength) throws SQLException {
-		// Setup and execute the query. Special care needs to be take to ensure that the results will be based
-		// on a cursor so that large amounts of memory are not consumed when the query retrieve a large amount of
-		// data. Here's the relevant PostgreSQL documentation:
-		// http://jdbc.postgresql.org/documentation/83/query.html#query-with-cursor
-		conn.setAutoCommit(false);
-		final Statement st = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-		if(expectedLength > 0) {
-			st.setFetchSize(expectedLength);
-		}
-
-		return st.executeQuery(query);
-	}
-
-    public static ResultSet executeQuery(final Connection conn, final String query) throws SQLException {
-        return SqlUtils.executeQuery(conn, query, 0);
-    }
-	
-	/**
-	 * @param conn
-	 * @param query
-	 */
-	public static void executeUpdate(final Connection conn, final String query) throws SQLException {
-		conn.setAutoCommit(false);
-		final Statement st = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-		st.executeUpdate(query);
-	}
 	
 	// TODO: Change to final ArrayList<LayoutItem_Field> fieldsToGet
 	public static String buildSqlSelectWithKey(final String tableName, final List<LayoutItemField> fieldsToGet,
@@ -598,27 +414,28 @@ public class SqlUtils {
 	/**
 	 * @param dataItem
 	 * @param field
-	 * @param rsIndex
-	 * @param rs
+	 * @param rsIndex The column index, 0-based.
+	 * @param cursor
 	 * @param primaryKeyValue
 	 * @throws SQLException
 	 */
 	public static void fillDataItemFromResultSet(final DataItem dataItem, final LayoutItemField field, final int rsIndex,
-			final ResultSet rs, final String documentID, final String tableName, final TypedDataItem primaryKeyValue) throws SQLException {
-		
+			final Cursor cursor, final String documentID, final String tableName, final TypedDataItem primaryKeyValue) {
+
 		switch (field.getGlomType()) {
 		case TYPE_TEXT:
-			final String text = rs.getString(rsIndex);
+			final String text = cursor.getString(rsIndex);
 			dataItem.setText(text != null ? text : "");
 			break;
 		case TYPE_BOOLEAN:
-			dataItem.setBoolean(rs.getBoolean(rsIndex));
+			dataItem.setBoolean(cursor.getInt(rsIndex) > 0);
 			break;
 		case TYPE_NUMERIC:
-			dataItem.setNumber(rs.getDouble(rsIndex));
+			dataItem.setNumber(cursor.getDouble(rsIndex));
 			break;
 		case TYPE_DATE:
-			final Date date = rs.getDate(rsIndex);
+            /* TODO:
+			final Date date = cursor.getDate(rsIndex);
 			if (date != null) {
 				// TODO: Pass Date and Time types instead of converting to text here?
 				// TODO: Use a 4-digit-year short form, somehow.
@@ -627,15 +444,18 @@ public class SqlUtils {
 			} else {
 				dataItem.setText("");
 			}
+			*/
 			break;
 		case TYPE_TIME:
-			final Time time = rs.getTime(rsIndex);
+            /* TODO:
+			final Time time = cursor.getTime(rsIndex);
 			if (time != null) {
 				final DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.ROOT);
 				dataItem.setText(timeFormat.format(time));
 			} else {
 				dataItem.setText("");
 			}
+			*/
 			break;
 		case TYPE_IMAGE:
 			//We don't get the data here.

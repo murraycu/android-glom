@@ -19,6 +19,7 @@
 
 package org.glom.app.libglom.test;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import java.io.BufferedReader;
@@ -133,9 +134,9 @@ public class SelfHoster {
 	 * @param tableName
 	 * @return
 	 */
-	protected boolean insertExampleData(final Connection connection, final Document document, final String tableName) {
+	protected boolean insertExampleData(final SQLiteDatabase db, final Document document, final String tableName) {
 
-		final DSLContext factory = DSL.using(connection, getSqlDialect());
+		final DSLContext factory = DSL.using(getSqlDialect());
 		final Table<Record> table = DSL.tableByName(tableName);
 
 		final List<Map<String, DataItem>> exampleRows = document.getExampleRows(tableName);
@@ -171,13 +172,7 @@ public class SelfHoster {
 			@SuppressWarnings("unchecked")
 			final InsertResultStep<Record> insertResultStep = (InsertResultStep<Record>) insertStep;
 
-			try {
-				insertResultStep.fetchOne();
-			} catch (final DataAccessException e) {
-				System.out.println("createAndSelfHostNewEmpty(): insertResultStep failed.");
-				e.printStackTrace();
-				return false;
-			}
+            db.execSQL(insertResultStep.getSQL(), insertResultStep.getBindValues().toArray());
 			// TODO: Check that it worked.
 		}
 
@@ -260,38 +255,6 @@ public class SelfHoster {
 		format.setGroupingUsed(false); // TODO: Does this change it system-wide?
 		return format.format(portNumber);
 	}
-	
-	/**
-	 */
-	public Connection createConnection(boolean failureExpected) {
-		//We don't just use SqlUtils.tryUsernameAndPassword() because it uses ComboPooledDataSource,
-		//which does not automatically close its connections,
-		//leading to errors because connections are already open.
-		final SqlUtils.JdbcConnectionDetails details = SqlUtils.getJdbcConnectionDetails(document);
-		if (details == null) {
-			return null;
-		}
-		
-		final Properties connectionProps = new Properties();
-		connectionProps.put("user", this.username);
-		connectionProps.put("password", this.password);
-
-		Connection conn = null;
-		try {
-			//TODO: Remove these debug prints when we figure out why getConnection sometimes hangs. 
-			//System.out.println("debug: SelfHosterPostgreSQL.createConnection(): before createConnection()");
-			DriverManager.setLoginTimeout(10);
-			conn = DriverManager.getConnection(details.jdbcURL, connectionProps);
-			//System.out.println("debug: createConnection(): before createConnection()");
-		} catch (final SQLException e) {
-			if(!failureExpected) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		return conn;
-	}
 
 	/**
 	 * @param str
@@ -361,47 +324,6 @@ public class SelfHoster {
 		final DSLContext factory = DSL.using(sqlDialect);
 		return factory.render(jooqName);
 	}
-
-    public String getSelfHostedDirectoryPath() {
-        final String pathFile = getFilePath();
-        if (!TextUtils.isEmpty(pathFile)) {
-            final File file = new File(pathFile);
-            final File parent = file.getParentFile();
-            if (parent == null) {
-                // TODO: Warn.
-                return "";
-            }
-
-            File dataDir = null;
-            switch (document.getHostingMode()) {
-                case HOSTING_MODE_POSTGRES_SELF:
-                    dataDir = new File(parent, "glom_postgres_data");
-                    break;
-                case HOSTING_MODE_POSTGRES_CENTRAL:
-                    dataDir = parent;
-                    break;
-                case HOSTING_MODE_MYSQL_SELF:
-                    dataDir = new File(parent, "glom_mysql_data");
-                    break;
-                case HOSTING_MODE_MYSQL_CENTRAL:
-                    dataDir = parent;
-                    break;
-                case HOSTING_MODE_SQLITE:
-                    dataDir = new File(parent, "glom_sqlite_data");
-                    break;
-                default:
-                    // TODO: Warn.
-                    break;
-            }
-
-            if (dataDir != null) {
-                return dataDir.getPath();
-            }
-        }
-
-        // TODO: std::cerr << G_STRFUNC << ": returning empty string." << std::endl;
-        return "";
-    }
 
     protected String getFilePath() {
         return filePath;

@@ -30,11 +30,4 @@ dependencies {
     compile 'commons-codec:commons-codec:1.8'
     compile 'org.jooq:jooq:3.3.2'
     compile 'com.google.guava:guava:17.0'
-    // TODO: sqldroid is not yet in maven
-    // ( See https://github.com/SQLDroid/SQLDroid/issues/31 )
-    // so find a way to make Gradle download the .jar directly
-    // instead of needing people to download it manually from here
-    // https://github.com/SQLDroid/SQLDroid/downloads
-    // and put it in app/libs
-    compile files('libs/sqldroid-1.0.0RC1.jar')
 }

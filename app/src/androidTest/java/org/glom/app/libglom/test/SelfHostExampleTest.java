@@ -36,7 +36,7 @@ import org.jooq.SQLDialect;
  */
 public class SelfHostExampleTest extends AndroidTestCase {
 
-	private static SelfHoster selfHoster = null;
+	private static SelfHosterSqlite selfHoster = null;
 
     /*
 	public void testPostgreSQL() throws SQLException {

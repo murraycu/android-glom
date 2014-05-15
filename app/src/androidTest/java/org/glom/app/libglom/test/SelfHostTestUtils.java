@@ -19,15 +19,13 @@
 
 package org.glom.app.libglom.test;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
 import junit.framework.Assert;
 
 import static junit.framework.Assert.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +42,7 @@ import org.jooq.Condition;
  *
  */
 public class SelfHostTestUtils {
-	static public void testExampleMusiccollectionData(final SelfHoster selfHoster, final Document document) throws SQLException
+	static public void testExampleMusiccollectionData(final SelfHosterSqlite selfHoster, final Document document)
 	{
 	  assertTrue(document != null);
 	  
@@ -67,33 +65,30 @@ public class SelfHostTestUtils {
 	  
 	  final String sqlQuery = SqlUtils.buildSqlSelectWithWhereClause(tableName, fieldsToGet, whereClause, null, selfHoster.getSqlDialect());
 	  
-	  final Connection conn = selfHoster.createConnection(false);
-	  assertTrue(conn != null);
+	  final SQLiteDatabase db = selfHoster.getSqlDatabase();
+	  assertTrue(db != null);
+
+	  final Cursor cursor = db.rawQuery(sqlQuery, null);
+	  assertTrue(cursor != null);
+
+	  Assert.assertEquals(2, cursor.getColumnCount());
 	  
-	  final Statement st = conn.createStatement(); //TODO: Passing these causes it to return a null Statement: //ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-      //st.setFetchSize(length);
-	  final ResultSet rs = st.executeQuery(sqlQuery);
-	  assertTrue(rs != null);
-	  
-	  final ResultSetMetaData rsMetaData = rs.getMetaData();
-	  Assert.assertEquals(2, rsMetaData.getColumnCount());
-	  
-	  rs.last();
-	  final int rsRowsCount = rs.getRow();
-	  Assert.assertEquals(1, rsRowsCount);
-	  
+	  //rs.last();
+	  final double rowsCount = cursor.getCount();
+	  Assert.assertEquals(1.0, rowsCount);
+
+      cursor.moveToFirst();
 	  final TypedDataItem albumID = new TypedDataItem();
-	  SqlUtils.fillDataItemFromResultSet(albumID, layoutItemFieldAlbumID, 1,
-              rs, "fake-document-id", tableName, null);
+	  SqlUtils.fillDataItemFromResultSet(albumID, layoutItemFieldAlbumID, 0,
+              cursor, "fake-document-id", tableName, null);
 	  testExampleMusiccollectionDataRelated(selfHoster, document, albumID);
 	}
 
 	/** Check that we can get data via a relationship.
 	 * @param document
 	 * @param albumID
-	 * @throws SQLException 
 	 */
-	static private void testExampleMusiccollectionDataRelated(final SelfHoster selfHoster, final Document document, TypedDataItem albumID) throws SQLException {
+	static private void testExampleMusiccollectionDataRelated(final SelfHosterSqlite selfHoster, final Document document, TypedDataItem albumID) {
 		final String tableName = "albums";
 		
 		//Normal fields:
@@ -122,19 +117,16 @@ public class SelfHostTestUtils {
 		  
 		final String sqlQuery = SqlUtils.buildSqlSelectWithKey(tableName, fieldsToGet, fieldAlbumID, albumID, selfHoster.getSqlDialect());
 		  
-		final Connection conn = selfHoster.createConnection(false);
-		assertTrue(conn != null);
-		  
-		final Statement st = conn.createStatement(); //TODO: Passing these causes it to return a null Statement: ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-		//st.setFetchSize(length);
-		final ResultSet rs = st.executeQuery(sqlQuery);
-		assertTrue(rs != null);
-		
-		final ResultSetMetaData rsMetaData = rs.getMetaData();
-		Assert.assertEquals(3, rsMetaData.getColumnCount());
+		final SQLiteDatabase db = selfHoster.getSqlDatabase();
+		assertTrue(db != null);
 
-		rs.last();
-		final int rsRowsCount = rs.getRow();
-		Assert.assertEquals(1, rsRowsCount);
+		final Cursor cursor = db.rawQuery(sqlQuery, null);
+		assertTrue(cursor != null);
+
+		Assert.assertEquals(3, cursor.getColumnCount());
+
+		//rs.last();
+		final double rsRowsCount = cursor.getCount();
+		Assert.assertEquals(1.0, rsRowsCount);
 	}
 }

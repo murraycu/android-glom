@@ -21,12 +21,12 @@ package org.glom.app.libglom.test;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import com.google.common.io.Files;
 
 import org.glom.app.Log;
-import org.glom.app.SqlUtils;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;
 import org.jooq.DSLContext;
@@ -34,14 +34,12 @@ import org.jooq.SQLDialect;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
 import org.jooq.impl.DSL;
-import org.sqldroid.SQLDroidDriver;
 
 /**
  * @author Murray Cumming <murrayc@murrayc.com>
@@ -49,8 +47,9 @@ import org.sqldroid.SQLDroidDriver;
  */
 public class SelfHosterSqlite extends SelfHoster {
     private final Context context; //Needed by SQLiteOpenHelper.
+    private SQLiteDatabase sqliteDatabase;
 
-    SelfHosterSqlite(final Document document, Context context) {
+    public SelfHosterSqlite(final Document document, Context context) {
 		super(document);
         this.context = context;
 	}
@@ -91,67 +90,12 @@ public class SelfHosterSqlite extends SelfHoster {
             return false; // STARTUPERROR_NONE; //Just do it once.
 		}
 
-		final String dbPath = getSelfHostingDataPath();
-
-		if (TextUtils.isEmpty(dbPath)) { // The file doesn't exist until sqlite first tries to use it || !SelfHoster.fileExists(dbPath)) {
-			/*
-			 * final String dbDirBackup = dbDir + File.separator + FILENAME_BACKUP;
-			 * 
-			 * if(fileExists(dbDirBackup)) { //TODO: std::cerr << G_STRFUNC <<
-			 * ": There is no data, but there is backup data." << std::endl; //Let the caller convert the backup to real
-			 * data and then try again: return false; // STARTUPERROR_FAILED_NO_DATA_HAS_BACKUP_DATA; } else {
-			 */
-            Log.error("selfHost(): The data file could not be found: " + dbPath);
-			// dbdir_data_uri << std::endl;
-			return false; // STARTUPERROR_FAILED_NO_DATA;
-			// }
-		}
-
-
-
 
         //The caller has already called initialize() to create the SQLite file.
         //SQLite doesn't need us to do anything else.
 		return true;
 	}
 
-	private String getSelfHostingPath(final String subpath, final boolean create) {
-		final String dbDir = getSelfHostedDirectoryPath();
-
-		String dbDirData = dbDir;
-        if(!TextUtils.isEmpty(subpath)) {
-            dbDirData += File.separator + subpath;
-        }
-
-		// Return the path regardless of whether it exists:
-		if (!create) {
-			return dbDirData;
-		}
-
-        final File file = new File(dbDirData);
-        if (!file.exists()) {
-			try {
-				Files.createParentDirs(file);
-			} catch (final IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return "";
-			}
-
-			if (!file.mkdir()) {
-				return "";
-			}
-		}
-
-		return dbDirData;
-	}
-
-	private String getSelfHostingDataPath() {
-        //Return the path to the sqlite database file, but do not try to create the file.
-		return getSelfHostingPath("", true /* create the directorties */) + File.separator + FILENAME_DATA;
-    }
-
-    /*
     private class Helper extends SQLiteOpenHelper {
 
         Helper(final Context context, final String databaseName) {
@@ -168,24 +112,19 @@ public class SelfHosterSqlite extends SelfHoster {
             //This is not necessary in this test code.
         }
     }
-    */
 
 	/**
 	 */
 	private boolean initialize() {
-        /*
-        final Helper helper = new Helper(context, "tempName");
-        sqliteDatabase = helper.getWritableDatabase();
-        */
+        //TODO: Generate a likely-unique database name.
 
-        //Make sure that the sqlite file (or something else at that path) doesn't exist yet:
-        final File f = new File(getSelfHostingDataPath());
-        if(f.exists()) {
-            f.delete();
-        }
+        //Make sure that the sqlite database doesn't exist yet:
+        context.deleteDatabase(FILENAME_DATA);
+
+        final Helper helper = new Helper(context, FILENAME_DATA);
+        sqliteDatabase = helper.getWritableDatabase();
 
 		return true;
-
 	}
 
 	/**
@@ -193,20 +132,9 @@ public class SelfHosterSqlite extends SelfHoster {
 	 */
     @Override
 	protected boolean recreateDatabaseFromDocument() {
-        //TODO: Avoid the ridiculous copy/pasting of this document in the other SelfHoster* classes.
-		// Check whether the database exists already.
-		final String dbName = document.getConnectionDatabase();
-		if (TextUtils.isEmpty(dbName)) {
-			return false;
-		}
-
-		// Create the database:
-		progress();
-
-		document.setConnectionDatabase(dbName);
-		final Connection connection = createConnection(false);
-		if (connection == null) {
-			Log.error("recreatedDatabase(): createConnection() failed,.");
+		final SQLiteDatabase db = getSqlDatabase();
+		if (db == null) {
+			Log.error("recreatedDatabase(): getSqlDatabase() failed,.");
 			return false;
 		}
 
@@ -220,7 +148,7 @@ public class SelfHosterSqlite extends SelfHoster {
 			final List<Field> fields = document.getTableFields(tableName);
 
 			progress();
-			final boolean tableCreationSucceeded = createTable(connection, document, tableName, fields);
+			final boolean tableCreationSucceeded = createTable(db, document, tableName, fields);
 			progress();
 			if (!tableCreationSucceeded) {
 				// TODO: std::cerr << G_STRFUNC << ": CREATE TABLE failed with the newly-created database." <<
@@ -252,7 +180,7 @@ public class SelfHosterSqlite extends SelfHoster {
 			// try
 			// {
 			progress();
-			final boolean tableInsertSucceeded = insertExampleData(connection, document, tableName);
+			final boolean tableInsertSucceeded = insertExampleData(db, document, tableName);
 
 			if (!tableInsertSucceeded) {
 				// TODO: std::cerr << G_STRFUNC << ": INSERT of example data failed with the newly-created database." <<
@@ -273,36 +201,8 @@ public class SelfHosterSqlite extends SelfHoster {
 
 	/**
 	 */
-	public Connection createConnection(boolean failureExpected) {
-		//We don't just use SqlUtils.tryUsernameAndPassword() because it uses ComboPooledDataSource,
-		//which does not automatically close its connections,
-		//leading to errors because connections are already open.
-		final SqlUtils.JdbcConnectionDetails details = SqlUtils.getJdbcConnectionDetailsForSqlite(document, getSelfHostingDataPath());
-		if (details == null) {
-			return null;
-		}
-
-        Connection conn = null;
-		try {
-			DriverManager.setLoginTimeout(10);
-
-            Properties properties = new Properties();
-            properties.put(SQLDroidDriver.ADDITONAL_DATABASE_FLAGS, SQLiteDatabase.CREATE_IF_NECESSARY | SQLiteDatabase.OPEN_READWRITE);
-
-            conn = new org.sqldroid.SQLDroidDriver().connect(details.jdbcURL, properties);
-			//This fails with a "No suitable driver" exception: conn = DriverManager.getConnection(details.jdbcURL, properties);
-		} catch (final SQLException e) {
-            if (e != null) { //TODO: Surely this shouldn't be happening? See https://github.com/SQLDroid/SQLDroid/issues/42
-                //TODO: Catch "No suitable driver" exceptions always
-                if (!failureExpected) {
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
-		}
-
-		return conn;
+	public SQLiteDatabase getSqlDatabase() {
+		return sqliteDatabase;
 	}
 
 	/**
@@ -319,7 +219,7 @@ public class SelfHosterSqlite extends SelfHoster {
 	 * @param fields
 	 * @return
 	 */
-	private boolean createTable(final Connection connection, final Document document, final String tableName,
+	private boolean createTable(final SQLiteDatabase db, final Document document, final String tableName,
 			final List<Field> fields) {
 		boolean tableCreationSucceeded = false;
 
@@ -354,8 +254,9 @@ public class SelfHosterSqlite extends SelfHoster {
 
 		// Actually create the table
 		final String query = "CREATE TABLE " + quoteAndEscapeSqlId(tableName) + " (" + sqlFields + ");";
-		final DSLContext factory = DSL.using(connection, getSqlDialect());
-		factory.execute(query);
+
+		db.execSQL(query);
+
 		tableCreationSucceeded = true;
 		if (!tableCreationSucceeded) {
 			System.out.println("recreatedDatabase(): CREATE TABLE() failed.");
@@ -379,9 +280,7 @@ public class SelfHosterSqlite extends SelfHoster {
 		boolean result = true;
 
 		// Delete the files:
-		final String selfhostingPath = getSelfHostingPath("", false);
-		final File fileSelfHosting = new File(selfhostingPath);
-		fileSelfHosting.delete();
+		context.deleteDatabase(FILENAME_DATA);
 
 		final String docPath = getFilePath();
 		final File fileDoc = new File(docPath);
