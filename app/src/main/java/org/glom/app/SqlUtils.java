@@ -51,6 +51,7 @@ import org.jooq.SelectFinalStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.SelectSelectStep;
 import org.jooq.Table;
+import org.jooq.conf.ParamType;
 import org.jooq.conf.RenderKeywordStyle;
 import org.jooq.conf.RenderNameStyle;
 import org.jooq.conf.Settings;
@@ -114,7 +115,7 @@ public class SqlUtils {
 			return "";
 		}
 
-		return step.getQuery().getSQL(true);
+		return step.getQuery().getSQL(ParamType.INLINED);
 		// Log.info("Query: " + query);
 		//return query;
 	}
