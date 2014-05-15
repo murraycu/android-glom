@@ -151,7 +151,7 @@ public class DocumentActivity extends Activity
         protected Boolean doInBackground(final InputStream... params) {
 
             if (params.length > 0) {
-                return documentSingleton.load(params[0]);
+                return documentSingleton.load(params[0], getApplicationContext());
             }
 
             return false;

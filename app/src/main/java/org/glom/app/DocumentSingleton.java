@@ -1,5 +1,9 @@
 package org.glom.app;
 
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
 import org.glom.app.libglom.Document;
 
 import java.io.InputStream;
@@ -14,8 +18,10 @@ import java.io.InputStream;
 public class DocumentSingleton {
 
     private static final DocumentSingleton ourInstance = new DocumentSingleton();
+
     //Don't let this ever be null, so we can avoid always checking getDocument() for null.
     private Document mDocument = new Document();
+    private SQLiteDatabase mDatabase;
 
     private DocumentSingleton() {
     }
@@ -24,10 +30,27 @@ public class DocumentSingleton {
         return ourInstance;
     }
 
-    public boolean load(final InputStream inputStream) {
+    public boolean load(final InputStream inputStream, final Context context) {
         //Make sure we start with a fresh Document:
         mDocument = new Document();
-        return mDocument.load(inputStream);
+        if(!mDocument.load(inputStream)) {
+            return false;
+        }
+
+        if(mDocument.getIsExampleFile()) {
+            //Create a SQLite database:
+            SelfHosterSqlite selfHosterSqlite = new SelfHosterSqlite(mDocument, context);
+            if(!selfHosterSqlite.createAndSelfHostFromExample()) {
+                Log.e("android-glom", "createAndSelfHostFromExample() failed.");
+                return false;
+            }
+
+            setDatabase(selfHosterSqlite.getSqlDatabase());
+
+            //TODO: Make sure that we can load the same saved copy of the document later.
+        }
+
+        return true;
     }
 
     public Document getDocument() {
@@ -36,5 +59,11 @@ public class DocumentSingleton {
 
     public void setDocument(final Document document) {
         this.mDocument = document;
+    }
+
+    public SQLiteDatabase getDatabase() { return mDatabase; }
+
+    public void setDatabase(final SQLiteDatabase database) {
+        this.mDatabase = database;
     }
 }
