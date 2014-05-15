@@ -24,77 +24,247 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
-import com.google.common.io.Files;
-
 import org.glom.app.Log;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;
-import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
-
-import org.jooq.impl.DSL;
 
 /**
  * @author Murray Cumming <murrayc@murrayc.com>
- * 
  */
 public class SelfHosterSqlite extends SelfHoster {
+    private static final String FILENAME_DATA = "data.db";
     private final Context context; //Needed by SQLiteOpenHelper.
     private SQLiteDatabase sqliteDatabase;
 
     public SelfHosterSqlite(final Document document, Context context) {
-		super(document);
+        super(document);
         this.context = context;
-	}
+    }
 
-	private static final String FILENAME_DATA = "data.db";
+    /**
+     * @param name
+     * @return
+     */
+    private static String quoteAndEscapeSqlId(final String name) {
+        return quoteAndEscapeSqlId(name, SQLDialect.SQLITE);
+    }
 
-	/**
-	 * @Override
-	 */
-	protected boolean createAndSelfHostNewEmpty() {
-		final File tempDir = saveDocumentCopy(Document.HostingMode.HOSTING_MODE_SQLITE);
+    /**
+     * @Override
+     */
+    protected boolean createAndSelfHostNewEmpty() {
+        final File tempDir = saveDocumentCopy(Document.HostingMode.HOSTING_MODE_SQLITE);
 
 
-		// Create the self-hosting files:
-		if (!initialize()) {
-			Log.error("createAndSelfHostNewEmpty(): initialize failed.");
-			// TODO: Delete directory.
-		}
+        // Create the self-hosting files:
+        if (!initialize()) {
+            Log.error("createAndSelfHostNewEmpty(): initialize failed.");
+            // TODO: Delete directory.
+        }
 
-		// Check that it really created some files:
-		if (!tempDir.exists()) {
+        // Check that it really created some files:
+        if (!tempDir.exists()) {
             Log.error("createAndSelfHostNewEmpty(): tempDir does not exist.");
-			// TODO: Delete directory.
-		}
+            // TODO: Delete directory.
+        }
 
-		return selfHost();
-	}
+        return selfHost();
+    }
 
     /*
-	 * @return
+     * @return
 	 */
-	private boolean selfHost() {
-		// TODO: m_network_shared = network_shared;
+    private boolean selfHost() {
+        // TODO: m_network_shared = network_shared;
 
-		if (getSelfHostingActive()) {
+        if (getSelfHostingActive()) {
             Log.error("selfHost(): getSelfHostingActive() failed.");
 
             return false; // STARTUPERROR_NONE; //Just do it once.
-		}
+        }
 
 
         //The caller has already called initialize() to create the SQLite file.
         //SQLite doesn't need us to do anything else.
-		return true;
-	}
+        return true;
+    }
+
+    /**
+     */
+    private boolean initialize() {
+        //TODO: Generate a likely-unique database name.
+
+        //Make sure that the sqlite database doesn't exist yet:
+        context.deleteDatabase(FILENAME_DATA);
+
+        final Helper helper = new Helper(context, FILENAME_DATA);
+        sqliteDatabase = helper.getWritableDatabase();
+
+        return true;
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    protected boolean recreateDatabaseFromDocument() {
+        final SQLiteDatabase db = getSqlDatabase();
+        if (db == null) {
+            Log.error("recreatedDatabase(): getSqlDatabase() failed,.");
+            return false;
+        }
+
+        progress();
+
+        // Create each table:
+        final List<String> tables = document.getTableNames();
+        for (final String tableName : tables) {
+
+            // Create SQL to describe all fields in this table:
+            final List<Field> fields = document.getTableFields(tableName);
+
+            progress();
+            final boolean tableCreationSucceeded = createTable(db, document, tableName, fields);
+            progress();
+            if (!tableCreationSucceeded) {
+                // TODO: std::cerr << G_STRFUNC << ": CREATE TABLE failed with the newly-created database." <<
+                // std::endl;
+                return false;
+            }
+        }
+
+        // Note that create_database() has already called add_standard_tables() and add_standard_groups(document).
+
+        // Add groups from the document:
+        progress();
+        if (!addGroupsFromDocument(document)) {
+            // TODO: std::cerr << G_STRFUNC << ": add_groups_from_document() failed." << std::endl;
+            return false;
+        }
+
+        // Set table privileges, using the groups we just added:
+        progress();
+        if (!setTablePrivilegesGroupsFromDocument(document)) {
+            // TODO: std::cerr << G_STRFUNC << ": set_table_privileges_groups_from_document() failed." << std::endl;
+            return false;
+        }
+
+        for (final String tableName : tables) {
+            // Add any example data to the table:
+            progress();
+
+            // try
+            // {
+            progress();
+            final boolean tableInsertSucceeded = insertExampleData(db, document, tableName);
+
+            if (!tableInsertSucceeded) {
+                // TODO: std::cerr << G_STRFUNC << ": INSERT of example data failed with the newly-created database." <<
+                // std::endl;
+                return false;
+            }
+            // }
+            // catch(final std::exception& ex)
+            // {
+            // std::cerr << G_STRFUNC << ": exception: " << ex.what() << std::endl;
+            // HandleError(ex);
+            // }
+
+        } // for(tables)
+
+        return true; // All tables created successfully.
+    }
+
+    /**
+     */
+    public SQLiteDatabase getSqlDatabase() {
+        return sqliteDatabase;
+    }
+
+    /**
+     *
+     */
+    private void progress() {
+        // TODO Auto-generated method stub
+
+    }
+
+    /**
+     * @param document
+     * @param tableName
+     * @param fields
+     * @return
+     */
+    private boolean createTable(final SQLiteDatabase db, final Document document, final String tableName,
+                                final List<Field> fields) {
+        boolean tableCreationSucceeded = false;
+
+		/*
+		 * TODO: //Create the standard field too: //(We don't actually use this yet) if(std::find_if(fields.begin(),
+		 * fields.end(), predicate_FieldHasName<Field>(GLOM_STANDARD_FIELD_LOCK)) == fields.end()) { sharedptr<Field>
+		 * field = sharedptr<Field>::create(); field->set_name(GLOM_STANDARD_FIELD_LOCK);
+		 * field->set_glom_type(Field::TYPE_TEXT); fields.push_back(field); }
+		 */
+
+        // Create SQL to describe all fields in this table:
+        String sqlFields = "";
+        for (final Field field : fields) {
+            // Create SQL to describe this field:
+            String sqlFieldDescription = quoteAndEscapeSqlId(field.getName()) + " " + field.getSqlType(Field.SqlDialect.SQLITE);
+
+            if (field.getPrimaryKey()) {
+                sqlFieldDescription += " NOT NULL  PRIMARY KEY";
+            }
+
+            // Append it:
+            if (!TextUtils.isEmpty(sqlFields)) {
+                sqlFields += ", ";
+            }
+
+            sqlFields += sqlFieldDescription;
+        }
+
+        if (TextUtils.isEmpty(sqlFields)) {
+            // TODO: std::cerr << G_STRFUNC << ": sql_fields is empty." << std::endl;
+        }
+
+        // Actually create the table
+        final String query = "CREATE TABLE " + quoteAndEscapeSqlId(tableName) + " (" + sqlFields + ");";
+
+        db.execSQL(query);
+
+        tableCreationSucceeded = true;
+        if (!tableCreationSucceeded) {
+            System.out.println("recreatedDatabase(): CREATE TABLE() failed.");
+        }
+
+        return tableCreationSucceeded;
+    }
+
+    /**
+     *
+     */
+    public boolean cleanup() {
+        boolean result = true;
+
+        // Delete the files:
+        context.deleteDatabase(FILENAME_DATA);
+
+        final String docPath = getFilePath();
+        final File fileDoc = new File(docPath);
+        fileDoc.delete();
+
+        return result;
+    }
+
+    @Override
+    public SQLDialect getSqlDialect() {
+        return SQLDialect.SQLITE;
+    }
 
     private class Helper extends SQLiteOpenHelper {
 
@@ -112,185 +282,4 @@ public class SelfHosterSqlite extends SelfHoster {
             //This is not necessary in this test code.
         }
     }
-
-	/**
-	 */
-	private boolean initialize() {
-        //TODO: Generate a likely-unique database name.
-
-        //Make sure that the sqlite database doesn't exist yet:
-        context.deleteDatabase(FILENAME_DATA);
-
-        final Helper helper = new Helper(context, FILENAME_DATA);
-        sqliteDatabase = helper.getWritableDatabase();
-
-		return true;
-	}
-
-	/**
-	 * @return
-	 */
-    @Override
-	protected boolean recreateDatabaseFromDocument() {
-		final SQLiteDatabase db = getSqlDatabase();
-		if (db == null) {
-			Log.error("recreatedDatabase(): getSqlDatabase() failed,.");
-			return false;
-		}
-
-		progress();
-
-		// Create each table:
-		final List<String> tables = document.getTableNames();
-		for (final String tableName : tables) {
-
-			// Create SQL to describe all fields in this table:
-			final List<Field> fields = document.getTableFields(tableName);
-
-			progress();
-			final boolean tableCreationSucceeded = createTable(db, document, tableName, fields);
-			progress();
-			if (!tableCreationSucceeded) {
-				// TODO: std::cerr << G_STRFUNC << ": CREATE TABLE failed with the newly-created database." <<
-				// std::endl;
-				return false;
-			}
-		}
-
-		// Note that create_database() has already called add_standard_tables() and add_standard_groups(document).
-
-		// Add groups from the document:
-		progress();
-		if (!addGroupsFromDocument(document)) {
-			// TODO: std::cerr << G_STRFUNC << ": add_groups_from_document() failed." << std::endl;
-			return false;
-		}
-
-		// Set table privileges, using the groups we just added:
-		progress();
-		if (!setTablePrivilegesGroupsFromDocument(document)) {
-			// TODO: std::cerr << G_STRFUNC << ": set_table_privileges_groups_from_document() failed." << std::endl;
-			return false;
-		}
-
-		for (final String tableName : tables) {
-			// Add any example data to the table:
-			progress();
-
-			// try
-			// {
-			progress();
-			final boolean tableInsertSucceeded = insertExampleData(db, document, tableName);
-
-			if (!tableInsertSucceeded) {
-				// TODO: std::cerr << G_STRFUNC << ": INSERT of example data failed with the newly-created database." <<
-				// std::endl;
-				return false;
-			}
-			// }
-			// catch(final std::exception& ex)
-			// {
-			// std::cerr << G_STRFUNC << ": exception: " << ex.what() << std::endl;
-			// HandleError(ex);
-			// }
-
-		} // for(tables)
-
-		return true; // All tables created successfully.
-	}
-
-	/**
-	 */
-	public SQLiteDatabase getSqlDatabase() {
-		return sqliteDatabase;
-	}
-
-	/**
-	 *
-	 */
-	private void progress() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * @param document
-	 * @param tableName
-	 * @param fields
-	 * @return
-	 */
-	private boolean createTable(final SQLiteDatabase db, final Document document, final String tableName,
-			final List<Field> fields) {
-		boolean tableCreationSucceeded = false;
-
-		/*
-		 * TODO: //Create the standard field too: //(We don't actually use this yet) if(std::find_if(fields.begin(),
-		 * fields.end(), predicate_FieldHasName<Field>(GLOM_STANDARD_FIELD_LOCK)) == fields.end()) { sharedptr<Field>
-		 * field = sharedptr<Field>::create(); field->set_name(GLOM_STANDARD_FIELD_LOCK);
-		 * field->set_glom_type(Field::TYPE_TEXT); fields.push_back(field); }
-		 */
-
-		// Create SQL to describe all fields in this table:
-		String sqlFields = "";
-		for (final Field field : fields) {
-			// Create SQL to describe this field:
-			String sqlFieldDescription = quoteAndEscapeSqlId(field.getName()) + " " + field.getSqlType(Field.SqlDialect.SQLITE);
-
-			if (field.getPrimaryKey()) {
-				sqlFieldDescription += " NOT NULL  PRIMARY KEY";
-			}
-
-			// Append it:
-			if (!TextUtils.isEmpty(sqlFields)) {
-				sqlFields += ", ";
-			}
-
-			sqlFields += sqlFieldDescription;
-		}
-
-		if (TextUtils.isEmpty(sqlFields)) {
-			// TODO: std::cerr << G_STRFUNC << ": sql_fields is empty." << std::endl;
-		}
-
-		// Actually create the table
-		final String query = "CREATE TABLE " + quoteAndEscapeSqlId(tableName) + " (" + sqlFields + ");";
-
-		db.execSQL(query);
-
-		tableCreationSucceeded = true;
-		if (!tableCreationSucceeded) {
-			System.out.println("recreatedDatabase(): CREATE TABLE() failed.");
-		}
-
-		return tableCreationSucceeded;
-	}
-
-	/**
-	 * @param name
-	 * @return
-	 */
-	private static String quoteAndEscapeSqlId(final String name) {
-		return quoteAndEscapeSqlId(name, SQLDialect.SQLITE);
-	}
-
-	/**
-	 *
-	 */
-	public boolean cleanup() {
-		boolean result = true;
-
-		// Delete the files:
-		context.deleteDatabase(FILENAME_DATA);
-
-		final String docPath = getFilePath();
-		final File fileDoc = new File(docPath);
-		fileDoc.delete();
-
-		return result;
-	}
-	
-	@Override
-	public SQLDialect getSqlDialect() {
-		return SQLDialect.SQLITE;
-	}
 }

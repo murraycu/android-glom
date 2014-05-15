@@ -21,36 +21,35 @@ package org.glom.app.libglom.test;
 
 import android.test.AndroidTestCase;
 
+import org.glom.app.libglom.Document;
+
 import java.io.InputStream;
 import java.sql.SQLException;
 
-import org.glom.app.libglom.Document;
-
 /**
  * @author Murray Cumming <murrayc@openismus.com>
- * 
  */
 public class SelfHostExampleNonNumericPrimaryKeysTest extends AndroidTestCase {
 
-	private static SelfHosterSqlite selfHosterSqlite = null;
+    private static SelfHosterSqlite selfHosterSqlite = null;
 
-	public void test() throws SQLException {
-		final InputStream inputStream = SelfHostExampleNonNumericPrimaryKeysTest.class.getClassLoader().getResourceAsStream("test_example_music_collection_text_pk_fields.glom");
-		assertNotNull(inputStream);
+    public void test() throws SQLException {
+        final InputStream inputStream = SelfHostExampleNonNumericPrimaryKeysTest.class.getClassLoader().getResourceAsStream("test_example_music_collection_text_pk_fields.glom");
+        assertNotNull(inputStream);
 
-		final Document document = new Document();
-		assertTrue(document.load(inputStream));
+        final Document document = new Document();
+        assertTrue(document.load(inputStream));
 
-		selfHosterSqlite = new SelfHosterSqlite(document, getContext());
-		final boolean hosted = selfHosterSqlite.createAndSelfHostFromExample();
-		assertTrue(hosted);
-		
-		SelfHostTestUtils.testExampleMusiccollectionData(selfHosterSqlite, document);
-	}
+        selfHosterSqlite = new SelfHosterSqlite(document, getContext());
+        final boolean hosted = selfHosterSqlite.createAndSelfHostFromExample();
+        assertTrue(hosted);
 
-	public void tearDown() {
-		if (selfHosterSqlite != null) {
-			selfHosterSqlite.cleanup();
-		}
-	}
+        SelfHostTestUtils.testExampleMusiccollectionData(selfHosterSqlite, document);
+    }
+
+    public void tearDown() {
+        if (selfHosterSqlite != null) {
+            selfHosterSqlite.cleanup();
+        }
+    }
 }

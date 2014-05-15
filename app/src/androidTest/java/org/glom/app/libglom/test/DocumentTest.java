@@ -19,16 +19,8 @@
 
 package org.glom.app.libglom.test;
 
-import static junit.framework.Assert.*;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import android.test.AndroidTestCase;
-import android.text.TextUtils;
+
 import org.glom.app.libglom.DataItem;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;
@@ -47,378 +39,344 @@ import org.glom.app.libglom.layout.StaticText;
 import org.glom.app.libglom.layout.TableToViewDetails;
 import org.glom.app.libglom.layout.reportparts.LayoutItemGroupBy;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Simple test to ensure that the generated bindings are working.
  */
-public class DocumentTest  extends AndroidTestCase {
+public class DocumentTest extends AndroidTestCase {
 
-	private static Document document;
-	private static final String defaultLocale = "";
-	private static final String germanLocale = "de";
-	static InputStream inputStreamMusicCollection; //TODO: Do not reuse this.
-	static InputStream inputStreamFilmManager;
+    private static final String defaultLocale = "";
+    private static final String germanLocale = "de";
+    static InputStream inputStreamMusicCollection; //TODO: Do not reuse this.
+    static InputStream inputStreamFilmManager;
+    private static Document document;
+
+    /*
+     * This method safely converts longs from libglom into ints. This method was taken from stackoverflow:
+     *
+     * http://stackoverflow.com/questions/1590831/safely-casting-long-to-int-in-java
+     */
+    private static int safeLongToInt(final long l) {
+        if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(l + " cannot be cast to int without changing its value.");
+        }
+        return (int) l;
+    }
 
     @Override
     public void setUp() {
         //For some reason DocumentTest.class.getResourceAsStream() doesn't work,
         //so we use DocumentTest.class.getClassLoader().getResourceAsStream(), which does.
-		inputStreamMusicCollection = DocumentTest.class.getClassLoader().getResourceAsStream("example_music_collection.glom");
-		assertNotNull(inputStreamMusicCollection);
+        inputStreamMusicCollection = DocumentTest.class.getClassLoader().getResourceAsStream("example_music_collection.glom");
+        assertNotNull(inputStreamMusicCollection);
 
         inputStreamFilmManager = DocumentTest.class.getClassLoader().getResourceAsStream("example_film_manager.glom");
-		assertNotNull(inputStreamFilmManager);
+        assertNotNull(inputStreamFilmManager);
 
-		document = new Document();
-		final boolean retval = document.load(inputStreamMusicCollection);
-		assertTrue(retval);
-	}
+        document = new Document();
+        final boolean retval = document.load(inputStreamMusicCollection);
+        assertTrue(retval);
+    }
 
     @Override
     public void tearDown() {
-	}
+    }
 
-	public void testDocumentInfo() {
-		assertEquals(document.getDatabaseTitleOriginal(), "Music Collection");
-		assertEquals(document.getDatabaseTitle(defaultLocale), "Music Collection");
-		assertEquals(document.getDatabaseTitle(germanLocale), "Musiksammlung");
-		assertEquals(document.getDefaultTable(), "artists");
-	}
+    public void testDocumentInfo() {
+        assertEquals(document.getDatabaseTitleOriginal(), "Music Collection");
+        assertEquals(document.getDatabaseTitle(defaultLocale), "Music Collection");
+        assertEquals(document.getDatabaseTitle(germanLocale), "Musiksammlung");
+        assertEquals(document.getDefaultTable(), "artists");
+    }
 
-	public void testLocales() {
-		final List<String> localeIDs = document.getTranslationAvailableLocales();
-		assertEquals(15, localeIDs.size());
+    public void testLocales() {
+        final List<String> localeIDs = document.getTranslationAvailableLocales();
+        assertEquals(15, localeIDs.size());
 
-		String tables = localeIDs.get(0);
-		for (int i = 1; i < localeIDs.size(); i++) {
-			tables += ", " + localeIDs.get(i);
-		}
-		assertEquals("cs, de, el, es, fr, gl, hu, id, lv, pt_BR, sl, sr, sr@latin, zh_CN, en", tables);
-	}
+        String tables = localeIDs.get(0);
+        for (int i = 1; i < localeIDs.size(); i++) {
+            tables += ", " + localeIDs.get(i);
+        }
+        assertEquals("cs, de, el, es, fr, gl, hu, id, lv, pt_BR, sl, sr, sr@latin, zh_CN, en", tables);
+    }
 
-	public void testReadTableNames() {
-		final List<String> tableNames = document.getTableNames();
-		assertEquals(4, tableNames.size());
+    public void testReadTableNames() {
+        final List<String> tableNames = document.getTableNames();
+        assertEquals(4, tableNames.size());
 
-		String tables = tableNames.get(0);
-		for (int i = 1; i < tableNames.size(); i++) {
-			tables += ", " + tableNames.get(i);
-		}
-		assertEquals("albums, songs, publishers, artists", tables);
-	}
-	
-	String getTitles(final List<Field> list, final String locale) {
-		String result = "";
-		for (int i = 0; i < list.size(); i++) {
-			final Translatable item = list.get(i);
-			
-			if(i != 0) {
-				result += ", ";
-			}
-			
-			result += item.getTitleOrName(locale);
-		}
+        String tables = tableNames.get(0);
+        for (int i = 1; i < tableNames.size(); i++) {
+            tables += ", " + tableNames.get(i);
+        }
+        assertEquals("albums, songs, publishers, artists", tables);
+    }
 
-		return result;
-	}
+    String getTitles(final List<Field> list, final String locale) {
+        String result = "";
+        for (int i = 0; i < list.size(); i++) {
+            final Translatable item = list.get(i);
 
-	public void testReadTableFieldSizes() {
+            if (i != 0) {
+                result += ", ";
+            }
 
-		List<Field> fields = document.getTableFields("albums");
-		assertEquals(6, fields.size());
+            result += item.getTitleOrName(locale);
+        }
 
-		// TODO: The sequence is not important. It's only important that they are all there.
-		assertEquals("Name, Publisher ID, Album ID, Artist ID, Comments, Year", getTitles(fields, defaultLocale));
-		assertEquals("Name, Herausgeber-Kennung, Albenkennung, Künstlerkennung, Kommentare, Jahr", getTitles(fields, germanLocale));
-		
-		fields = document.getTableFields("artists");
-		assertEquals(4, fields.size());
+        return result;
+    }
 
-		// TODO: The sequence is not important. It's only important that they are all there.
-		assertEquals("Name, Comments, Artist ID, Description", getTitles(fields, defaultLocale));
-		assertEquals("Name, Kommentare, Künstlerkennung, Beschreibung", getTitles(fields, germanLocale));
+    public void testReadTableFieldSizes() {
 
-		fields = document.getTableFields("publishers");
-		assertEquals(3, fields.size());
+        List<Field> fields = document.getTableFields("albums");
+        assertEquals(6, fields.size());
 
-		// TODO: The sequence is not important. It's only important that they are all there.
-		assertEquals("Name, Comments, Publisher ID", getTitles(fields, defaultLocale));
-		assertEquals("Name, Kommentare, Herausgeber-Kennung", getTitles(fields, germanLocale));
+        // TODO: The sequence is not important. It's only important that they are all there.
+        assertEquals("Name, Publisher ID, Album ID, Artist ID, Comments, Year", getTitles(fields, defaultLocale));
+        assertEquals("Name, Herausgeber-Kennung, Albenkennung, Künstlerkennung, Kommentare, Jahr", getTitles(fields, germanLocale));
+
+        fields = document.getTableFields("artists");
+        assertEquals(4, fields.size());
+
+        // TODO: The sequence is not important. It's only important that they are all there.
+        assertEquals("Name, Comments, Artist ID, Description", getTitles(fields, defaultLocale));
+        assertEquals("Name, Kommentare, Künstlerkennung, Beschreibung", getTitles(fields, germanLocale));
+
+        fields = document.getTableFields("publishers");
+        assertEquals(3, fields.size());
+
+        // TODO: The sequence is not important. It's only important that they are all there.
+        assertEquals("Name, Comments, Publisher ID", getTitles(fields, defaultLocale));
+        assertEquals("Name, Kommentare, Herausgeber-Kennung", getTitles(fields, germanLocale));
 
 
-		fields = document.getTableFields("songs");
-		assertEquals(4, fields.size());
+        fields = document.getTableFields("songs");
+        assertEquals(4, fields.size());
 
-		// TODO: The sequence is not important. It's only important that they are all there.
-		assertEquals("Name, Comments, Song ID, Album ID", getTitles(fields, defaultLocale));
-		assertEquals("Name, Kommentare, Lied-Kennung, Albenkennung", getTitles(fields, germanLocale));
-	}
+        // TODO: The sequence is not important. It's only important that they are all there.
+        assertEquals("Name, Comments, Song ID, Album ID", getTitles(fields, defaultLocale));
+        assertEquals("Name, Kommentare, Lied-Kennung, Albenkennung", getTitles(fields, germanLocale));
+    }
 
-	public void testReadTableExampleRows() {
-		final List<Map<String, DataItem>> exampleRows = document.getExampleRows("albums");
-		assertFalse(exampleRows.isEmpty());
+    public void testReadTableExampleRows() {
+        final List<Map<String, DataItem>> exampleRows = document.getExampleRows("albums");
+        assertFalse(exampleRows.isEmpty());
 
-		final Map<String, DataItem> row = exampleRows.get(0);
-		assertFalse(row.isEmpty());
-	}
+        final Map<String, DataItem> row = exampleRows.get(0);
+        assertFalse(row.isEmpty());
+    }
 
-	public void testReadLayoutListInfo() {
-		final String[] tables = { "albums", "artists", "publishers", "songs" };
-		final int[] sortClauseSizes = { 0, 1, 1, 1 };
-		final int[] layoutFieldSizes = { 7, 4, 3, 4 };
+    public void testReadLayoutListInfo() {
+        final String[] tables = {"albums", "artists", "publishers", "songs"};
+        final int[] sortClauseSizes = {0, 1, 1, 1};
+        final int[] layoutFieldSizes = {7, 4, 3, 4};
 
-		for (int i = 0; i < tables.length; i++) {
-			final List<LayoutGroup> layoutList = document.getDataLayoutGroups(Document.LAYOUT_NAME_LIST, tables[i]);
-			assertTrue(!layoutList.isEmpty());
-			final List<LayoutItem> layoutItems = layoutList.get(0).getItems();
-			final List<LayoutItemField> layoutFields = new ArrayList<LayoutItemField>();
-			final SortClause sortClause = new SortClause(); // TODO: Why use a SortClause instead of a List?
-			final int numItems = safeLongToInt(layoutItems.size());
-			for (int j = 0; j < numItems; j++) {
-				final LayoutItem item = layoutItems.get(j);
+        for (int i = 0; i < tables.length; i++) {
+            final List<LayoutGroup> layoutList = document.getDataLayoutGroups(Document.LAYOUT_NAME_LIST, tables[i]);
+            assertTrue(!layoutList.isEmpty());
+            final List<LayoutItem> layoutItems = layoutList.get(0).getItems();
+            final List<LayoutItemField> layoutFields = new ArrayList<LayoutItemField>();
+            final SortClause sortClause = new SortClause(); // TODO: Why use a SortClause instead of a List?
+            final int numItems = safeLongToInt(layoutItems.size());
+            for (int j = 0; j < numItems; j++) {
+                final LayoutItem item = layoutItems.get(j);
 
-				if (item instanceof LayoutItemField) {
-					final LayoutItemField field = (LayoutItemField) item;
-					layoutFields.add(field);
-					final Field details = field.getFullFieldDetails();
-					if (details != null && details.getPrimaryKey()) {
-						sortClause.add(new SortClause.SortField(field, true)); // ascending
-					}
-				}
-			}
-			assertEquals(sortClauseSizes[i], sortClause.size());
-			assertEquals(layoutFieldSizes[i], safeLongToInt(layoutFields.size()));
-		}
-	}
+                if (item instanceof LayoutItemField) {
+                    final LayoutItemField field = (LayoutItemField) item;
+                    layoutFields.add(field);
+                    final Field details = field.getFullFieldDetails();
+                    if (details != null && details.getPrimaryKey()) {
+                        sortClause.add(new SortClause.SortField(field, true)); // ascending
+                    }
+                }
+            }
+            assertEquals(sortClauseSizes[i], sortClause.size());
+            assertEquals(layoutFieldSizes[i], safeLongToInt(layoutFields.size()));
+        }
+    }
 
-	/*
-	 * This tests if getting values from a NumericFormat object is working. This test was failing with a JVM crash when
-	 * using the glom_sharedptr macro with Glom::UsesRelationship and Glom::Formatting.
-	 */
-	public void testGetNumericFormat() {
-		final List<String> tableNames = document.getTableNames();
+    /*
+     * This tests if getting values from a NumericFormat object is working. This test was failing with a JVM crash when
+     * using the glom_sharedptr macro with Glom::UsesRelationship and Glom::Formatting.
+     */
+    public void testGetNumericFormat() {
+        final List<String> tableNames = document.getTableNames();
 
-		for (int i = 0; i < tableNames.size(); i++) {
-			final String table = tableNames.get(i);
-			final List<LayoutGroup> layoutList = document.getDataLayoutGroups(Document.LAYOUT_NAME_LIST, table);
-			assertTrue(!layoutList.isEmpty());
-			final LayoutGroup firstgroup = layoutList.get(0);
-			assertNotNull(firstgroup);
-			final List<LayoutItem> layoutItems = firstgroup.getItems();
-			final int numItems = safeLongToInt(layoutItems.size());
-			for (int j = 0; j < numItems; j++) {
-				final LayoutItem item = layoutItems.get(j);
-				assertNotNull(item);
+        for (int i = 0; i < tableNames.size(); i++) {
+            final String table = tableNames.get(i);
+            final List<LayoutGroup> layoutList = document.getDataLayoutGroups(Document.LAYOUT_NAME_LIST, table);
+            assertTrue(!layoutList.isEmpty());
+            final LayoutGroup firstgroup = layoutList.get(0);
+            assertNotNull(firstgroup);
+            final List<LayoutItem> layoutItems = firstgroup.getItems();
+            final int numItems = safeLongToInt(layoutItems.size());
+            for (int j = 0; j < numItems; j++) {
+                final LayoutItem item = layoutItems.get(j);
+                assertNotNull(item);
 
-				if (item instanceof LayoutItemField) {
-					final LayoutItemField itemField = (LayoutItemField) item;
-					// don't keep a reference to the FeildFormatting object
-					final NumericFormat numFormat = itemField.getFormattingUsed().getNumericFormat();
-					assertNotNull(numFormat);
+                if (item instanceof LayoutItemField) {
+                    final LayoutItemField itemField = (LayoutItemField) item;
+                    // don't keep a reference to the FeildFormatting object
+                    final NumericFormat numFormat = itemField.getFormattingUsed().getNumericFormat();
+                    assertNotNull(numFormat);
 
-					// get the values
-					final boolean altForegroundColorForNegatives = numFormat.getUseAltForegroundColorForNegatives();
-					final String currencySymbol = numFormat.getCurrencySymbol();
-					final long decimalPlaces = numFormat.getDecimalPlaces();
-					final boolean decimalPlacesRestricted = numFormat.getDecimalPlacesRestricted();
-					final boolean useThousandsSepator = numFormat.getUseThousandsSeparator();
-					final String alternativeColorForNegatives = NumericFormat
-							.getAlternativeColorForNegativesAsHTMLColor();
-					final long defaultPrecision = NumericFormat.getDefaultPrecision();
+                    // get the values
+                    final boolean altForegroundColorForNegatives = numFormat.getUseAltForegroundColorForNegatives();
+                    final String currencySymbol = numFormat.getCurrencySymbol();
+                    final long decimalPlaces = numFormat.getDecimalPlaces();
+                    final boolean decimalPlacesRestricted = numFormat.getDecimalPlacesRestricted();
+                    final boolean useThousandsSepator = numFormat.getUseThousandsSeparator();
+                    final String alternativeColorForNegatives = NumericFormat
+                            .getAlternativeColorForNegativesAsHTMLColor();
+                    final long defaultPrecision = NumericFormat.getDefaultPrecision();
 
-					// Simulate a garbage collection
-					System.gc();
-					System.runFinalization();
+                    // Simulate a garbage collection
+                    System.gc();
+                    System.runFinalization();
 
-					// re-get the values and test
-					assertEquals(altForegroundColorForNegatives, numFormat.getUseAltForegroundColorForNegatives());
-					assertEquals(currencySymbol, numFormat.getCurrencySymbol());
-					assertEquals(decimalPlaces, numFormat.getDecimalPlaces());
-					assertEquals(decimalPlacesRestricted, numFormat.getDecimalPlacesRestricted());
-					assertEquals(useThousandsSepator, numFormat.getUseThousandsSeparator());
-					assertEquals(alternativeColorForNegatives,
-							NumericFormat.getAlternativeColorForNegativesAsHTMLColor());
-					assertEquals(defaultPrecision, NumericFormat.getDefaultPrecision());
+                    // re-get the values and test
+                    assertEquals(altForegroundColorForNegatives, numFormat.getUseAltForegroundColorForNegatives());
+                    assertEquals(currencySymbol, numFormat.getCurrencySymbol());
+                    assertEquals(decimalPlaces, numFormat.getDecimalPlaces());
+                    assertEquals(decimalPlacesRestricted, numFormat.getDecimalPlacesRestricted());
+                    assertEquals(useThousandsSepator, numFormat.getUseThousandsSeparator());
+                    assertEquals(alternativeColorForNegatives,
+                            NumericFormat.getAlternativeColorForNegativesAsHTMLColor());
+                    assertEquals(defaultPrecision, NumericFormat.getDefaultPrecision());
 
-				}
-			}
-		}
-	}
+                }
+            }
+        }
+    }
 
-	/*
-	 * A smoke test for the methods added to LayoutItemField for accessing methods in Glom::UsesRelationship.
-	 */
-	public void testUsesRelationshipMethods() {
-		final String table = "albums";
-		final List<LayoutGroup> layoutList = document.getDataLayoutGroups(Document.LAYOUT_NAME_LIST, table);
-		final List<LayoutItem> layoutItems = layoutList.get(0).getItems();
+    /*
+     * A smoke test for the methods added to LayoutItemField for accessing methods in Glom::UsesRelationship.
+     */
+    public void testUsesRelationshipMethods() {
+        final String table = "albums";
+        final List<LayoutGroup> layoutList = document.getDataLayoutGroups(Document.LAYOUT_NAME_LIST, table);
+        final List<LayoutItem> layoutItems = layoutList.get(0).getItems();
 
-		String names = null, hasRelationshipNames = null, tablesUsed = null;
-		final LayoutItem firstItem = layoutItems.get(0);
+        String names = null, hasRelationshipNames = null, tablesUsed = null;
+        final LayoutItem firstItem = layoutItems.get(0);
 
-		if (firstItem instanceof LayoutItemField) {
-			final LayoutItemField firstItemField = (LayoutItemField) firstItem;
-			names = firstItemField.getName();
-			hasRelationshipNames = "" + firstItemField.getHasRelationshipName();
-			tablesUsed = firstItemField.getTableUsed(table);
-		}
-		final int numItems = safeLongToInt(layoutItems.size());
-		for (int j = 1; j < numItems; j++) {
-			final LayoutItem item = layoutItems.get(j);
+        if (firstItem instanceof LayoutItemField) {
+            final LayoutItemField firstItemField = (LayoutItemField) firstItem;
+            names = firstItemField.getName();
+            hasRelationshipNames = "" + firstItemField.getHasRelationshipName();
+            tablesUsed = firstItemField.getTableUsed(table);
+        }
+        final int numItems = safeLongToInt(layoutItems.size());
+        for (int j = 1; j < numItems; j++) {
+            final LayoutItem item = layoutItems.get(j);
 
-			if (item instanceof LayoutItemField) {
-				final LayoutItemField itemField = (LayoutItemField) item;
-				names += ", " + itemField.getName();
-				hasRelationshipNames += ", " + itemField.getHasRelationshipName();
-				tablesUsed += ", " + itemField.getTableUsed(table);
-			}
-		}
-		assertEquals("name, year, artist_id, name, publisher_id, name, comments", names);
-		assertEquals("false, false, false, true, false, true, false", hasRelationshipNames);
-		assertEquals("albums, albums, albums, artists, albums, publishers, albums", tablesUsed);
-	}
+            if (item instanceof LayoutItemField) {
+                final LayoutItemField itemField = (LayoutItemField) item;
+                names += ", " + itemField.getName();
+                hasRelationshipNames += ", " + itemField.getHasRelationshipName();
+                tablesUsed += ", " + itemField.getTableUsed(table);
+            }
+        }
+        assertEquals("name, year, artist_id, name, publisher_id, name, comments", names);
+        assertEquals("false, false, false, true, false, true, false", hasRelationshipNames);
+        assertEquals("albums, albums, albums, artists, albums, publishers, albums", tablesUsed);
+    }
 
-	public void testLayoutItemText() {
+    public void testLayoutItemText() {
 
-		// Create a new document for the film manager
-		final Document filmManagerDocument = new Document();
-		final boolean retval = filmManagerDocument.load(inputStreamFilmManager);
-		assertTrue(retval);
+        // Create a new document for the film manager
+        final Document filmManagerDocument = new Document();
+        final boolean retval = filmManagerDocument.load(inputStreamFilmManager);
+        assertTrue(retval);
 
-		// This relies on specific details of the film manager details
-		// view layout. I've included safety checks that will fail if the layout changes.
-		final List<LayoutGroup> detailsLayout = filmManagerDocument.getDataLayoutGroups(Document.LAYOUT_NAME_DETAILS, "scenes");
-		assertEquals(3, detailsLayout.size());
+        // This relies on specific details of the film manager details
+        // view layout. I've included safety checks that will fail if the layout changes.
+        final List<LayoutGroup> detailsLayout = filmManagerDocument.getDataLayoutGroups(Document.LAYOUT_NAME_DETAILS, "scenes");
+        assertEquals(3, detailsLayout.size());
 
-		LayoutGroup layoutGroup = detailsLayout.get(1);
-		assertEquals(Document.LAYOUT_NAME_DETAILS, layoutGroup.getName());
+        LayoutGroup layoutGroup = detailsLayout.get(1);
+        assertEquals(Document.LAYOUT_NAME_DETAILS, layoutGroup.getName());
 
-		final List<LayoutItem> items = layoutGroup.getItems();
-		
-		final LayoutItem item = items.get(1);
-		assertTrue(item instanceof LayoutItemText);
-		
-		LayoutItemText itemText = (LayoutItemText)item;
-		StaticText text = itemText.getText();
-		assertEquals("The location name will be used if the name is empty.", text.getTitle());
-	}
-		
+        final List<LayoutItem> items = layoutGroup.getItems();
 
-	public void testGetSuitableTableToViewDetails() {
+        final LayoutItem item = items.get(1);
+        assertTrue(item instanceof LayoutItemText);
 
-		// Create a new document for the film manager
-		final Document filmManagerDocument = new Document();
-		final boolean retval = filmManagerDocument.load(inputStreamFilmManager);
-		assertTrue(retval);
+        LayoutItemText itemText = (LayoutItemText) item;
+        StaticText text = itemText.getText();
+        assertEquals("The location name will be used if the name is empty.", text.getTitle());
+    }
 
-		// Get the "Scene Cast" related list portal. This relies on specific details of the film manager details
-		// view layout. I've included safety checks that will fail if the layout changes.
-		final List<LayoutGroup> detailsLayout = filmManagerDocument.getDataLayoutGroups(Document.LAYOUT_NAME_DETAILS, "scenes");
-		assertEquals(3, detailsLayout.size());
+    public void testGetSuitableTableToViewDetails() {
 
-		LayoutGroup layoutGroup = detailsLayout.get(1);
-		assertEquals(Document.LAYOUT_NAME_DETAILS, layoutGroup.getName());
-		assertEquals("Details", layoutGroup.getTitle(defaultLocale));
-		assertEquals("Details", layoutGroup.getTitle(germanLocale));
+        // Create a new document for the film manager
+        final Document filmManagerDocument = new Document();
+        final boolean retval = filmManagerDocument.load(inputStreamFilmManager);
+        assertTrue(retval);
 
-		layoutGroup = detailsLayout.get(2);
-		assertEquals("details_lower", layoutGroup.getName());
+        // Get the "Scene Cast" related list portal. This relies on specific details of the film manager details
+        // view layout. I've included safety checks that will fail if the layout changes.
+        final List<LayoutGroup> detailsLayout = filmManagerDocument.getDataLayoutGroups(Document.LAYOUT_NAME_DETAILS, "scenes");
+        assertEquals(3, detailsLayout.size());
 
-		List<LayoutItem> items = layoutGroup.getItems();
-		assertEquals(2, items.size());
+        LayoutGroup layoutGroup = detailsLayout.get(1);
+        assertEquals(Document.LAYOUT_NAME_DETAILS, layoutGroup.getName());
+        assertEquals("Details", layoutGroup.getTitle(defaultLocale));
+        assertEquals("Details", layoutGroup.getTitle(germanLocale));
 
-		final LayoutItem notebookItem = items.get(0);
-		assertEquals("notebook", notebookItem.getName());
-		assertTrue(notebookItem instanceof LayoutItemNotebook);
-		final LayoutItemNotebook notebook = (LayoutItemNotebook) notebookItem;
-		items = notebook.getItems();
-		assertEquals(7, items.size());
-		final LayoutItem portalItem = items.get(0);
-		assertTrue(portalItem instanceof LayoutItemPortal);
-		final LayoutItemPortal portal = (LayoutItemPortal) portalItem;
-		assertNotNull(portal);
+        layoutGroup = detailsLayout.get(2);
+        assertEquals("details_lower", layoutGroup.getName());
 
-		assertEquals("scene_cast", portal.getRelationshipNameUsed());
-		assertEquals("Cast", portal.getTitle(defaultLocale));
-		assertEquals("Szene Besetzung", portal.getTitle(germanLocale));
+        List<LayoutItem> items = layoutGroup.getItems();
+        assertEquals(2, items.size());
 
-		// call getSuitableTableToViewDetails
-		final TableToViewDetails viewDetails = filmManagerDocument.getPortalSuitableTableToViewDetails(portal);
-		assertNotNull(viewDetails);
+        final LayoutItem notebookItem = items.get(0);
+        assertEquals("notebook", notebookItem.getName());
+        assertTrue(notebookItem instanceof LayoutItemNotebook);
+        final LayoutItemNotebook notebook = (LayoutItemNotebook) notebookItem;
+        items = notebook.getItems();
+        assertEquals(7, items.size());
+        final LayoutItem portalItem = items.get(0);
+        assertTrue(portalItem instanceof LayoutItemPortal);
+        final LayoutItemPortal portal = (LayoutItemPortal) portalItem;
+        assertNotNull(portal);
 
-		// Simulate a garbage collection
-		System.gc();
-		System.runFinalization();
+        assertEquals("scene_cast", portal.getRelationshipNameUsed());
+        assertEquals("Cast", portal.getTitle(defaultLocale));
+        assertEquals("Szene Besetzung", portal.getTitle(germanLocale));
 
-		// Check if things are working like we expect
-		assertEquals("characters", viewDetails.tableName);
-		assertNotNull(viewDetails.usesRelationship);
-		final Relationship relationship = viewDetails.usesRelationship.getRelationship();
-		assertNotNull(relationship);
-		assertEquals("cast", relationship.getName());
-		assertTrue(viewDetails.usesRelationship.getRelatedRelationship() == null);
+        // call getSuitableTableToViewDetails
+        final TableToViewDetails viewDetails = filmManagerDocument.getPortalSuitableTableToViewDetails(portal);
+        assertNotNull(viewDetails);
 
-	}
+        // Simulate a garbage collection
+        System.gc();
+        System.runFinalization();
 
-	public void testReadReportNames() {
-		final List<String> reportNames = document.getReportNames("albums");
-		assertEquals(1, reportNames.size()); // TODO: Test something with more reports.
+        // Check if things are working like we expect
+        assertEquals("characters", viewDetails.tableName);
+        assertNotNull(viewDetails.usesRelationship);
+        final Relationship relationship = viewDetails.usesRelationship.getRelationship();
+        assertNotNull(relationship);
+        assertEquals("cast", relationship.getName());
+        assertTrue(viewDetails.usesRelationship.getRelatedRelationship() == null);
 
-		String reports = reportNames.get(0);
-		for (int i = 1; i < reportNames.size(); i++) {
-			reports += ", " + reportNames.get(i);
-		}
-		assertEquals(reports, "albums_by_artist");
-	}
+    }
 
-	public void testReadReportStructure() {
-		final Report report = document.getReport("albums", "albums_by_artist");
-		assertNotNull(report);
-		
-		assertEquals(report.getTitle(defaultLocale), "Albums By Artist");
-		assertEquals(report.getTitle(germanLocale), "Alben nach Künstler");
-		
-		final LayoutGroup layoutGroup = report.getLayoutGroup();
-		assertNotNull(layoutGroup);
-		final List<LayoutItem> layoutItems = layoutGroup.getItems();
-		final int numItems = safeLongToInt(layoutItems.size());
-		assertEquals(1, numItems);
+    public void testReadReportNames() {
+        final List<String> reportNames = document.getReportNames("albums");
+        assertEquals(1, reportNames.size()); // TODO: Test something with more reports.
 
-		LayoutItem layoutItem = layoutItems.get(0);
-		assertNotNull(layoutItem);
-		final LayoutGroup asGroup = (LayoutGroup) layoutItem;
-		assertNotNull(asGroup);
-		final LayoutItemGroupBy groupby = (LayoutItemGroupBy) layoutItem;
-		assertNotNull(groupby);
-
-		assertTrue(groupby.getHasFieldGroupBy());
-		final LayoutItemField fieldGroupBy = groupby.getFieldGroupBy();
-		assertNotNull(fieldGroupBy);
-		assertEquals(fieldGroupBy.getName(), "artist_id");
-
-		final LayoutGroup groupSecondaries = groupby.getSecondaryFields();
-		assertNotNull(groupSecondaries);
-
-		final List<LayoutItem> innerItems = groupby.getItems();
-		assertNotNull(innerItems);
-		final int numInnerItems = safeLongToInt(innerItems.size());
-		assertEquals(2, numInnerItems);
-
-		layoutItem = innerItems.get(0);
-		assertNotNull(layoutItem);
-		assertTrue(layoutItem instanceof LayoutItemField);
-		LayoutItemField field = (LayoutItemField) layoutItem;
-		assertNotNull(field);
-		assertEquals(field.getName(), "name");
-		assertEquals(field.getGlomType(), Field.GlomFieldType.TYPE_TEXT);
-
-		layoutItem = innerItems.get(1);
-		assertNotNull(layoutItem);
-		assertTrue(layoutItem instanceof LayoutItemField);
-		field = (LayoutItemField) layoutItem;
-		assertNotNull(field);
-		assertEquals(field.getName(), "year");
-		assertEquals(field.getGlomType(), Field.GlomFieldType.TYPE_NUMERIC);
-	}
+        String reports = reportNames.get(0);
+        for (int i = 1; i < reportNames.size(); i++) {
+            reports += ", " + reportNames.get(i);
+        }
+        assertEquals(reports, "albums_by_artist");
+    }
 
     //TODO: Re-enable this when we know why it fails.
 //	// Test thread class that runs all the tests.
@@ -486,16 +444,54 @@ public class DocumentTest  extends AndroidTestCase {
 //		}
 //	}
 
-	/*
-	 * This method safely converts longs from libglom into ints. This method was taken from stackoverflow:
-	 * 
-	 * http://stackoverflow.com/questions/1590831/safely-casting-long-to-int-in-java
-	 */
-	private static int safeLongToInt(final long l) {
-		if (l < Integer.MIN_VALUE || l > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException(l + " cannot be cast to int without changing its value.");
-		}
-		return (int) l;
-	}
+    public void testReadReportStructure() {
+        final Report report = document.getReport("albums", "albums_by_artist");
+        assertNotNull(report);
+
+        assertEquals(report.getTitle(defaultLocale), "Albums By Artist");
+        assertEquals(report.getTitle(germanLocale), "Alben nach Künstler");
+
+        final LayoutGroup layoutGroup = report.getLayoutGroup();
+        assertNotNull(layoutGroup);
+        final List<LayoutItem> layoutItems = layoutGroup.getItems();
+        final int numItems = safeLongToInt(layoutItems.size());
+        assertEquals(1, numItems);
+
+        LayoutItem layoutItem = layoutItems.get(0);
+        assertNotNull(layoutItem);
+        final LayoutGroup asGroup = (LayoutGroup) layoutItem;
+        assertNotNull(asGroup);
+        final LayoutItemGroupBy groupby = (LayoutItemGroupBy) layoutItem;
+        assertNotNull(groupby);
+
+        assertTrue(groupby.getHasFieldGroupBy());
+        final LayoutItemField fieldGroupBy = groupby.getFieldGroupBy();
+        assertNotNull(fieldGroupBy);
+        assertEquals(fieldGroupBy.getName(), "artist_id");
+
+        final LayoutGroup groupSecondaries = groupby.getSecondaryFields();
+        assertNotNull(groupSecondaries);
+
+        final List<LayoutItem> innerItems = groupby.getItems();
+        assertNotNull(innerItems);
+        final int numInnerItems = safeLongToInt(innerItems.size());
+        assertEquals(2, numInnerItems);
+
+        layoutItem = innerItems.get(0);
+        assertNotNull(layoutItem);
+        assertTrue(layoutItem instanceof LayoutItemField);
+        LayoutItemField field = (LayoutItemField) layoutItem;
+        assertNotNull(field);
+        assertEquals(field.getName(), "name");
+        assertEquals(field.getGlomType(), Field.GlomFieldType.TYPE_TEXT);
+
+        layoutItem = innerItems.get(1);
+        assertNotNull(layoutItem);
+        assertTrue(layoutItem instanceof LayoutItemField);
+        field = (LayoutItemField) layoutItem;
+        assertNotNull(field);
+        assertEquals(field.getName(), "year");
+        assertEquals(field.getGlomType(), Field.GlomFieldType.TYPE_NUMERIC);
+    }
 
 }

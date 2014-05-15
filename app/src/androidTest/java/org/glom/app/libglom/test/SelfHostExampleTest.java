@@ -21,25 +21,20 @@ package org.glom.app.libglom.test;
 
 import android.test.AndroidTestCase;
 
-import static junit.framework.Assert.*;
+import org.glom.app.libglom.Document;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.sql.SQLException;
-
-import org.glom.app.libglom.Document;
-import org.jooq.SQLDialect;
 
 /**
  * @author Murray Cumming <murrayc@openismus.com>
- * 
  */
 public class SelfHostExampleTest extends AndroidTestCase {
 
-	private static SelfHosterSqlite selfHoster = null;
+    private static SelfHosterSqlite selfHoster = null;
 
     /*
-	public void testPostgreSQL() throws SQLException {
+    public void testPostgreSQL() throws SQLException {
 		doTest(Document.HostingMode.HOSTING_MODE_POSTGRES_SELF);
 	}
 
@@ -51,55 +46,55 @@ public class SelfHostExampleTest extends AndroidTestCase {
     public void testSQLite() throws SQLException {
         doTest(Document.HostingMode.HOSTING_MODE_SQLITE);
     }
-	
-	/* This is really a test of our test utility code. */
-	public void testSelfHosterEscapeIDSame() {
-		final String id = "something";
-		//assertEquals("\"" + id + "\"", SelfHosterPostgreSQL.quoteAndEscapeSqlId(id, SQLDialect.POSTGRES));
-		//assertEquals("`" + id + "`", SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.MYSQL));
+
+    /* This is really a test of our test utility code. */
+    public void testSelfHosterEscapeIDSame() {
+        final String id = "something";
+        //assertEquals("\"" + id + "\"", SelfHosterPostgreSQL.quoteAndEscapeSqlId(id, SQLDialect.POSTGRES));
+        //assertEquals("`" + id + "`", SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.MYSQL));
         //TODO: What should this be? Maybe SQLite only quotes when necessary: assertEquals("`" + id + "`", SelfHosterSqlite.quoteAndEscapeSqlId(id, SQLDialect.SQLITE));
-	}
+    }
 
-	/* This is really a test of our test utility code. */
-	public void testSelfHosterEscapeIDNotSame() {
-		final String id = "something with a \" and a ` char";
-		//assertFalse(SelfHosterPostgreSQL.quoteAndEscapeSqlId(id, SQLDialect.POSTGRES).equals("\"" + id + "\""));
-		//ssertFalse(SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.MYSQL).equals("`" + id + "`"));
+    /* This is really a test of our test utility code. */
+    public void testSelfHosterEscapeIDNotSame() {
+        final String id = "something with a \" and a ` char";
+        //assertFalse(SelfHosterPostgreSQL.quoteAndEscapeSqlId(id, SQLDialect.POSTGRES).equals("\"" + id + "\""));
+        //ssertFalse(SelfHosterMySQL.quoteAndEscapeSqlId(id, SQLDialect.MYSQL).equals("`" + id + "`"));
         //TODO: What should this be? Maybe SQLite only quotes when necessary:  assertFalse(SelfHosterSqlite.quoteAndEscapeSqlId(id, SQLDialect.SQLITE).equals("`" + id + "`"));
-	}
+    }
 
-	/**
-	 * @param hostingMode 
-	 * @throws SQLException
-	 */
-	private void doTest(Document.HostingMode hostingMode) {
-		final InputStream inputStream = SelfHostExampleTest.class.getClassLoader().getResourceAsStream("example_music_collection.glom");
-		assertNotNull(inputStream);
+    /**
+     * @param hostingMode
+     * @throws SQLException
+     */
+    private void doTest(Document.HostingMode hostingMode) {
+        final InputStream inputStream = SelfHostExampleTest.class.getClassLoader().getResourceAsStream("example_music_collection.glom");
+        assertNotNull(inputStream);
 
-		final Document document = new Document();
-		assertTrue(document.load(inputStream));
+        final Document document = new Document();
+        assertTrue(document.load(inputStream));
 
-		if (hostingMode == Document.HostingMode.HOSTING_MODE_SQLITE) {
+        if (hostingMode == Document.HostingMode.HOSTING_MODE_SQLITE) {
             selfHoster = new SelfHosterSqlite(document, getContext());
-		} else {
-			// TODO: std::cerr << G_STRFUNC << ": This test function does not support the specified hosting_mode: " <<
-			// hosting_mode << std::endl;
-			assert false;
-		}
+        } else {
+            // TODO: std::cerr << G_STRFUNC << ": This test function does not support the specified hosting_mode: " <<
+            // hosting_mode << std::endl;
+            assert false;
+        }
 
-		final boolean hosted = selfHoster.createAndSelfHostFromExample();
-		assertTrue(hosted);
-		
-		SelfHostTestUtils.testExampleMusiccollectionData(selfHoster, document);
-		
-		if (selfHoster != null) {
-			selfHoster.cleanup();
-		}
-	}
+        final boolean hosted = selfHoster.createAndSelfHostFromExample();
+        assertTrue(hosted);
 
-	public void tearDown() {
-		if (selfHoster != null) {
-			selfHoster.cleanup();
-		}
-	}
+        SelfHostTestUtils.testExampleMusiccollectionData(selfHoster, document);
+
+        if (selfHoster != null) {
+            selfHoster.cleanup();
+        }
+    }
+
+    public void tearDown() {
+        if (selfHoster != null) {
+            selfHoster.cleanup();
+        }
+    }
 }

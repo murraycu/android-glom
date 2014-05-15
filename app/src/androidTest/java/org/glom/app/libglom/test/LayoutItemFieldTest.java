@@ -19,40 +19,39 @@
 
 package org.glom.app.libglom.test;
 
-import static junit.framework.Assert.*;
-
 import android.test.AndroidTestCase;
 import android.text.TextUtils;
+
 import org.glom.app.libglom.Field;
 import org.glom.app.libglom.layout.LayoutItemField;
 
 public class LayoutItemFieldTest extends AndroidTestCase {
 
-	private static String locale = ""; // This means the original locale.
+    private static String locale = ""; // This means the original locale.
 
-	public void test() {
-		final LayoutItemField item = new LayoutItemField();
-		assertTrue(TextUtils.isEmpty(item.getTitleOriginal()));
-		assertTrue(TextUtils.isEmpty(item.getTitle(locale)));
+    public void test() {
+        final LayoutItemField item = new LayoutItemField();
+        assertTrue(TextUtils.isEmpty(item.getTitleOriginal()));
+        assertTrue(TextUtils.isEmpty(item.getTitle(locale)));
 
-		final String testFieldTitle = "somefieldtitle";
-		final Field field = new Field();
-		assertTrue(TextUtils.isEmpty(field.getTitleOriginal()));
-		assertTrue(TextUtils.isEmpty(field.getTitle(locale)));
-		field.setTitleOriginal(testFieldTitle);
-		assertEquals(testFieldTitle, field.getTitleOriginal());
-		assertEquals(testFieldTitle, field.getTitle(locale));
+        final String testFieldTitle = "somefieldtitle";
+        final Field field = new Field();
+        assertTrue(TextUtils.isEmpty(field.getTitleOriginal()));
+        assertTrue(TextUtils.isEmpty(field.getTitle(locale)));
+        field.setTitleOriginal(testFieldTitle);
+        assertEquals(testFieldTitle, field.getTitleOriginal());
+        assertEquals(testFieldTitle, field.getTitle(locale));
 
-		// Check that the LayoutItemField's title is retrieved from the field:
-		item.setFullFieldDetails(field);
-		assertEquals(testFieldTitle, item.getTitleOriginal());
-		assertEquals(testFieldTitle, item.getTitle(locale));
+        // Check that the LayoutItemField's title is retrieved from the field:
+        item.setFullFieldDetails(field);
+        assertEquals(testFieldTitle, item.getTitleOriginal());
+        assertEquals(testFieldTitle, item.getTitle(locale));
 
-		// Check that a custom title is used:
-		final String testItemTitle = "someitemtitle";
-		item.getCustomTitle().setTitleOriginal(testItemTitle);
-		item.getCustomTitle().setUseCustomTitle(true);
-		assertEquals(testItemTitle, item.getTitleOriginal());
-		assertEquals(testItemTitle, item.getTitle(locale));
-	}
+        // Check that a custom title is used:
+        final String testItemTitle = "someitemtitle";
+        item.getCustomTitle().setTitleOriginal(testItemTitle);
+        item.getCustomTitle().setUseCustomTitle(true);
+        assertEquals(testItemTitle, item.getTitleOriginal());
+        assertEquals(testItemTitle, item.getTitle(locale));
+    }
 }

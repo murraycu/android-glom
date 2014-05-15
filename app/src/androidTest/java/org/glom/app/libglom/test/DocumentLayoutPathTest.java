@@ -20,64 +20,60 @@
 
 package org.glom.app.libglom.test;
 
-import static junit.framework.Assert.*;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import android.test.AndroidTestCase;
-import android.text.TextUtils;
 
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.layout.LayoutItem;
 import org.glom.app.libglom.layout.LayoutItemField;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Simple test to ensure that the generated bindings are working.
  */
 public class DocumentLayoutPathTest extends AndroidTestCase {
 
-	private static Document document;
+    private static Document document;
 
     @Override
-	public void setUp() {
+    public void setUp() {
         //For some reason DocumentTest.class.getResourceAsStream() doesn't work,
         //so we use DocumentTest.class.getClassLoader().getResourceAsStream(), which does.
-		final InputStream inputStream = DocumentLayoutPathTest.class.getClassLoader().getResourceAsStream("example_music_collection.glom");
-		assertNotNull(inputStream);
-		
-		document = new Document();
-		final boolean retval = document.load(inputStream);
-		assertTrue(retval);
-	}
+        final InputStream inputStream = DocumentLayoutPathTest.class.getClassLoader().getResourceAsStream("example_music_collection.glom");
+        assertNotNull(inputStream);
 
-	@Override
+        document = new Document();
+        final boolean retval = document.load(inputStream);
+        assertTrue(retval);
+    }
+
+    @Override
     public void tearDown() {
-	}
+    }
 
-	public void testNormal() throws IOException {
-		// Just an initial sanity check:
-		assertEquals("Music Collection", document.getDatabaseTitleOriginal());
-		
-		final String layoutPath = "1:2";
-		final LayoutItem item = document.getLayoutItemByPath("artists", Document.LAYOUT_NAME_DETAILS, layoutPath);
-		assertNotNull(item);
-		assertTrue(item instanceof LayoutItemField);
+    public void testNormal() throws IOException {
+        // Just an initial sanity check:
+        assertEquals("Music Collection", document.getDatabaseTitleOriginal());
 
-		assertEquals("comments", item.getName());
-	}
+        final String layoutPath = "1:2";
+        final LayoutItem item = document.getLayoutItemByPath("artists", Document.LAYOUT_NAME_DETAILS, layoutPath);
+        assertNotNull(item);
+        assertTrue(item instanceof LayoutItemField);
 
-	public void testOutOfBounds() throws IOException {
-		final String layoutPath = "1:200"; //Check that it does not crash.
-		final LayoutItem item = document.getLayoutItemByPath("artists", Document.LAYOUT_NAME_DETAILS, layoutPath);
-		assertNull(item);
-	}
+        assertEquals("comments", item.getName());
+    }
 
-	public void testOutOfBoundsNegative() throws IOException {
-		final String layoutPath = "-1:-50"; //Check that it does not crash.
-		final LayoutItem item = document.getLayoutItemByPath("artists", Document.LAYOUT_NAME_DETAILS, layoutPath);
-		assertNull(item);
-	}
+    public void testOutOfBounds() throws IOException {
+        final String layoutPath = "1:200"; //Check that it does not crash.
+        final LayoutItem item = document.getLayoutItemByPath("artists", Document.LAYOUT_NAME_DETAILS, layoutPath);
+        assertNull(item);
+    }
+
+    public void testOutOfBoundsNegative() throws IOException {
+        final String layoutPath = "-1:-50"; //Check that it does not crash.
+        final LayoutItem item = document.getLayoutItemByPath("artists", Document.LAYOUT_NAME_DETAILS, layoutPath);
+        assertNull(item);
+    }
 
 }
