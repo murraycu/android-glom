@@ -17,7 +17,7 @@
  * along with GWT-Glom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.glom.app.libglom.test;
+package org.glom.app;
 
 import android.database.sqlite.SQLiteDatabase;
 

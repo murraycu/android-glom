@@ -21,6 +21,7 @@ package org.glom.app.libglom.test;
 
 import android.test.AndroidTestCase;
 
+import org.glom.app.SelfHosterSqlite;
 import org.glom.app.libglom.Document;
 
 import java.io.InputStream;

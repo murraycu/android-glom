@@ -24,6 +24,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import junit.framework.Assert;
 
+import org.glom.app.SelfHosterSqlite;
 import org.glom.app.SqlUtils;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;

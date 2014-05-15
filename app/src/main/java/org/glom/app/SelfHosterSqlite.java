@@ -17,14 +17,13 @@
  * along with GWT-Glom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.glom.app.libglom.test;
+package org.glom.app;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
-import org.glom.app.Log;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;
 import org.jooq.SQLDialect;
