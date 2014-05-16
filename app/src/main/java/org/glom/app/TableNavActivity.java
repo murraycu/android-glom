@@ -101,7 +101,7 @@ public class TableNavActivity extends DocumentActivity
         } else {
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
-            Intent detailIntent = new Intent(this, TableDetailActivity.class);
+            Intent detailIntent = new Intent(this, TableListActivity.class);
             detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
             startActivity(detailIntent);
         }
