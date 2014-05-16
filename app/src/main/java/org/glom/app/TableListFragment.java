@@ -2,16 +2,12 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import org.glom.app.libglom.*;
@@ -20,7 +16,6 @@ import org.glom.app.libglom.layout.LayoutItem;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.glom.app.libglom.layout.LayoutItemPortal;
 import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 
 import java.util.ArrayList;
 import java.util.List;

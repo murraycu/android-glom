@@ -22,15 +22,9 @@ package org.glom.app;
 import android.text.TextUtils;
 import android.database.Cursor;
 
-import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Time;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.DataItem;

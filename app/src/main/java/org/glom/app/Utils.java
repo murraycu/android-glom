@@ -23,7 +23,6 @@ import android.text.TextUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -34,7 +33,6 @@ import java.util.Date;
 //import org.apache.http.client.utils.URIBuilder;
 import org.glom.app.libglom.TypedDataItem;
 import org.glom.app.libglom.Field.GlomFieldType;
-import org.glom.app.libglom.layout.LayoutItemField;
 
 /**
  *
