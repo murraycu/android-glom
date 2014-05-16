@@ -178,7 +178,7 @@ public class SqlUtils {
 		final org.jooq.Field<?> field = DSL.field("*");
 		final AggregateFunction<?> count = DSL.count(field);
 		select.select(count).from(selectInner);
-		return select.getQuery().getSQL(true);
+		return select.getQuery().getSQL(ParamType.INLINED);
 		// return "SELECT COUNT(*) FROM (" + query + ") AS glomarbitraryalias";
 	}
 
