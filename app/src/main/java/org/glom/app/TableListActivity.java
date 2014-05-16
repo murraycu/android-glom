@@ -41,4 +41,19 @@ public class TableListActivity extends TableDataActivity {
                     .commit();
         }
     }
+
+    @Override
+    protected void onDocumentLoadingFinished(Boolean result) {
+        super.onDocumentLoadingFinished(result);
+
+        //Tell the list of tables to show the contents of the document:
+        TableListFragment fragment = getTableListFragment();
+        if (fragment != null)
+            fragment.update();
+    }
+
+    private TableListFragment getTableListFragment() {
+        return ((TableListFragment) getFragmentManager()
+                .findFragmentById(R.id.table_list));
+    }
 }

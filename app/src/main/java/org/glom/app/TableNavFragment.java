@@ -10,6 +10,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: Why doesn't this need a layout resource?
+
 /**
  * A list fragment representing a list of Tables. This fragment
  * also supports tablet devices by allowing list items to be given an
@@ -26,6 +28,7 @@ public class TableNavFragment extends ListFragment {
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+
     /**
      * A dummy implementation of the {@link TableNavCallbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
@@ -40,6 +43,7 @@ public class TableNavFragment extends ListFragment {
             return null;
         }
     };
+
     /**
      * The fragment's current callback object, which is notified of list item
      * clicks.
@@ -78,8 +82,8 @@ public class TableNavFragment extends ListFragment {
 
         setListAdapter(new ArrayAdapter<TableNavItem>(
                 activity,
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
+                android.R.layout.simple_list_item_activated_1, //TODO: Explain this.
+                android.R.id.text1, //TODO: Explain this.
                 tables));
     }
 

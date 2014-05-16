@@ -66,6 +66,7 @@ public class TableNavActivity extends DocumentActivity
         }
     }
 
+    @Override
     protected void onDocumentLoadingFinished(Boolean result) {
         super.onDocumentLoadingFinished(result);
 
