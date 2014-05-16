@@ -71,7 +71,7 @@ public class SelfHostTestUtils {
         final Cursor cursor = db.rawQuery(sqlQuery, null);
         assertTrue(cursor != null);
 
-        Assert.assertEquals(2, cursor.getColumnCount());
+        Assert.assertEquals(3, cursor.getColumnCount()); //1 extra for the _id column alias.
 
         //rs.last();
         final double rowsCount = cursor.getCount();
@@ -125,7 +125,7 @@ public class SelfHostTestUtils {
         final Cursor cursor = db.rawQuery(sqlQuery, null);
         assertTrue(cursor != null);
 
-        Assert.assertEquals(3, cursor.getColumnCount());
+        Assert.assertEquals(4, cursor.getColumnCount()); //1 extra for the _id column alias.
 
         //rs.last();
         final double rsRowsCount = cursor.getCount();
