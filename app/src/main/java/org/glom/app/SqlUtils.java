@@ -65,7 +65,7 @@ public class SqlUtils {
 
 	
 	// TODO: Change to final ArrayList<LayoutItem_Field> fieldsToGet
-	public static String buildSqlSelectWithKey(final String tableName, final List<LayoutItemField> fieldsToGet,
+	public static String buildSqlSelectWithKey(final Document document, final String tableName, final List<LayoutItemField> fieldsToGet,
 			final Field primaryKey, final TypedDataItem primaryKeyValue, final SQLDialect sqlDialect) {
 
 		Condition whereClause = null; // Note that we ignore quickFind.
@@ -74,7 +74,7 @@ public class SqlUtils {
 		}
 
 		final SortClause sortClause = null; // Ignored.
-		return buildSqlSelectWithWhereClause(tableName, fieldsToGet, whereClause, sortClause, sqlDialect);
+		return buildSqlSelectWithWhereClause(document, tableName, fieldsToGet, whereClause, sortClause, sqlDialect);
 	}
 
 	public static Condition buildSimpleWhereExpression(final String tableName, final Field primaryKey,
@@ -108,9 +108,9 @@ public class SqlUtils {
 	 * buildSqlSelectWithWhereClause(tableName, fieldsToGet, whereClause, sortClause); }
 	 */
 
-	public static String buildSqlSelectWithWhereClause(final String tableName, final List<LayoutItemField> fieldsToGet,
+	public static String buildSqlSelectWithWhereClause(final Document document, final String tableName, final List<LayoutItemField> fieldsToGet,
 			final Condition whereClause, final SortClause sortClause, final SQLDialect sqlDialect) {
-		final SelectFinalStep step = buildSqlSelectStepWithWhereClause(tableName, fieldsToGet, whereClause, sortClause, sqlDialect);
+		final SelectFinalStep step = buildSqlSelectStepWithWhereClause(document, tableName, fieldsToGet, whereClause, sortClause, sqlDialect);
 		if (step == null) {
 			return "";
 		}
@@ -131,14 +131,22 @@ public class SqlUtils {
 		return dslContext.select();
 	}
 
-	private static SelectFinalStep buildSqlSelectStepWithWhereClause(final String tableName,
+	private static SelectFinalStep buildSqlSelectStepWithWhereClause(final Document document, final String tableName,
 			final List<LayoutItemField> fieldsToGet, final Condition whereClause, final SortClause sortClause, final SQLDialect sqlDialect) {
 
-		final SelectSelectStep selectStep = createSelect(sqlDialect);
+		SelectSelectStep selectStep = createSelect(sqlDialect);
 
 		// Add the fields, and any necessary joins:
 		final List<UsesRelationship> listRelationships = buildSqlSelectAddFieldsToGet(selectStep, tableName,
 				fieldsToGet, sortClause, false /* extraJoin */);
+
+        // Android's CursorAdaptor and SimpleCursorAdaptor need the primary key to be called "_id"
+        // so we add an extra "theid as _id" alias:
+        Field pk = document.getTablePrimaryKeyField(tableName);
+        if(pk != null) {
+            final org.jooq.Field<?> fieldPk = createField(tableName, pk.getName());
+            selectStep = selectStep.select(fieldPk.as("_id"));
+        }
 
 		final Table<Record> table = DSL.tableByName(tableName);
 		final SelectJoinStep joinStep = selectStep.from(table);
@@ -157,15 +165,15 @@ public class SqlUtils {
 		return finalStep;
 	}
 
-	public static String buildSqlCountSelectWithWhereClause(final String tableName,
+	public static String buildSqlCountSelectWithWhereClause(final Document document, final String tableName,
 			final List<LayoutItemField> fieldsToGet, final SQLDialect sqlDialect) {
-		final SelectFinalStep selectInner = buildSqlSelectStepWithWhereClause(tableName, fieldsToGet, null, null, sqlDialect);
+		final SelectFinalStep selectInner = buildSqlSelectStepWithWhereClause(document, tableName, fieldsToGet, null, null, sqlDialect);
 		return buildSqlSelectCountRows(selectInner, sqlDialect);
 	}
 
-	public static String buildSqlCountSelectWithWhereClause(final String tableName,
+	public static String buildSqlCountSelectWithWhereClause(final Document document, final String tableName,
 			final List<LayoutItemField> fieldsToGet, final Condition whereClause, final SQLDialect sqlDialect) {
-		final SelectFinalStep selectInner = buildSqlSelectStepWithWhereClause(tableName, fieldsToGet, whereClause, null, sqlDialect);
+		final SelectFinalStep selectInner = buildSqlSelectStepWithWhereClause(document, tableName, fieldsToGet, whereClause, null, sqlDialect);
 		return buildSqlSelectCountRows(selectInner, sqlDialect);
 	}
 
