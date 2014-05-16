@@ -2,6 +2,7 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -164,21 +166,27 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         final Cursor cursor = db.rawQuery(query, null);
 
         //TODO: Check for nulls and an empty list.
-        //TODO: Use all fields:
-        final LayoutItemField field = fieldsToGet.get(0);
-        final org.jooq.Field<Object> jooqField = DSL.fieldByName(field.getSqlTableOrJoinAliasName(getTableName()), field.getName());
-        final String fieldSQL = jooqField.toString();
+
+        final String[] fieldNames = new String[fieldsToGet.size()];
+        final int[] textViewIds = new int[fieldsToGet.size()];
+        int i = 0;
+        for(final LayoutItemField field : fieldsToGet) {
+            //TODO: We are not allowed to qualify these with the table name, but that's ambiguous.
+            //final org.jooq.Field<Object> jooqField = DSL.fieldByName(field.getSqlTableOrJoinAliasName(getTableName()), field.getName());
+            //fieldNames[i] = jooqField.toString();
+            fieldNames[i] = field.getName();
+
+            i++;
+        }
 
         //TODO: This throws an exception if there is no _id column. Handle that.
         try {
-            setListAdapter(new SimpleCursorAdapter(
+            setListAdapter(new GlomCursorAdapter(
                     activity,
-                    android.R.layout.simple_list_item_activated_1, //TODO: Explain this.
                     cursor,
-                    new String[] { field.getName() }, //TODO: We are not allowed to qualify this with the table name, but that's ambiguous.
-                    new int[] { android.R.id.text1 })); //TODO: Explain this.
+                    fieldsToGet.size()));
         } catch (final Exception e) {
-            // We can get a RuntimeException if:
+            // We can get a RuntimeException from SimpleCursorAdaptor if:
             // -there is no _id field (we provide this as an alias)
             // or if
             // -there we try to show a "from" field that is not in the query.
