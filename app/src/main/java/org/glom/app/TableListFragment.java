@@ -160,20 +160,6 @@ public class TableListFragment extends ListFragment implements TableDataFragment
                 null, null, SQLDialect.SQLITE);
         final Cursor cursor = db.rawQuery(query, null);
 
-        //TODO: Check for nulls and an empty list.
-
-        final String[] fieldNames = new String[fieldsToGet.size()];
-        final int[] textViewIds = new int[fieldsToGet.size()];
-        int i = 0;
-        for(final LayoutItemField field : fieldsToGet) {
-            //TODO: We are not allowed to qualify these with the table name, but that's ambiguous.
-            //final org.jooq.Field<Object> jooqField = DSL.fieldByName(field.getSqlTableOrJoinAliasName(getTableName()), field.getName());
-            //fieldNames[i] = jooqField.toString();
-            fieldNames[i] = field.getName();
-
-            i++;
-        }
-
         //TODO: This throws an exception if there is no _id column. Handle that.
         try {
             setListAdapter(new GlomCursorAdapter(
