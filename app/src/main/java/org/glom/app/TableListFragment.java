@@ -2,12 +2,16 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import org.glom.app.libglom.*;
@@ -153,14 +157,12 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         final Document document = DocumentSingleton.getInstance().getDocument();
         final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
 
-
         final List<LayoutItemField> fieldsToGet = getFieldsToShowForSQLQuery(document, getTableName(),
                 document.getDataLayoutGroups("list", getTableName()));
         final String query = SqlUtils.buildSqlSelectWithWhereClause(document, getTableName(), fieldsToGet,
                 null, null, SQLDialect.SQLITE);
         final Cursor cursor = db.rawQuery(query, null);
 
-        //TODO: This throws an exception if there is no _id column. Handle that.
         try {
             setListAdapter(new GlomCursorAdapter(
                     activity,
@@ -174,6 +176,49 @@ public class TableListFragment extends ListFragment implements TableDataFragment
             // And we can get an Exception from SQLiteCursor if we qualify the "from" field name with the table name.
             Log.error("glom", "setListAdapter() failed for query: " + query + "\n with exception: " + e.getMessage());
         }
+
+        // We can't add the header view (column titles) here because getListView()
+        // won't work until onActivityCreated() so we do it there._
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+
+        //TODO: Check for nulls and an empty list.
+        final Document document = DocumentSingleton.getInstance().getDocument();
+        final List<LayoutItemField> fieldsToGet = getFieldsToShowForSQLQuery(document, getTableName(),
+                document.getDataLayoutGroups("list", getTableName()));
+        ListView listView = getListView();
+        if(listView != null) {
+            final Activity activity = getActivity();
+            final Context context = activity.getApplicationContext();
+            final LinearLayout headerLayout = new LinearLayout(context);
+
+            int i = 0;
+            for(final LayoutItemField field : fieldsToGet) {
+                final TextView textView = new TextView(context);
+                textView.setText(field.getTitleOrName("")); //TODO: Handle locale properly.
+
+                //Separate the views with some space:
+                if(i != 0) {
+                    //TODO: Align items so the width is the same for the whole column.
+                    final float paddingInDp = 16;
+                    final float scale = context.getResources().getDisplayMetrics().density;
+                    final int dpAsPixels = (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels
+                    textView.setPadding(dpAsPixels /* left */, 0, 0, 0);
+                }
+
+                textView.setTypeface(null, Typeface.BOLD);
+
+                headerLayout.addView(textView);
+
+                i++;
+            }
+
+            listView.addHeaderView(headerLayout);
+        }
+
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
