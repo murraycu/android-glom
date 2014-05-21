@@ -33,8 +33,18 @@ public class UiUtils {
         //TODO: Use  listPreferredItemPaddingStart instead, if we can discover what SDK version has it.
         final int[] attrs = new int[] { R.attr.listPreferredItemPaddingLeft };
         final TypedArray a = context.obtainStyledAttributes(attrs);
-        final int size = a.getDimensionPixelSize(0, -1);
+        final int size = a.getDimensionPixelSize(0 /* The first (only) value */,
+            -1 /* return this if there is no value */);
         a.recycle();
+
+        //In case the theme didn't have a value:
+        if (size == -1) {
+            final int paddingInDp = 16;
+            final float scale = context.getResources().getDisplayMetrics().density;
+            final int dpAsPixels = (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels
+            return dpAsPixels;
+        }
+
         return size;
     }
 }
