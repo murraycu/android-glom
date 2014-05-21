@@ -36,11 +36,19 @@ public class GlomCursorAdapter extends CursorAdapter {
 
             //Separate the views with some space:
             if(i != 0) {
+                //final float paddingInDp = 16;
+                //final float scale = context.getResources().getDisplayMetrics().density;
+                //final int dpAsPixels = (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels
+                //textView.setPadding(dpAsPixels /* left */, 0, 0, 0);
+
                 //TODO: Align items so the width is the same for the whole column.
-                final float paddingInDp = 16;
-                final float scale = context.getResources().getDisplayMetrics().density;
-                final int dpAsPixels = (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels
-                textView.setPadding(dpAsPixels /* left */, 0, 0, 0);
+                //final float paddingInDp = R.attr.listPreferredItemPaddingLeft;
+                //final float scale = context.getResources().getDisplayMetrics().density;
+                //final int dpAsPixels = (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels
+                //textView.setPadding(dpAsPixels /* left */, 0, 0, 0);
+
+                final int size = UiUtils.getStandardItemPadding(context);
+                textView.setPadding(size /* left */, 0, 0, 0);
             }
 
             rowLayout.addView(textView);
