@@ -37,6 +37,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
      * The fragment's current callback object.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
+    private List<LayoutItemField> mFieldsToGet; //A cache.
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -157,8 +158,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         final Document document = DocumentSingleton.getInstance().getDocument();
         final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
 
-        final List<LayoutItemField> fieldsToGet = getFieldsToShowForSQLQuery(document, getTableName(),
-                document.getDataLayoutGroups("list", getTableName()));
+        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
         final String query = SqlUtils.buildSqlSelectWithWhereClause(document, getTableName(), fieldsToGet,
                 null, null, SQLDialect.SQLITE);
         final Cursor cursor = db.rawQuery(query, null);
@@ -185,9 +185,8 @@ public class TableListFragment extends ListFragment implements TableDataFragment
     public void onActivityCreated(Bundle savedInstanceState) {
 
         //TODO: Check for nulls and an empty list.
-        final Document document = DocumentSingleton.getInstance().getDocument();
-        final List<LayoutItemField> fieldsToGet = getFieldsToShowForSQLQuery(document, getTableName(),
-                document.getDataLayoutGroups("list", getTableName()));
+        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
+
         ListView listView = getListView();
         if(listView != null) {
             final Activity activity = getActivity();
@@ -219,6 +218,16 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         }
 
         super.onActivityCreated(savedInstanceState);
+    }
+
+    private List<LayoutItemField> getFieldsToShow() {
+        if(mFieldsToGet == null) {
+            final Document document = DocumentSingleton.getInstance().getDocument();
+            mFieldsToGet = getFieldsToShowForSQLQuery(document, getTableName(),
+                    document.getDataLayoutGroups("list", getTableName()));
+        }
+
+        return mFieldsToGet;
     }
 
     @Override
