@@ -609,7 +609,7 @@ public class Document {
 
     public boolean save(final String fileURI) {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = null;
+        DocumentBuilder documentBuilder;
         try {
             documentBuilder = dbf.newDocumentBuilder();
         } catch (final ParserConfigurationException e) {
@@ -640,6 +640,7 @@ public class Document {
         } else {
             strHostingMode = ATTRIBUTE_CONNECTION_HOSTING_POSTGRES_SELF;
         }
+
         final Element nodeConnection = createElement(doc, rootNode, NODE_CONNECTION);
         nodeConnection.setAttribute(ATTRIBUTE_CONNECTION_HOSTING_MODE, strHostingMode);
         nodeConnection.setAttribute(ATTRIBUTE_CONNECTION_SERVER, connectionServer);
@@ -1745,9 +1746,6 @@ public class Document {
      */
     private LayoutItemField getPortalFieldIsFromNonHiddenRelatedRecord(final LayoutItemPortal portal) {
         // Find the first field that is from a non-hidden related table.
-
-        final LayoutItemField result = null;
-
         final String parent_table_name = portal.getTableUsed("" /* parent table - not relevant */);
 
         final List<LayoutItem> items = portal.getItems();
@@ -1763,7 +1761,7 @@ public class Document {
             }
         }
 
-        return result;
+        return null;
     }
 
     private Relationship getPortalFieldIdentifiesNonHiddenRelatedRecord(final LayoutItemPortal portal) {

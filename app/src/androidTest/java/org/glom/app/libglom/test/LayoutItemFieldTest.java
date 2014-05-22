@@ -27,7 +27,7 @@ import org.glom.app.libglom.layout.LayoutItemField;
 
 public class LayoutItemFieldTest extends AndroidTestCase {
 
-    private static String locale = ""; // This means the original locale.
+    private static final String locale = ""; // This means the original locale.
 
     public void test() {
         final LayoutItemField item = new LayoutItemField();

@@ -62,8 +62,9 @@ public class TableListFragment extends ListFragment implements TableDataFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_table_list, container, false);
-        assert rootView != null;
+        //TODO? super.onCreateView(inflater, container, savedInstanceState);
+
+        final View rootView = inflater.inflate(R.layout.fragment_table_list, container, false);
 
         // Show the dummy content as text in a TextView.
         final String title = mCallbacks.getTableTitle(getTableName());
@@ -73,6 +74,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         setHasOptionsMenu(true);
 
         update();
+
 
         return rootView;
     }

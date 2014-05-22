@@ -134,7 +134,7 @@ public class Utils {
 			return null;
 		}
 
-		String result = new String();
+		String result = "";
 		for(int i:path) {
 			if(!result.isEmpty()) {
 				result += ":";

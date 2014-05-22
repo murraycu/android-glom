@@ -248,8 +248,6 @@ public class SelfHosterSqlite extends SelfHoster {
      *
      */
     public boolean cleanup() {
-        boolean result = true;
-
         // Delete the files:
         context.deleteDatabase(FILENAME_DATA);
 
@@ -257,7 +255,7 @@ public class SelfHosterSqlite extends SelfHoster {
         final File fileDoc = new File(docPath);
         fileDoc.delete();
 
-        return result;
+        return true;
     }
 
     @Override
