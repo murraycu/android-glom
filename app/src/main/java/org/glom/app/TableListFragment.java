@@ -24,6 +24,8 @@ import org.jooq.SQLDialect;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.max;
+
 /**
  * A fragment representing a single Table detail screen.
  * This fragment is either contained in a {@link org.glom.app.TableNavActivity}
@@ -167,7 +169,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
             setListAdapter(new GlomCursorAdapter(
                     activity,
                     cursor,
-                    fieldsToGet.size()));
+                    fieldsToGet));
         } catch (final Exception e) {
             // We can get a RuntimeException from SimpleCursorAdaptor if:
             // -there is no _id field (we provide this as an alias)
@@ -183,37 +185,48 @@ public class TableListFragment extends ListFragment implements TableDataFragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        final ListView listView = getListView();
+        if(listView == null) {
+            return;
+        }
+
+        final Activity activity = getActivity();
+        final Context context = activity.getApplicationContext();
+        final LinearLayout headerLayout = new LinearLayout(context);
 
         //TODO: Check for nulls and an empty list.
         final List<LayoutItemField> fieldsToGet = getFieldsToShow();
+        final List<Integer> widths = UiUtils.getSuitableWidths(context, fieldsToGet);
 
-        ListView listView = getListView();
-        if(listView != null) {
-            final Activity activity = getActivity();
-            final Context context = activity.getApplicationContext();
-            final LinearLayout headerLayout = new LinearLayout(context);
+        final int MAX = 3; //TODO: Be more clever about how we don't use more than the available space.
+        int i = 0;
+        for (final LayoutItemField field : fieldsToGet) {
+            if (i > MAX)
+                break;
 
-            int i = 0;
-            for(final LayoutItemField field : fieldsToGet) {
-                final TextView textView = new TextView(context);
-                textView.setText(field.getTitleOrName("")); //TODO: Handle locale properly.
+            //TODO: The left edges of these titles still don't quite align with the text in the rows.
+            final TextView textView = UiUtils.createTextView(context);
+            textView.setText(field.getTitleOrName("")); //TODO: Handle locale properly.
 
-                //Separate the views with some space:
-                if(i != 0) {
-                    //TODO: Align items so the width is the same for the whole column.
-                    final int size = UiUtils.getStandardItemPadding(context);
-                    textView.setPadding(size /* left */, 0, 0, 0);
-                }
-
-                textView.setTypeface(null, Typeface.BOLD);
-
-                headerLayout.addView(textView);
-
-                i++;
+            if (i != MAX) { //Let the last field take all available space.
+                textView.setWidth(widths.get(i));
             }
 
-            listView.addHeaderView(headerLayout);
+            //Separate the views with some space:
+            if(i != 0) {
+                //TODO: Align items so the width is the same for the whole column.
+                final int size = UiUtils.getStandardItemPadding(context);
+                textView.setPadding(size /* left */, 0, 0, 0);
+            }
+
+            textView.setTypeface(null, Typeface.BOLD);
+
+            headerLayout.addView(textView);
+
+            i++;
         }
+
+        listView.addHeaderView(headerLayout);
 
         super.onActivityCreated(savedInstanceState);
     }

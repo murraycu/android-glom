@@ -22,8 +22,17 @@ package org.glom.app;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Paint;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import org.glom.app.R;
+import org.glom.app.libglom.layout.LayoutItemField;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.lang.Math.max;
 
 /**
  * Created by murrayc on 5/21/14.
@@ -48,5 +57,86 @@ public class UiUtils {
         }
 
         return size;
+    }
+
+    static TextView createTextView(Context context) {
+        final TextView textView = new TextView(context);
+
+        /*
+        ViewGroup.LayoutParams params = textView.getLayoutParams();
+        if (params == null) {
+            params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        } else {
+            //params.width = LayoutParams.WRAP_CONTENT;
+            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+
+        textView.setLayoutParams(params);
+        */
+
+        return textView;
+    }
+
+    /** Get a suitable TextView width (in pixels) for the field's contents, in dp.
+     *
+     * @param item
+     * @return
+     */
+    static float getSuitableWidthForField(final TextView textView, final LayoutItemField item) {
+        String exampleText;
+        switch(item.getGlomType()) {
+            case TYPE_NUMERIC:
+                exampleText = "1234.5678";
+            case TYPE_TEXT:
+                exampleText = "abcdefghijklmnopqrstu";
+            default:
+                //TODO: Handle other types too
+                exampleText = "abcdefghijklmnopqrstu";
+        }
+
+        //TODO:
+        final float widthExample = measureText(textView, exampleText);
+        final float widthTitle = measureText(textView, item.getTitleOrName(""));
+        final float width = max(widthExample, widthTitle);
+        return width;
+    }
+
+    /** Get the width of the text in pixels, if drawn in the TextView.
+     *
+     * @param textView
+     * @param text
+     * @return
+     */
+    private static float measureText(final TextView textView, final String text) {
+        final Paint paint = textView.getPaint();
+        final float width = paint.measureText(text); //TODO: Confirm that this is pixels.
+
+        return (float) (width / 1.5); /* TODO: Avoid this hack. */
+    }
+
+    /** Get suitable widths (in pixels) for the fields.
+     *
+     * @param context
+     * @param fieldsToGet
+     * @return
+     */
+    public static List<Integer> getSuitableWidths(final Context context, final List<LayoutItemField> fieldsToGet) {
+        /*
+        //TODO: Use actual database data from the first few rows:
+        if(cursor == null) {
+            final String query = SqlUtils.buildSqlSelectWithWhereClause(document, tableName, fieldsToGet,
+                    null, null, SQLDialect.SQLITE);
+            cursor = db.rawQuery(query, null);
+        }
+        */
+
+        final TextView textView = createTextView(context);
+
+        final List<Integer> result = new ArrayList<Integer>();
+        for(final LayoutItemField item : fieldsToGet) {
+            result.add((int) getSuitableWidthForField(textView, item));
+        }
+
+        return result;
     }
 }

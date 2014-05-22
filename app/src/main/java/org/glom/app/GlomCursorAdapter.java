@@ -8,6 +8,8 @@ import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.glom.app.libglom.layout.LayoutItemField;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,24 +17,35 @@ import java.util.List;
  * Created by murrayc on 5/16/14.
  */
 public class GlomCursorAdapter extends CursorAdapter {
-    private int mFieldsCount = 0;
-    List<TextView> mTextViews;
+    private List<LayoutItemField> mFieldsToGet;
+    private List<TextView> mTextViews;
 
-    public GlomCursorAdapter(Context context, Cursor c, final int fieldsCount) {
+    public GlomCursorAdapter(Context context, Cursor c, final List<LayoutItemField> fieldsToGet) {
         super(context, c, 0 /* seems reasonable */);
-        mFieldsCount = fieldsCount;
+        mFieldsToGet = fieldsToGet;
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        final List<Integer> widths = UiUtils.getSuitableWidths(context, mFieldsToGet);
+
         final LinearLayout rowLayout = new LinearLayout(context);
         //rowLayout.setId(View.generateViewId());
         //rowLayout.setTag("content");
 
         //Create the layout for the row:
         mTextViews = new ArrayList<TextView>();
-        for (int i = 0; i < mFieldsCount; i++) {
-            final TextView textView = new TextView(context);
+
+        final int MAX = 3; //TODO: Be more clever about how we don't use more than the available space.
+        for (int i = 0; i < mFieldsToGet.size(); i++) {
+            if (i > MAX)
+                break;
+
+            final TextView textView = UiUtils.createTextView(context);
+
+            if (i != MAX) { //Let the last field take all available space.
+                textView.setWidth(widths.get(i));
+            }
 
             //Separate the views with some space:
             if(i != 0) {
