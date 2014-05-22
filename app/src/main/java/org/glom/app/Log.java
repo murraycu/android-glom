@@ -84,7 +84,7 @@ public class Log {
 	}
 
 	public static void error(final String documentID, final String message, final Throwable e) {
-		error(LOG_TAG, defaultString(documentID) + ": " + defaultString(message), e);
+		error(LOG_TAG, documentID, defaultString(message) + ":" + e.getMessage());
 	}
 
 	public static void error(final String documentID, final String message) {
@@ -111,7 +111,7 @@ public class Log {
 	}
 
 	public static void warn(final String documentID, final String message, final Throwable e) {
-		warn(LOG_TAG, defaultString(documentID) + ": " + defaultString(message), e);
+		warn(LOG_TAG, documentID, defaultString(message)  + ": " + e.getMessage());
 	}
 
 	public static void warn(final String documentID, final String message) {
@@ -138,7 +138,7 @@ public class Log {
 	}
 
 	public static void info(final String documentID, final String message, final Throwable e) {
-		info(LOG_TAG, defaultString(documentID) + ": " + defaultString(message), e);
+		info(LOG_TAG, documentID, defaultString(message) + ": " + e.getMessage());
 	}
 
 	public static void info(final String documentID, final String message) {
