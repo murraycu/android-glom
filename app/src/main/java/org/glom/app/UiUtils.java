@@ -39,6 +39,8 @@ public class UiUtils {
 
         //In case the theme didn't have a value:
         if (size == -1) {
+            // TODO: This value should be in values*/*.xml files, so it can
+            // have an appropriate value for each screen size/dpi.
             final int paddingInDp = 16;
             final float scale = context.getResources().getDisplayMetrics().density;
             final int dpAsPixels = (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels
