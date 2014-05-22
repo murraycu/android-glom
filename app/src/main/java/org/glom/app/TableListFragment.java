@@ -84,9 +84,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         final List<LayoutItemField> listLayoutFIelds = new ArrayList<LayoutItemField>();
 
         // We will show the fields that the document says we should:
-        for (int i = 0; i < layoutGroupVec.size(); i++) {
-            final LayoutGroup layoutGroup = layoutGroupVec.get(i);
-
+        for (final LayoutGroup layoutGroup : layoutGroupVec) {
             // satisfy the precondition of getDetailsLayoutGroup(String tableName, LayoutGroup
             // libglomLayoutGroup)
             if (layoutGroup == null) {
