@@ -1,5 +1,6 @@
 package org.glom.app;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,12 +24,6 @@ import android.os.Bundle;
  */
 public class TableNavActivity extends DocumentActivity
         implements TableDataFragment.Callbacks {
-
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,25 +82,16 @@ public class TableNavActivity extends DocumentActivity
      */
     @Override
     public void onTableSelected(final String tableName) {
-        if (mTwoPane) {
-            // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(TableDetailFragment.ARG_TABLE_NAME, tableName);
-            TableDetailFragment fragment = new TableDetailFragment();
-            fragment.setArguments(arguments);
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.table_data_container, fragment)
-                    .commit();
+        navigate(tableName, null);
+    }
 
-        } else {
-            // In single-pane mode, simply start the detail activity
-            // for the selected item ID.
-            Intent detailIntent = new Intent(this, TableListActivity.class);
-            detailIntent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
-            startActivity(detailIntent);
-        }
+    /**
+     * Callback method from {@link TableDataFragment.Callbacks}
+     * indicating that the record with the given ID was selected.
+     */
+    @Override
+    public void onRecordSelected(final String tableName, final String primaryKeyValue) {
+        navigate(tableName, primaryKeyValue);
     }
 
     @Override

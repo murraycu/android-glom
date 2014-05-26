@@ -27,6 +27,10 @@ public interface TableDataFragment {
         }
 
         @Override
+        public void onRecordSelected(final String tableName, final String primaryKeyValue) {
+        }
+
+        @Override
         public List<TableNavItem> getMainTableNames() {
             return null;
         }
@@ -52,5 +56,12 @@ public interface TableDataFragment {
          * Callback to get title of a table.
          */
         public String getTableTitle(final String tableName);
+
+        //TODO: Don't just use a String for the primary key value.
+        /**
+         * Callback for when a record has been selected.
+         */
+        public void onRecordSelected(final String tableName, final String primaryKeyValue);
+
     }
 }

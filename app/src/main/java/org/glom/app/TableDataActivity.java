@@ -106,4 +106,8 @@ public class TableDataActivity extends DocumentActivity
         return getDocument().getTableTitle(tableName, "" /* TODO */);
     }
 
+    @Override
+    public void onRecordSelected(final String tableName, final String primaryKeyValue) {
+        navigate(tableName, primaryKeyValue);
+    }
 }

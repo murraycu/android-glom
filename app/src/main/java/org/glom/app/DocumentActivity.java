@@ -2,6 +2,7 @@ package org.glom.app;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -24,6 +25,12 @@ import java.util.List;
 @SuppressLint("Registered") //This is a base class for other Activities.
 public class DocumentActivity extends Activity
         implements TableNavCallbacks {
+
+    /**
+     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
+     * device.
+     */
+    protected boolean mTwoPane = false; //Set by derived constructors sometimes.
 
     private final DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
 
@@ -68,6 +75,49 @@ public class DocumentActivity extends Activity
         //as long as we cannot register a more specific MIME type.
         //String type = intent.getType();
         //Log.v("glomdebug", "type=" + type);
+    }
+
+    /** Navigate to the table,
+     * showing the list or table view, depending on whether a primaryKeyValue is provided.
+     *
+     * @param tableName
+     * @param primaryKeyValue
+     */
+    protected void navigate(final String tableName, final String primaryKeyValue) {
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            final Bundle arguments = new Bundle();
+            arguments.putString(TableDetailFragment.ARG_TABLE_NAME, tableName);
+
+            Fragment fragment;
+            if (primaryKeyValue == null) {
+                fragment = new TableListFragment();
+            } else {
+                fragment = new TableDetailFragment();
+                arguments.putString(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, primaryKeyValue);
+            }
+
+            fragment.setArguments(arguments);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.table_data_container, fragment)
+                    .commit();
+        } else {
+            // In single-pane mode, simply start the detail activity
+            // for the selected item ID.
+            Intent intent;
+            if (primaryKeyValue == null) {
+                intent = new Intent(this, TableListActivity.class);
+            } else {
+                intent = new Intent(this, TableDetailActivity.class);
+                intent.putExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, primaryKeyValue);
+            }
+
+            intent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
+
+            startActivity(intent);
+        }
     }
 
     private void showDocumentTitle() {
@@ -178,5 +228,7 @@ public class DocumentActivity extends Activity
 
             onDocumentLoadingFinished(result);
         }
+
+
     }
 }

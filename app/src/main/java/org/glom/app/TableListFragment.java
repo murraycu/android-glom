@@ -3,6 +3,7 @@ package org.glom.app;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
@@ -10,7 +11,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
+import android.widget.HeaderViewListAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -68,10 +72,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
 
         final View rootView = inflater.inflate(R.layout.fragment_table_list, container, false);
 
-        // Show the dummy content as text in a TextView.
-        final String title = mCallbacks.getTableTitle(getTableName());
-        //TODO: Use a real specific method for this?
-        ((TextView) rootView.findViewById(R.id.textView)).setText(title);
+        showTableTitle(rootView);
 
         setHasOptionsMenu(true);
 
@@ -79,6 +80,11 @@ public class TableListFragment extends ListFragment implements TableDataFragment
 
 
         return rootView;
+    }
+
+    private void showTableTitle(final View rootView) {
+        final String title = mCallbacks.getTableTitle(getTableName());
+        ((TextView) rootView.findViewById(R.id.textView)).setText(title);
     }
 
     /*
@@ -269,5 +275,32 @@ public class TableListFragment extends ListFragment implements TableDataFragment
     @Override
     public void setTableName(String tableName) {
         mTableName = tableName;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+
+        ListAdapter adapter = l.getAdapter();
+
+        //When the ListView has header views, our adaptor will be wrapped by HeaderViewListAdapter:
+        if(adapter instanceof HeaderViewListAdapter) {
+            final HeaderViewListAdapter parentAdapter = (HeaderViewListAdapter)adapter;
+            adapter = parentAdapter.getWrappedAdapter();
+        }
+
+        if(!(adapter instanceof CursorAdapter)) {
+            Log.error("Unexpected Adaptor class: " + adapter.getClass().toString());
+            return;
+        }
+
+        //TODO: CursorAdapter.getItem() might return a Cursor.
+        final CursorAdapter cursorAdapter = (CursorAdapter)adapter;
+        final Cursor cursor = cursorAdapter.getCursor();
+        cursor.moveToPosition(position);
+
+        final String primaryKeyValue = cursor.getString(0); //TODO: Get primary key position.
+
+        mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
     }
 }
