@@ -294,10 +294,14 @@ public class TableListFragment extends ListFragment implements TableDataFragment
             return;
         }
 
-        //TODO: CursorAdapter.getItem() might return a Cursor.
+        // CursorAdapter.getItem() returns a  Cursor but that seems to be completely undocumented:
+        // https://code.google.com/p/android/issues/detail?id=69973&thanks=69973&ts=1400841331
         final CursorAdapter cursorAdapter = (CursorAdapter)adapter;
-        final Cursor cursor = cursorAdapter.getCursor();
-        cursor.moveToPosition(position);
+        final Cursor cursor = (Cursor)cursorAdapter.getItem(position - 1 /* Because we have a header */);
+        if (cursor == null) {
+            Log.error("cursorAdapter.getItem() returned null.");
+            return;
+        }
 
         final String primaryKeyValue = cursor.getString(0); //TODO: Get primary key position.
 
