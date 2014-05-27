@@ -23,10 +23,8 @@ package org.glom.app;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.glom.app.R;
 import org.glom.app.libglom.layout.LayoutItemField;
 
 import java.util.ArrayList;

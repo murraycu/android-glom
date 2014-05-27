@@ -1,8 +1,6 @@
 package org.glom.app;
 
-import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.os.Bundle;
 
 

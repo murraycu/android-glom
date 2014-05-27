@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.test.ActivityUnitTestCase;
 
 import org.glom.app.TableDetailActivity;
-import org.glom.app.TableNavActivity;
 
 /**
  * Created by murrayc on 5/26/14.
