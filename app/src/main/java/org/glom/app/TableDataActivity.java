@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,7 +71,7 @@ public class TableDataActivity extends DocumentActivity
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            NavUtils.navigateUpTo(this, new Intent(this, TableNavActivity.class));
+            navigateUpTo(new Intent(this, TableNavActivity.class));
             return true;
         } else if (id == R.id.option_menu_item_list) {
             navigate(mTableName, null);

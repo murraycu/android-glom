@@ -40,7 +40,7 @@ import static java.lang.Math.max;
 public class UiUtils {
     public static int getStandardItemPadding(final Context context) {
         //TODO: Use  listPreferredItemPaddingStart instead, if we can discover what SDK version has it.
-        final int[] attrs = new int[] { R.attr.listPreferredItemPaddingLeft };
+        final int[] attrs = new int[] { android.R.attr.listPreferredItemPaddingLeft };
         final TypedArray a = context.obtainStyledAttributes(attrs);
         final int size = a.getDimensionPixelSize(0 /* The first (only) value */,
             -1 /* return this if there is no value */);
