@@ -17,7 +17,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.glom.app.libglom.*;
+import org.glom.app.libglom.Document;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.jooq.SQLDialect;
 
@@ -113,7 +113,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         final ListView listView = getListView();
-        if(listView == null) {
+        if (listView == null) {
             return;
         }
 
@@ -140,7 +140,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
             }
 
             //Separate the views with some space:
-            if(i != 0) {
+            if (i != 0) {
                 //TODO: Align items so the width is the same for the whole column.
                 final int size = UiUtils.getStandardItemPadding(context);
                 textView.setPadding(size /* left */, 0, 0, 0);
@@ -159,7 +159,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
     }
 
     private List<LayoutItemField> getFieldsToShow() {
-        if(mFieldsToGet == null) {
+        if (mFieldsToGet == null) {
             final Document document = DocumentSingleton.getInstance().getDocument();
             mFieldsToGet = Utils.getFieldsToShowForSQLQuery(document, getTableName(),
                     document.getDataLayoutGroups("list", getTableName()));
@@ -205,20 +205,20 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         ListAdapter adapter = l.getAdapter();
 
         //When the ListView has header views, our adaptor will be wrapped by HeaderViewListAdapter:
-        if(adapter instanceof HeaderViewListAdapter) {
-            final HeaderViewListAdapter parentAdapter = (HeaderViewListAdapter)adapter;
+        if (adapter instanceof HeaderViewListAdapter) {
+            final HeaderViewListAdapter parentAdapter = (HeaderViewListAdapter) adapter;
             adapter = parentAdapter.getWrappedAdapter();
         }
 
-        if(!(adapter instanceof CursorAdapter)) {
+        if (!(adapter instanceof CursorAdapter)) {
             Log.error("Unexpected Adaptor class: " + adapter.getClass().toString());
             return;
         }
 
         // CursorAdapter.getItem() returns a  Cursor but that seems to be completely undocumented:
         // https://code.google.com/p/android/issues/detail?id=69973&thanks=69973&ts=1400841331
-        final CursorAdapter cursorAdapter = (CursorAdapter)adapter;
-        final Cursor cursor = (Cursor)cursorAdapter.getItem(position - 1 /* Because we have a header */);
+        final CursorAdapter cursorAdapter = (CursorAdapter) adapter;
+        final Cursor cursor = (Cursor) cursorAdapter.getItem(position - 1 /* Because we have a header */);
         if (cursor == null) {
             Log.error("cursorAdapter.getItem() returned null.");
             return;

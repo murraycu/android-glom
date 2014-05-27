@@ -19,136 +19,136 @@
 
 package org.glom.app.libglom;
 
-import java.util.Date;
-
-import org.glom.app.libglom.DataItem;
 import org.glom.app.libglom.Field.GlomFieldType;
+
+import java.util.Date;
 
 /**
  * This specialization of DataItem can hold a primary key item.
  */
 @SuppressWarnings("serial")
 public class TypedDataItem extends DataItem {
-	private boolean empty = true;
-	private GlomFieldType type = GlomFieldType.TYPE_INVALID;
-	private String unknown = null;
+    private boolean empty = true;
+    private GlomFieldType type = GlomFieldType.TYPE_INVALID;
+    private String unknown = null;
 
-	public TypedDataItem() {
-	}
+    public TypedDataItem() {
+    }
 
-	public boolean isEmpty() {
-		return empty;
-	}
-	
-	public boolean isUnknownType() {
-		return (type == GlomFieldType.TYPE_INVALID);
-	}
+    public boolean isEmpty() {
+        return empty;
+    }
 
-	/** Get the value.
-	 * 
-	 * This is a generic alternative to getNumber(), getText(), etc.
-	 * @return
-	 */
-	public Object getValue() {
-		switch(type) {
-		case TYPE_NUMERIC:
-			return getNumber();
-		case TYPE_TEXT:
-			return getText();
-		case TYPE_DATE:
-			return getDate();
-		//TODO: case TYPE_TIME:
-		//	return getTime();
-		case TYPE_BOOLEAN:
-			return getBoolean();
-		case TYPE_IMAGE:
-			return getImageData();
-		case TYPE_INVALID:
-			return "value-with-invalid-type";
-		default:
-			return "value-with-unknown-type";
-		}
-	}
+    public boolean isUnknownType() {
+        return (type == GlomFieldType.TYPE_INVALID);
+    }
 
-	//TODO: Why is this override necessary?
-	/*
+    /**
+     * Get the value.
+     * <p/>
+     * This is a generic alternative to getNumber(), getText(), etc.
+     *
+     * @return
+     */
+    public Object getValue() {
+        switch (type) {
+            case TYPE_NUMERIC:
+                return getNumber();
+            case TYPE_TEXT:
+                return getText();
+            case TYPE_DATE:
+                return getDate();
+            //TODO: case TYPE_TIME:
+            //	return getTime();
+            case TYPE_BOOLEAN:
+                return getBoolean();
+            case TYPE_IMAGE:
+                return getImageData();
+            case TYPE_INVALID:
+                return "value-with-invalid-type";
+            default:
+                return "value-with-unknown-type";
+        }
+    }
+
+    //TODO: Why is this override necessary?
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.glom.web.shared.DataItem#setBoolean(boolean)
 	 */
-	@Override
-	public void setBoolean(final boolean bool) {
-		this.empty = false;
-		this.type = GlomFieldType.TYPE_BOOLEAN;
-		super.setBoolean(bool);
-	}
+    @Override
+    public void setBoolean(final boolean bool) {
+        this.empty = false;
+        this.type = GlomFieldType.TYPE_BOOLEAN;
+        super.setBoolean(bool);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.glom.web.shared.DataItem#setNumber(double)
-	 */
-	@Override
-	public void setNumber(final double number) {
-		this.empty = false;
-		this.type = GlomFieldType.TYPE_NUMERIC;
-		super.setNumber(number);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.glom.web.shared.DataItem#setNumber(double)
+     */
+    @Override
+    public void setNumber(final double number) {
+        this.empty = false;
+        this.type = GlomFieldType.TYPE_NUMERIC;
+        super.setNumber(number);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.glom.web.shared.DataItem#setText(java.lang.String)
-	 */
-	@Override
-	public void setText(final String text) {
-		this.empty = false;
-		this.type = GlomFieldType.TYPE_TEXT;
-		super.setText(text);
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.glom.web.shared.DataItem#setNumber(double)
-	 */
-	@Override
-	public void setDate(final Date date) {
-		this.empty = false;
-		this.type = GlomFieldType.TYPE_DATE;
-		super.setDate(date);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.glom.web.shared.DataItem#setText(java.lang.String)
+     */
+    @Override
+    public void setText(final String text) {
+        this.empty = false;
+        this.type = GlomFieldType.TYPE_TEXT;
+        super.setText(text);
+    }
 
-	public void setImageData(final byte[] imageData) {
-		this.empty = false;
-		this.type = GlomFieldType.TYPE_IMAGE;
-		super.setImageData(imageData);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.glom.web.shared.DataItem#setNumber(double)
+     */
+    @Override
+    public void setDate(final Date date) {
+        this.empty = false;
+        this.type = GlomFieldType.TYPE_DATE;
+        super.setDate(date);
+    }
 
-	public void setImageDataUrl(final String image) {
-		this.empty = false;
-		this.type = GlomFieldType.TYPE_IMAGE;
-		super.setImageDataUrl(image);
-	}
-	
+    public void setImageData(final byte[] imageData) {
+        this.empty = false;
+        this.type = GlomFieldType.TYPE_IMAGE;
+        super.setImageData(imageData);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.glom.web.shared.DataItem#setText(java.lang.String)
-	 */
-	public void setUnknown(final String value) {
-		this.empty = false;
-		this.type = GlomFieldType.TYPE_INVALID;
-		this.unknown = value;
-	}
+    public void setImageDataUrl(final String image) {
+        this.empty = false;
+        this.type = GlomFieldType.TYPE_IMAGE;
+        super.setImageDataUrl(image);
+    }
 
-	public String getUnknown() {
-		return unknown;
-	}
+    public String getUnknown() {
+        return unknown;
+    }
 
-	public GlomFieldType getType() {
-		return type;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.glom.web.shared.DataItem#setText(java.lang.String)
+     */
+    public void setUnknown(final String value) {
+        this.empty = false;
+        this.type = GlomFieldType.TYPE_INVALID;
+        this.unknown = value;
+    }
+
+    public GlomFieldType getType() {
+        return type;
+    }
 
 }

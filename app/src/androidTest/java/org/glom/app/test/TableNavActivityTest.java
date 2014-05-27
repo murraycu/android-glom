@@ -9,7 +9,7 @@ import org.glom.app.TableNavActivity;
  * Created by murrayc on 5/26/14.
  */
 public class TableNavActivityTest
-    extends ActivityUnitTestCase<TableNavActivity> {
+        extends ActivityUnitTestCase<TableNavActivity> {
 
     private TableNavActivity mActivity;
 

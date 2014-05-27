@@ -11,11 +11,6 @@ public interface TableDataFragment {
      * represents.
      */
     public static final String ARG_TABLE_NAME = "table_name";
-
-    public String getTableName();
-
-    public void setTableName(final String tableName);
-
     /**
      * A dummy implementation of the {@link Callbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
@@ -41,6 +36,10 @@ public interface TableDataFragment {
         }
     };
 
+    public String getTableName();
+
+    public void setTableName(final String tableName);
+
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -58,6 +57,7 @@ public interface TableDataFragment {
         public String getTableTitle(final String tableName);
 
         //TODO: Don't just use a String for the primary key value.
+
         /**
          * Callback for when a record has been selected.
          */

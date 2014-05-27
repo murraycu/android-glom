@@ -23,7 +23,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.google.common.io.Files;
 
-import org.glom.app.Log;
 import org.glom.app.libglom.DataItem;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;

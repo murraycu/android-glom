@@ -38,10 +38,10 @@ import static java.lang.Math.max;
 public class UiUtils {
     public static int getStandardItemPadding(final Context context) {
         //TODO: Use  listPreferredItemPaddingStart instead, if we can discover what SDK version has it.
-        final int[] attrs = new int[] { android.R.attr.listPreferredItemPaddingLeft };
+        final int[] attrs = new int[]{android.R.attr.listPreferredItemPaddingLeft};
         final TypedArray a = context.obtainStyledAttributes(attrs);
         final int size = a.getDimensionPixelSize(0 /* The first (only) value */,
-            -1 /* return this if there is no value */);
+                -1 /* return this if there is no value */);
         a.recycle();
 
         //In case the theme didn't have a value:
@@ -75,14 +75,15 @@ public class UiUtils {
         return textView;
     }
 
-    /** Get a suitable TextView width (in pixels) for the field's contents, in dp.
+    /**
+     * Get a suitable TextView width (in pixels) for the field's contents, in dp.
      *
      * @param item
      * @return
      */
     static float getSuitableWidthForField(final TextView textView, final LayoutItemField item) {
         String exampleText;
-        switch(item.getGlomType()) {
+        switch (item.getGlomType()) {
             case TYPE_NUMERIC:
                 exampleText = "1234.5678";
             case TYPE_TEXT:
@@ -99,7 +100,8 @@ public class UiUtils {
         return width;
     }
 
-    /** Get the width of the text in pixels, if drawn in the TextView.
+    /**
+     * Get the width of the text in pixels, if drawn in the TextView.
      *
      * @param textView
      * @param text
@@ -112,7 +114,8 @@ public class UiUtils {
         return (float) (width / 1.5); /* TODO: Avoid this hack. */
     }
 
-    /** Get suitable widths (in pixels) for the fields.
+    /**
+     * Get suitable widths (in pixels) for the fields.
      *
      * @param context
      * @param fieldsToGet
@@ -131,7 +134,7 @@ public class UiUtils {
         final TextView textView = createTextView(context);
 
         final List<Integer> result = new ArrayList<Integer>();
-        for(final LayoutItemField item : fieldsToGet) {
+        for (final LayoutItemField item : fieldsToGet) {
             result.add((int) getSuitableWidthForField(textView, item));
         }
 

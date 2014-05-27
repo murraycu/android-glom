@@ -48,7 +48,7 @@ public class GlomCursorAdapter extends CursorAdapter {
             }
 
             //Separate the views with some space:
-            if(i != 0) {
+            if (i != 0) {
                 //final float paddingInDp = 16;
                 //final float scale = context.getResources().getDisplayMetrics().density;
                 //final int dpAsPixels = (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels

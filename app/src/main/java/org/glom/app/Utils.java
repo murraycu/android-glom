@@ -21,6 +21,15 @@ package org.glom.app;
 
 import android.text.TextUtils;
 
+import org.glom.app.libglom.Document;
+import org.glom.app.libglom.Field;
+import org.glom.app.libglom.Field.GlomFieldType;
+import org.glom.app.libglom.TypedDataItem;
+import org.glom.app.libglom.layout.LayoutGroup;
+import org.glom.app.libglom.layout.LayoutItem;
+import org.glom.app.libglom.layout.LayoutItemField;
+import org.glom.app.libglom.layout.LayoutItemPortal;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,60 +42,52 @@ import java.util.Date;
 import java.util.List;
 
 //import org.apache.http.client.utils.URIBuilder;
-import org.glom.app.libglom.Document;
-import org.glom.app.libglom.Field;
-import org.glom.app.libglom.TypedDataItem;
-import org.glom.app.libglom.Field.GlomFieldType;
-import org.glom.app.libglom.layout.LayoutGroup;
-import org.glom.app.libglom.layout.LayoutItem;
-import org.glom.app.libglom.layout.LayoutItemField;
-import org.glom.app.libglom.layout.LayoutItemPortal;
 
 /**
  *
  */
 public class Utils {
 
-	/*
-	 * This method safely converts longs from libglom into ints. This method was taken from stackoverflow:
-	 * 
-	 * http://stackoverflow.com/questions/1590831/safely-casting-long-to-int-in-java
-	 */
-	public static int safeLongToInt(final long value) {
-		if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException(value + " cannot be cast to int without changing its value.");
-		}
-		return (int) value;
-	}
+    /*
+     * This method safely converts longs from libglom into ints. This method was taken from stackoverflow:
+     *
+     * http://stackoverflow.com/questions/1590831/safely-casting-long-to-int-in-java
+     */
+    public static int safeLongToInt(final long value) {
+        if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(value + " cannot be cast to int without changing its value.");
+        }
+        return (int) value;
+    }
 
-	static public Object deepCopy(final Object oldObj) {
-		ObjectOutputStream oos = null;
-		ObjectInputStream ois = null;
+    static public Object deepCopy(final Object oldObj) {
+        ObjectOutputStream oos = null;
+        ObjectInputStream ois = null;
 
-		try {
-			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			oos = new ObjectOutputStream(bos);
-			// serialize and pass the object
-			oos.writeObject(oldObj);
-			oos.flush();
-			final ByteArrayInputStream bin = new ByteArrayInputStream(bos.toByteArray());
-			ois = new ObjectInputStream(bin);
+        try {
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            oos = new ObjectOutputStream(bos);
+            // serialize and pass the object
+            oos.writeObject(oldObj);
+            oos.flush();
+            final ByteArrayInputStream bin = new ByteArrayInputStream(bos.toByteArray());
+            ois = new ObjectInputStream(bin);
 
-			// return the new object
-			return ois.readObject();
-		} catch (final Exception e) {
-			System.out.println("Exception in deepCopy:" + e);
-			return null;
-		} finally {
-			try {
-				oos.close();
-				ois.close();
-			} catch (final IOException e) {
-				System.out.println("Exception in deepCopy during finally: " + e);
-				return null;
-			}
-		}
-	}
+            // return the new object
+            return ois.readObject();
+        } catch (final Exception e) {
+            System.out.println("Exception in deepCopy:" + e);
+            return null;
+        } finally {
+            try {
+                oos.close();
+                ois.close();
+            } catch (final IOException e) {
+                System.out.println("Exception in deepCopy during finally: " + e);
+                return null;
+            }
+        }
+    }
 
 //	/** Build the URL for the service that will return the binary data for an image.
 //	 *
@@ -133,100 +134,100 @@ public class Utils {
 //		return uriBuilder;
 //	}
 
-	/** Build a :-separated string to represent the path as a string.
-	 * @param path
-	 * @return
-	 */
-	public static String buildLayoutPath(int[] path) {
-		if((path == null) || (path.length == 0)) {
-			return null;
-		}
+    /**
+     * Build a :-separated string to represent the path as a string.
+     *
+     * @param path
+     * @return
+     */
+    public static String buildLayoutPath(int[] path) {
+        if ((path == null) || (path.length == 0)) {
+            return null;
+        }
 
-		String result = "";
-		for(int i:path) {
-			if(!result.isEmpty()) {
-				result += ":";
-			}
-			
-			final String strIndex = Integer.toString(i);
-			result += strIndex;
-		}
-		
-		return result;
-	}
+        String result = "";
+        for (int i : path) {
+            if (!result.isEmpty()) {
+                result += ":";
+            }
 
-	/** Get an array of int indices from the :-separated string.
-	 * See buildLayoutPath().
-	 * 
-	 * @param attrLayoutPath
-	 * @return The array of indices of the layout items.
-	 */
-	public static int[] parseLayoutPath(final String attrLayoutPath) {
-		if(TextUtils.isEmpty(attrLayoutPath)) {
-			return null;
-		}
-		
-		final String[] strIndices = attrLayoutPath.split(":");
-		final int[] indices = new int[strIndices.length];
-		for (int i = 0; i < strIndices.length; ++i) {
-			final String str = strIndices[i];
-	
-			try
-			{
-				indices[i] = Integer.parseInt(str);
-			}
-			catch (final NumberFormatException nfe)
-			{
-				//TODO: Log the error.
-				return null;
-			}
-		}
-	
-		return indices;
-	}
+            final String strIndex = Integer.toString(i);
+            result += strIndex;
+        }
 
-	public static void transformUnknownToActualType(final TypedDataItem dataItem, final GlomFieldType actualType) {
-		if(dataItem.getType() == actualType)
-			return;
-		
-		String unknownText = dataItem.getUnknown();
-		
-		//Avoid repeated checks for null:
-		if (unknownText == null) {
-			unknownText = "";
-		}
-	
-		switch(actualType) {
-		case TYPE_NUMERIC:
-			// TODO: Is this really locale-independent?
-			double number = 0;
-			if(!TextUtils.isEmpty(unknownText)) {
-				try {
-					number = Double.parseDouble(unknownText);		
-				} catch (final NumberFormatException e) {
-					e.printStackTrace();
-				}
-			}
+        return result;
+    }
 
-			dataItem.setNumber(number);
-			break;
-		case TYPE_TEXT:
-			dataItem.setText(unknownText);
-			break;
-		case TYPE_DATE:
-			final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-	        Date date = null;
-			try {
-				date = formatter.parse(unknownText);
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	
-			dataItem.setDate(date); 
-			break;
-		case TYPE_TIME:
-			/*TODO :
+    /**
+     * Get an array of int indices from the :-separated string.
+     * See buildLayoutPath().
+     *
+     * @param attrLayoutPath
+     * @return The array of indices of the layout items.
+     */
+    public static int[] parseLayoutPath(final String attrLayoutPath) {
+        if (TextUtils.isEmpty(attrLayoutPath)) {
+            return null;
+        }
+
+        final String[] strIndices = attrLayoutPath.split(":");
+        final int[] indices = new int[strIndices.length];
+        for (int i = 0; i < strIndices.length; ++i) {
+            final String str = strIndices[i];
+
+            try {
+                indices[i] = Integer.parseInt(str);
+            } catch (final NumberFormatException nfe) {
+                //TODO: Log the error.
+                return null;
+            }
+        }
+
+        return indices;
+    }
+
+    public static void transformUnknownToActualType(final TypedDataItem dataItem, final GlomFieldType actualType) {
+        if (dataItem.getType() == actualType)
+            return;
+
+        String unknownText = dataItem.getUnknown();
+
+        //Avoid repeated checks for null:
+        if (unknownText == null) {
+            unknownText = "";
+        }
+
+        switch (actualType) {
+            case TYPE_NUMERIC:
+                // TODO: Is this really locale-independent?
+                double number = 0;
+                if (!TextUtils.isEmpty(unknownText)) {
+                    try {
+                        number = Double.parseDouble(unknownText);
+                    } catch (final NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                dataItem.setNumber(number);
+                break;
+            case TYPE_TEXT:
+                dataItem.setText(unknownText);
+                break;
+            case TYPE_DATE:
+                final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = null;
+                try {
+                    date = formatter.parse(unknownText);
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                dataItem.setDate(date);
+                break;
+            case TYPE_TIME:
+            /*TODO :
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	        Date date;
 			try {
@@ -238,21 +239,21 @@ public class Utils {
 	
 			setDate(date); 
 			*/
-			break;
-		case TYPE_BOOLEAN:
-			final boolean bool = unknownText.equals("true");
-			dataItem.setBoolean(bool); //TODO
-			break;
-		case TYPE_IMAGE:
-			dataItem.setImageDataUrl(unknownText);
-			//setImageData(null);//TODO: Though this is only used for primary keys anyway.
-			break;
-		case TYPE_INVALID:
-			break;
-		default:
-			break; //TODO: Warn because this is unusual?
-		}
-	}
+                break;
+            case TYPE_BOOLEAN:
+                final boolean bool = unknownText.equals("true");
+                dataItem.setBoolean(bool); //TODO
+                break;
+            case TYPE_IMAGE:
+                dataItem.setImageDataUrl(unknownText);
+                //setImageData(null);//TODO: Though this is only used for primary keys anyway.
+                break;
+            case TYPE_INVALID:
+                break;
+            default:
+                break; //TODO: Warn because this is unusual?
+        }
+    }
 
     /*
           * Gets a list to use when generating an SQL query.

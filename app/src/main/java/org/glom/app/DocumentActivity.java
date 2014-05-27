@@ -26,14 +26,12 @@ import java.util.List;
 public class DocumentActivity extends Activity
         implements TableNavCallbacks {
 
+    private final DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     protected boolean mTwoPane = false; //Set by derived constructors sometimes.
-
-    private final DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
-
     private Uri mUri;
 
     private void showDocumentLoadProgress() {
@@ -77,7 +75,8 @@ public class DocumentActivity extends Activity
         //Log.v("glomdebug", "type=" + type);
     }
 
-    /** Navigate to the table,
+    /**
+     * Navigate to the table,
      * showing the list or table view, depending on whether a primaryKeyValue is provided.
      *
      * @param tableName
@@ -147,7 +146,7 @@ public class DocumentActivity extends Activity
         // so that ArrayAdapter will call TableNavItem.toString() to get the titles.
         List<TableNavItem> tables = new ArrayList<TableNavItem>();
         for (final String tableName : tableNames) {
-            if(document.getTableIsHidden(tableName)) {
+            if (document.getTableIsHidden(tableName)) {
                 continue;
             }
 

@@ -7,13 +7,15 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:textIsSelectable="true"
-    tools:context="org.glom.app.TableDetailFragment" >
+    tools:context="org.glom.app.TableDetailFragment">
 
-    <TextView android:id="@+id/textView"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TableLayout android:id="@+id/tableLayout"
+    <TableLayout
+        android:id="@+id/tableLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"

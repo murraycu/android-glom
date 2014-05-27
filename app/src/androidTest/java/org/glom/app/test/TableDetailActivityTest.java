@@ -9,7 +9,7 @@ import org.glom.app.TableDetailActivity;
  * Created by murrayc on 5/26/14.
  */
 public class TableDetailActivityTest
-    extends ActivityUnitTestCase<TableDetailActivity> {
+        extends ActivityUnitTestCase<TableDetailActivity> {
 
     private TableDetailActivity mActivity;
 

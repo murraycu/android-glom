@@ -203,7 +203,7 @@ public class SelfHosterSqlite extends SelfHoster {
         boolean tableCreationSucceeded = false;
 
 		/*
-		 * TODO: //Create the standard field too: //(We don't actually use this yet) if(std::find_if(fields.begin(),
+         * TODO: //Create the standard field too: //(We don't actually use this yet) if(std::find_if(fields.begin(),
 		 * fields.end(), predicate_FieldHasName<Field>(GLOM_STANDARD_FIELD_LOCK)) == fields.end()) { sharedptr<Field>
 		 * field = sharedptr<Field>::create(); field->set_name(GLOM_STANDARD_FIELD_LOCK);
 		 * field->set_glom_type(Field::TYPE_TEXT); fields.push_back(field); }

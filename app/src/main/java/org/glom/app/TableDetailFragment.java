@@ -66,13 +66,13 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
         final Bundle bundle = getArguments();
         if ((bundle != null)) {
-            if(!bundle.containsKey(ARG_TABLE_NAME)) {
+            if (!bundle.containsKey(ARG_TABLE_NAME)) {
                 Log.error("The bundle doesn't contain the table name.");
             } else {
                 setTableName(bundle.getString(ARG_TABLE_NAME));
             }
 
-            if(!bundle.containsKey(ARG_PRIMARY_KEY_VALUE)) {
+            if (!bundle.containsKey(ARG_PRIMARY_KEY_VALUE)) {
                 Log.error("The bundle doesn't contain the primary key value.");
             } else {
                 mPkValue = bundle.getString(ARG_PRIMARY_KEY_VALUE);
@@ -106,7 +106,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
         final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
         mCursor = db.rawQuery(query, null);
-        if(mCursor.getCount() <= 0) { //In case the query returned no rows.
+        if (mCursor.getCount() <= 0) { //In case the query returned no rows.
             Log.error("The query returned no rows: " + query);
         }
 
@@ -121,7 +121,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
         //Look at each group in the layout:
         final TableLayout tableLayout = getTableLayout(rootView);
-        for(final LayoutGroup group : groups) {
+        for (final LayoutGroup group : groups) {
             addGroupToLayout(context, tableLayout, group);
         }
 
@@ -129,7 +129,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
     }
 
     private List<LayoutItemField> getFieldsToShow() {
-        if(mFieldsToGet == null) {
+        if (mFieldsToGet == null) {
             final Document document = DocumentSingleton.getInstance().getDocument();
             mFieldsToGet = Utils.getFieldsToShowForSQLQuery(document, getTableName(),
                     document.getDataLayoutGroups("details", getTableName()));
@@ -140,14 +140,14 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
     private void addGroupToLayout(final Context context, TableLayout tableLayout, LayoutGroup group) {
         final List<LayoutItem> items = group.getItems();
-        for(final LayoutItem item : items) {
+        for (final LayoutItem item : items) {
             final Class itemClass = item.getClass();
-            if(itemClass.isAssignableFrom(LayoutGroup.class)) {
-                final LayoutGroup innerGroup = (LayoutGroup)item;
+            if (itemClass.isAssignableFrom(LayoutGroup.class)) {
+                final LayoutGroup innerGroup = (LayoutGroup) item;
                 final TableLayout innerTableLayout = new TableLayout(context);
                 addGroupToLayout(context, innerTableLayout, innerGroup);
-            } else if(itemClass.isAssignableFrom(LayoutItemField.class)) {
-                final LayoutItemField field = (LayoutItemField)item;
+            } else if (itemClass.isAssignableFrom(LayoutItemField.class)) {
+                final LayoutItemField field = (LayoutItemField) item;
                 final TableRow row = new TableRow(context);
                 tableLayout.addView(row);
 
@@ -162,7 +162,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
                 // and possibly incorrect behaviour of getColumnIndex() when the query has two
                 // fields with the same name from different tables.
                 String value = null;
-                if(mCursor.getCount() >= 1) { //In case the query returned no rows.
+                if (mCursor.getCount() >= 1) { //In case the query returned no rows.
                     try {
                         final int columnIndex = mCursor.getColumnIndexOrThrow(field.getName());
                         if (columnIndex >= 0) {

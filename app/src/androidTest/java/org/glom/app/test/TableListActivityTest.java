@@ -9,7 +9,7 @@ import org.glom.app.TableListActivity;
  * Created by murrayc on 5/26/14.
  */
 public class TableListActivityTest
-    extends ActivityUnitTestCase<TableListActivity> {
+        extends ActivityUnitTestCase<TableListActivity> {
 
     private TableListActivity mActivity;
 

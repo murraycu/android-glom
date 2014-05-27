@@ -33,14 +33,14 @@ public class DocumentSingleton {
     public boolean load(final InputStream inputStream, final Context context) {
         //Make sure we start with a fresh Document:
         mDocument = new Document();
-        if(!mDocument.load(inputStream)) {
+        if (!mDocument.load(inputStream)) {
             return false;
         }
 
-        if(mDocument.getIsExampleFile()) {
+        if (mDocument.getIsExampleFile()) {
             //Create a SQLite database:
             SelfHosterSqlite selfHosterSqlite = new SelfHosterSqlite(mDocument, context);
-            if(!selfHosterSqlite.createAndSelfHostFromExample()) {
+            if (!selfHosterSqlite.createAndSelfHostFromExample()) {
                 Log.e("android-glom", "createAndSelfHostFromExample() failed.");
                 return false;
             }
@@ -61,7 +61,9 @@ public class DocumentSingleton {
         this.mDocument = document;
     }
 
-    public SQLiteDatabase getDatabase() { return mDatabase; }
+    public SQLiteDatabase getDatabase() {
+        return mDatabase;
+    }
 
     public void setDatabase(final SQLiteDatabase database) {
         this.mDatabase = database;

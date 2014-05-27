@@ -3,22 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/table_list"
     style="?android:attr/textAppearanceLarge"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp"
     tools:context="org.glom.app.TableListFragment">
 
-    <TextView android:id="@+id/textView"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ListView android:id="@id/android:list"
+    <ListView
+        android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:drawSelectorOnTop="false"
         android:layout_below="@+id/textView"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:drawSelectorOnTop="false" />
 
 
 </RelativeLayout>
