@@ -1,5 +1,6 @@
 package org.glom.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 /**
@@ -31,10 +32,18 @@ public class TableDetailActivity extends TableDataActivity {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
+            final Bundle arguments = new Bundle();
             arguments.putString(TableDetailFragment.ARG_TABLE_NAME,
-                    mTableName);
-            TableDetailFragment fragment = new TableDetailFragment();
+                    mTableName); //Obtained in the super class.
+
+            // TODO: Find a simpler way to just pass this through to the fragment.
+            // For instance, pass the intent.getExtras() as the bundle?.
+            final Intent intent = getIntent();
+            final String pkValue = intent.getStringExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE);
+            arguments.putString(TableDetailFragment.ARG_PRIMARY_KEY_VALUE,
+                    pkValue);
+
+            final TableDetailFragment fragment = new TableDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
                     .add(R.id.table_data_container, fragment)

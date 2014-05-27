@@ -76,6 +76,7 @@ public class GlomCursorAdapter extends CursorAdapter {
         int i = 0;
         for (final TextView textView : mTextViews) {
             //TODO: Keep a list of the LayoutItemFields and do some real rendering here:
+            //TODO: Use the correct Cursor.get*() method depending on the column type.
             textView.setText(cursor.getString(i));
             i++;
         }

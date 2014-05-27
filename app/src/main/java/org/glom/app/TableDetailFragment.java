@@ -3,6 +3,8 @@ package org.glom.app;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,9 +18,12 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.glom.app.libglom.Document;
+import org.glom.app.libglom.Field;
+import org.glom.app.libglom.TypedDataItem;
 import org.glom.app.libglom.layout.LayoutGroup;
 import org.glom.app.libglom.layout.LayoutItem;
 import org.glom.app.libglom.layout.LayoutItemField;
+import org.jooq.SQLDialect;
 
 import java.util.List;
 
@@ -37,6 +42,11 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
     public static final String ARG_PRIMARY_KEY_VALUE = "pk_value";
 
     private String mTableName;
+    private String mPkValue;
+    private Cursor mCursor;
+
+    private List<LayoutItemField> mFieldsToGet; //A cache.
+
 
     /**
      * The fragment's current callback object.
@@ -55,11 +65,18 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         super.onCreate(savedInstanceState);
 
         final Bundle bundle = getArguments();
-        if ((bundle != null) && bundle.containsKey(ARG_TABLE_NAME)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            setTableName(getArguments().getString(ARG_TABLE_NAME));
+        if ((bundle != null)) {
+            if(!bundle.containsKey(ARG_TABLE_NAME)) {
+                Log.error("The bundle doesn't contain the table name.");
+            } else {
+                setTableName(bundle.getString(ARG_TABLE_NAME));
+            }
+
+            if(!bundle.containsKey(ARG_PRIMARY_KEY_VALUE)) {
+                Log.error("The bundle doesn't contain the primary key value.");
+            } else {
+                mPkValue = bundle.getString(ARG_PRIMARY_KEY_VALUE);
+            }
         }
 
         setHasOptionsMenu(true);
@@ -71,6 +88,30 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         final Activity activity = getActivity();
         final Context context = activity.getApplicationContext();
 
+        final Document document = DocumentSingleton.getInstance().getDocument();
+        final List<LayoutGroup> groups = document.getDataLayoutGroups("details", getTableName());
+
+        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
+
+        final Field primaryKey = document.getTablePrimaryKeyField(getTableName());
+        if (primaryKey == null) {
+            Log.error("Couldn't find primary key in table. Returning null.");
+            return null;
+        }
+
+        //TODO: Do not expect the ID to be a string:
+        final TypedDataItem primaryKeyValue = new TypedDataItem();
+        primaryKeyValue.setText(mPkValue);
+        final String query = SqlUtils.buildSqlSelectWithKey(document, getTableName(), fieldsToGet, primaryKey, primaryKeyValue, SQLDialect.SQLITE);
+
+        final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
+        mCursor = db.rawQuery(query, null);
+        if(mCursor.getCount() <= 0) { //In case the query returned no rows.
+            Log.error("The query returned no rows: " + query);
+        }
+
+        mCursor.moveToFirst(); //There should only be one anyway.
+
         final View rootView = inflater.inflate(R.layout.fragment_table_detail, container, false);
         assert rootView != null;
 
@@ -80,8 +121,6 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
         //Look at each group in the layout:
         final TableLayout tableLayout = getTableLayout(rootView);
-        final Document document = DocumentSingleton.getInstance().getDocument();
-        final List<LayoutGroup> groups = document.getDataLayoutGroups("details", getTableName());
         for(final LayoutGroup group : groups) {
             addGroupToLayout(context, tableLayout, group);
         }
@@ -89,15 +128,26 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         return rootView;
     }
 
+    private List<LayoutItemField> getFieldsToShow() {
+        if(mFieldsToGet == null) {
+            final Document document = DocumentSingleton.getInstance().getDocument();
+            mFieldsToGet = Utils.getFieldsToShowForSQLQuery(document, getTableName(),
+                    document.getDataLayoutGroups("details", getTableName()));
+        }
+
+        return mFieldsToGet;
+    }
+
     private void addGroupToLayout(final Context context, TableLayout tableLayout, LayoutGroup group) {
         final List<LayoutItem> items = group.getItems();
         for(final LayoutItem item : items) {
             final Class itemClass = item.getClass();
             if(itemClass.isAssignableFrom(LayoutGroup.class)) {
-                LayoutGroup innerGroup = (LayoutGroup)item;
+                final LayoutGroup innerGroup = (LayoutGroup)item;
                 final TableLayout innerTableLayout = new TableLayout(context);
                 addGroupToLayout(context, innerTableLayout, innerGroup);
             } else if(itemClass.isAssignableFrom(LayoutItemField.class)) {
+                final LayoutItemField field = (LayoutItemField)item;
                 final TableRow row = new TableRow(context);
                 tableLayout.addView(row);
 
@@ -107,7 +157,29 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
                 row.addView(textViewTitle);
 
                 final TextView textViewValue = UiUtils.createTextView(context);
-                row.addView(textViewValue);
+
+                // TODO: Keep our own column index, because we cannot depend on the undocumented
+                // and possibly incorrect behaviour of getColumnIndex() when the query has two
+                // fields with the same name from different tables.
+                String value = null;
+                if(mCursor.getCount() >= 1) { //In case the query returned no rows.
+                    try {
+                        final int columnIndex = mCursor.getColumnIndexOrThrow(field.getName());
+                        if (columnIndex >= 0) {
+                            value = mCursor.getString(columnIndex);
+                        }
+                    } catch (final IllegalArgumentException e) {
+                        Log.error("Exception while getting value", e);
+                    } catch (final Exception e) {
+                        Log.error("Exception while getting value", e);
+                    }
+                }
+
+                if (null != value) {
+                    textViewValue.setText(value);
+                    row.addView(textViewValue);
+                }
+
             }
         }
     }
