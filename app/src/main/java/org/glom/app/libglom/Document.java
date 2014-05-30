@@ -48,8 +48,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -607,7 +610,30 @@ public class Document {
         element.setTextContent(escaped);
     }
 
-    public boolean save(final String fileURI) {
+    public boolean save(final String fileUri) {
+        FileOutputStream stream;
+
+        final File file = new File(fileUri);
+        try {
+            file.getParentFile().mkdirs();
+            file.createNewFile();
+            stream = new FileOutputStream(file);
+        } catch (IOException e) {
+            System.out.println("createAndSelfHostNewEmpty(): Couldn't create stream for file URI.");
+            return false; // TODO: Delete the directory.
+        }
+
+        final boolean result = save(stream);
+        try {
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public boolean save(final OutputStream outputStream) {
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder;
         try {
@@ -670,6 +696,7 @@ public class Document {
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
         // Make sure that the parent directory exists:
+        /*
         final File file = new File(fileURI);
         try {
             Files.createParentDirs(file);
@@ -677,9 +704,10 @@ public class Document {
             e.printStackTrace();
             return false;
         }
+        */
 
         final DOMSource source = new DOMSource(doc);
-        final StreamResult result = new StreamResult(file);
+        final StreamResult result = new StreamResult(outputStream);
 
         // Output to console for testing
         // StreamResult result = new StreamResult(System.out);
