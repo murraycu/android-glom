@@ -20,6 +20,7 @@ import org.glom.app.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class GlomContentProvider extends ContentProvider {
 
@@ -217,6 +218,12 @@ public class GlomContentProvider extends ContentProvider {
                 if(context != null) {
                     final File realFile = new File(context.getExternalFilesDir(null),
                             Long.toString(fileId) + ".glom"); //TODO: Is toString() affected by the locale?
+
+                    //Actually create an empty file there -
+                    //otherwise when we try to write to it via openOutputStream()
+                    //we will get a FileNotFoundException.
+                    realFile.createNewFile();
+
                     realFileUri = realFile.getAbsolutePath();
                 }
             } catch (UnsupportedOperationException e) {
@@ -226,6 +233,9 @@ public class GlomContentProvider extends ContentProvider {
                 //TODO: Find a way to let it succeed.
                 realFileUri = "testuri";
                 Log.error("Unsupported operation", e);
+            } catch (IOException e) {
+                Log.error("IOException", e);
+                return null;
             }
 
             //Put the value for the _data column in the files table:
@@ -309,6 +319,22 @@ public class GlomContentProvider extends ContentProvider {
                                 (!TextUtils.isEmpty(selection) ?
                                         " AND (" + selection + ')' : ""),
                         selectionArgs, null, null, orderBy);
+
+                //debugging:
+                /*
+                Log.info("c count=" + c.getCount());
+
+                c.moveToFirst();
+                final int index = c.getColumnIndex(DatabaseHelper.DB_COLUMN_NAME_FILE_DATA);
+                if (index == -1) {
+                    Log.error("Cursor.getColumnIndex() failed.");
+                    return null;
+                }
+
+                final String strRealUri = c.getString(index);
+                Log.info("strRealUri=" + strRealUri);
+                */
+
                 c.setNotificationUri(getContext().getContentResolver(),
                         GlomSystem.FILE_URI); //TODO: More precise?
                 break;
