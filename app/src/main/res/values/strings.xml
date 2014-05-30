@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">AndroidGlom</string>
+    <string name="title_database_tables">Tables</string>
     <string name="title_table_detail">Table Detail</string>
     <string name="title_table_list">Table Records</string>
     <string name="action_list">List</string>

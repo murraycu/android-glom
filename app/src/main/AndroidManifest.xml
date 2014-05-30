@@ -2,19 +2,30 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.glom.app" >
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="org.glom.app.TableNavActivity"
-            android:label="@string/app_name" >
+            android:name="org.glom.app.DatabaseListActivity"
+            android:label="@string/title_database_tables" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name="org.glom.app.TableNavActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="org.glom.app.DatabaseListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.glom.app.DatabaseListActivity" />
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.EDIT" />
@@ -31,20 +42,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.glom.app.TableDetailActivity"
-            android:label="@string/title_table_detail"
-            android:parentActivityName="org.glom.app.TableListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.glom.app.TableListActivity" />
-        </activity>
-        <activity
             android:name="org.glom.app.TableListActivity"
             android:label="@string/title_table_list"
             android:parentActivityName="org.glom.app.TableNavActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.glom.app.TableNavActivity" />
+        </activity>
+        <activity
+            android:name="org.glom.app.TableDetailActivity"
+            android:label="@string/title_table_detail"
+            android:parentActivityName="org.glom.app.TableListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.glom.app.TableListActivity" />
         </activity>
 
         <provider

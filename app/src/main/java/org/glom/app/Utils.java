@@ -19,6 +19,9 @@
 
 package org.glom.app;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.net.Uri;
 import android.text.TextUtils;
 
 import org.glom.app.libglom.Document;
@@ -29,6 +32,7 @@ import org.glom.app.libglom.layout.LayoutGroup;
 import org.glom.app.libglom.layout.LayoutItem;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.glom.app.libglom.layout.LayoutItemPortal;
+import org.glom.app.provider.GlomSystem;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -323,5 +327,24 @@ public class Utils {
             }
         }
         return layoutItemFields;
+    }
+
+    public static Uri buildFileContentUri(final Uri uriSystem, final ContentResolver resolver) {
+        final String[] projection = new String[] {GlomSystem.Columns.FILE_URI_COLUMN};
+        final Cursor cursor = resolver.query(uriSystem, projection, null, new String[]{}, null);
+        if (cursor.getCount() <= 0) {
+            Log.error("ContentResolver.query() returned no rows.");
+            return null;
+        }
+
+        cursor.moveToFirst();
+        final int index = cursor.getColumnIndex(GlomSystem.Columns.FILE_URI_COLUMN);
+        if (index == -1) {
+            Log.error("Cursor.getColumnIndex() failed.");
+            return null;
+        }
+
+        final String str = cursor.getString(index);
+        return Uri.parse(str);
     }
 }

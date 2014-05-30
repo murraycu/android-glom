@@ -7,10 +7,11 @@ import java.util.List;
  */
 public interface TableDataFragment {
     /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
+     * The fragment argument representing the table name that this fragment
+     * displays.
      */
     public static final String ARG_TABLE_NAME = "table_name";
+
     /**
      * A dummy implementation of the {@link Callbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.

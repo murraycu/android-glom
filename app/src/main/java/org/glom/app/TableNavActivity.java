@@ -23,6 +23,13 @@ import android.os.Bundle;
 public class TableNavActivity extends DocumentActivity
         implements TableDataFragment.Callbacks {
 
+    /**
+     * The intent argument representing the database ID (in the ContentProvider) that this activity
+     * displays.
+     * The activity will get either this (for an already-opened file) or a URL of an example file.
+     */
+    public static final String ARG_DATABASE_ID = "database_id";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +56,7 @@ public class TableNavActivity extends DocumentActivity
             }
         }
 
-        if (!hasUri()) {
+        if (!hasDocument()) {
             //Show an empty list,
             //instead of the "Loading ..." progress bar.
             //Otherwise, this will happen in onDocumentLoadingFinished

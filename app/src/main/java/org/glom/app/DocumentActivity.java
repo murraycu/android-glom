@@ -3,6 +3,9 @@ package org.glom.app;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -11,8 +14,10 @@ import android.os.Bundle;
 import android.util.Log;
 
 import org.glom.app.libglom.Document;
+import org.glom.app.provider.GlomSystem;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,12 +32,27 @@ public class DocumentActivity extends Activity
         implements TableNavCallbacks {
 
     private final DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
+
+    //We reference this while it's loading,
+    //just so we can close it when loading has finished.
+    InputStream mStream;
+
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     protected boolean mTwoPane = false; //Set by derived constructors sometimes.
     private Uri mUri;
+
+    protected boolean hasDocument() {
+        //The Activity's Intent should have either a URI or a databaseId:
+        if(hasUri())
+            return true;
+
+        final Intent intent = getIntent();
+        final long databaseId = intent.getLongExtra(TableNavActivity.ARG_DATABASE_ID, -1);
+        return (databaseId != -1);
+    }
 
     private void showDocumentLoadProgress() {
     }
@@ -41,6 +61,14 @@ public class DocumentActivity extends Activity
         if (!result) {
             Log.e("android-glom", "Document.load() failed for URI: " + mUri);
         }
+
+        try {
+            mStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mStream = null;
 
         //TODO: Notify other Activities that the shared document has changed?
         //And somehow invalidate/close activities those activities if it's a different document?
@@ -51,23 +79,32 @@ public class DocumentActivity extends Activity
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
-        mUri = intent.getData();
-        if (mUri != null) {
-            InputStream inputStream;
-            try {
-                inputStream = getContentResolver().openInputStream(mUri);
-            } catch (final FileNotFoundException e) {
-                e.printStackTrace();
-                return;
+
+        final long databaseId = intent.getLongExtra(TableNavActivity.ARG_DATABASE_ID, -1);
+        if(databaseId != -1) {
+            //Reopen a previously-opened database:
+            mStream = getInputStreamForExisting(databaseId);
+        } else {
+            mUri = intent.getData();
+            if (mUri != null) {
+                try {
+                    mStream = getContentResolver().openInputStream(mUri);
+                } catch (final FileNotFoundException e) {
+                    e.printStackTrace();
+                    return;
+                }
             }
-
-            //Load the document asynchronously.
-            //We respond when it finishes in onDocumentLoadingFinished.
-            final DocumentLoadTask task = new DocumentLoadTask();
-            task.execute(inputStream);
-
-            showDocumentTitle();
         }
+
+        if (mStream == null) {
+            org.glom.app.Log.error("stream is null.");
+            return;
+        }
+
+        //Load the document asynchronously.
+        //We respond when it finishes in onDocumentLoadingFinished.
+        final DocumentLoadTask task = new DocumentLoadTask();
+        task.execute(mStream);
 
         //This lets us know what MIME Type to mention in the intent filter in the manifest file,
         //as long as we cannot register a more specific MIME type.
@@ -195,6 +232,25 @@ public class DocumentActivity extends Activity
      */
     protected boolean hasUri() {
         return mUri != null;
+    }
+
+    public InputStream getInputStreamForExisting(long databaseId) {
+        final ContentResolver resolver = getContentResolver();
+
+        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, databaseId);
+        final Uri fileUri = Utils.buildFileContentUri(uriSystem, resolver);
+        if (fileUri == null) {
+            org.glom.app.Log.error("buildFileContentUri() failed.");
+            return null;
+        }
+
+        try {
+            final InputStream stream = resolver.openInputStream(fileUri);
+            return stream;
+        } catch (FileNotFoundException e) {
+            org.glom.app.Log.error("load() failed.", e);
+            return null;
+        }
     }
 
     //This loads the document in an AsyncTask because it can take a noticeably long time,
