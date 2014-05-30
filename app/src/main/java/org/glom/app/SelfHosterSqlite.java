@@ -57,6 +57,10 @@ public class SelfHosterSqlite extends SelfHoster {
      */
     protected boolean createAndSelfHostNewEmpty() {
         final File tempDir = saveDocumentCopy(Document.HostingMode.HOSTING_MODE_SQLITE);
+        if (tempDir == null) {
+            Log.error("createAndSelfHostNewEmpty(): saveDocumentCopy() failed.");
+            return false;
+        }
 
 
         // Create the self-hosting files:
@@ -252,8 +256,10 @@ public class SelfHosterSqlite extends SelfHoster {
         context.deleteDatabase(FILENAME_DATA);
 
         final String docPath = getFilePath();
-        final File fileDoc = new File(docPath);
-        fileDoc.delete();
+        if (docPath != null) {
+            final File fileDoc = new File(docPath);
+            fileDoc.delete();
+        }
 
         return true;
     }
