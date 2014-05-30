@@ -21,7 +21,6 @@ package org.glom.app;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import org.glom.app.libglom.Document;
@@ -35,9 +34,10 @@ import java.util.List;
  * @author Murray Cumming <murrayc@murrayc.com>
  */
 public class SelfHosterSqlite extends SelfHoster {
-    private static final String FILENAME_DATA = "data.db";
+    private static final String FILENAME_DATA = "data.db"; //TODO: Rename this variable - it's a name not a filename.
     private final Context context; //Needed by SQLiteOpenHelper.
     private SQLiteDatabase sqliteDatabase;
+    private String sqliteDatabaseName; //For later use with DbHelper.
 
     public SelfHosterSqlite(final Document document, Context context) {
         super(document);
@@ -99,15 +99,31 @@ public class SelfHosterSqlite extends SelfHoster {
     /**
      */
     private boolean initialize() {
-        //TODO: Generate a likely-unique database name.
+        sqliteDatabaseName = getUnusedDatabaseName(FILENAME_DATA);
 
-        //Make sure that the sqlite database doesn't exist yet:
-        context.deleteDatabase(FILENAME_DATA);
+        //Make sure that the sqlite database doesn't exist yet.
+        //though we have just checked that it does not exist.
+        context.deleteDatabase(sqliteDatabaseName);
 
-        final Helper helper = new Helper(context, FILENAME_DATA);
+        final DbHelper helper = new DbHelper(context, sqliteDatabaseName);
         sqliteDatabase = helper.getWritableDatabase();
 
         return true;
+    }
+
+    private String getUnusedDatabaseName(final String databaseNamePrefix) {
+        int suffix = 1;
+        while(true) {
+            final String nameCandidate = databaseNamePrefix + suffix;
+            final File fileDb = context.getDatabasePath(nameCandidate);
+            if (!fileDb.exists()) {
+                //The database with this name doesn't exist yet,
+                //so we can use this name for a new database:
+                return nameCandidate;
+            }
+
+            ++suffix;
+        }
     }
 
     /**
@@ -186,6 +202,10 @@ public class SelfHosterSqlite extends SelfHoster {
      */
     public SQLiteDatabase getSqlDatabase() {
         return sqliteDatabase;
+    }
+
+    public String getSqlDatabaseName() {
+        return sqliteDatabaseName;
     }
 
     /**
@@ -269,20 +289,4 @@ public class SelfHosterSqlite extends SelfHoster {
         return SQLDialect.SQLITE;
     }
 
-    private class Helper extends SQLiteOpenHelper {
-
-        Helper(final Context context, final String databaseName) {
-            super(context, databaseName, null, 1);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase sqLiteDatabase) {
-            //We will create the tables later.
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-            //This is not necessary in this test code.
-        }
-    }
 }
