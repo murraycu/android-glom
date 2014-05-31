@@ -1,10 +1,8 @@
 package org.glom.app;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
@@ -15,8 +13,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import static org.glom.app.Log.*;
 
 /**
  * A singleton that allows our various Activities to share the same document data and database

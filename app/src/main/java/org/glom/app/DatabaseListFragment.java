@@ -2,28 +2,19 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.HeaderViewListAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
-import org.glom.app.libglom.Document;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.glom.app.provider.GlomSystem;
-import org.jooq.SQLDialect;
 
 import java.util.List;
 

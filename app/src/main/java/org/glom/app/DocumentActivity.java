@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;

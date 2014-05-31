@@ -13,7 +13,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 
 import org.glom.app.Log;

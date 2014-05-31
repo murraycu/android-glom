@@ -30,9 +30,7 @@ import android.test.mock.MockContentResolver;
 import org.glom.app.provider.GlomContentProvider;
 import org.glom.app.provider.GlomSystem;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * Simple test to ensure that the generated bindings are working.
