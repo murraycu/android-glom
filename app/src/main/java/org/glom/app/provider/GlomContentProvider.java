@@ -35,9 +35,9 @@ public class GlomContentProvider extends ContentProvider {
 
     /**
      * The MIME type of a {@link GlomSystem#CONTENT_URI} sub-directory of a single
-     * video.
+     * item.
      */
-    public static final String CONTENT_VIDEO_TYPE =
+    public static final String CONTENT_SYSTEM_TYPE =
             "vnd.android.cursor.item/vnd.glom.system";
 
     /**
@@ -133,16 +133,16 @@ public class GlomContentProvider extends ContentProvider {
                         selectionArgs);
                 break;
             case MATCHER_ID_SYSTEM:
-                long videoId = ContentUris.parseId(uri);
+                final long systemId = ContentUris.parseId(uri);
                 affected = getDb().delete(DatabaseHelper.TABLE_NAME_SYSTEMS,
-                        BaseColumns._ID + "=" + videoId
+                        BaseColumns._ID + "=" + systemId
                                 + (!TextUtils.isEmpty(selection) ?
                                 " AND (" + selection + ')' : ""),
                         selectionArgs);
                 break;
             //TODO?: case MATCHER_ID_FILE:
             default:
-                throw new IllegalArgumentException("unknown video element: " +
+                throw new IllegalArgumentException("unknown itemt: " +
                         uri);
         }
 
@@ -156,9 +156,9 @@ public class GlomContentProvider extends ContentProvider {
             case MATCHER_ID_SYSTEMS:
                 return CONTENT_TYPE;
             case MATCHER_ID_SYSTEM:
-                return CONTENT_VIDEO_TYPE;
+                return CONTENT_SYSTEM_TYPE;
             default:
-                throw new IllegalArgumentException("Unknown video type: " +
+                throw new IllegalArgumentException("Unknown item type: " +
                         uri);
         }
     }
@@ -290,7 +290,7 @@ public class GlomContentProvider extends ContentProvider {
         Cursor c;
         switch (match) {
             case MATCHER_ID_SYSTEMS:
-                // query the database for all videos
+                // query the database for all database systems:
                 c = getDb().query(DatabaseHelper.TABLE_NAME_SYSTEMS, projection,
                         selection, selectionArgs,
                         null, null, orderBy);
@@ -299,7 +299,7 @@ public class GlomContentProvider extends ContentProvider {
                         GlomSystem.CONTENT_URI);
                 break;
             case MATCHER_ID_SYSTEM:
-                // query the database for a specific video
+                // query the database for a specific database system:
                 final long systemId = ContentUris.parseId(uri);
                 c = getDb().query(DatabaseHelper.TABLE_NAME_SYSTEMS, projection,
                         BaseColumns._ID + " = " + systemId + //TODO: Use ? to avoid SQL Injection.
