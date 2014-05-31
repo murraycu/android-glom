@@ -26,5 +26,5 @@ public class GlomSystem {
     public static final class Columns implements BaseColumns {
         public static final String TITLE_COLUMN = "title";
         public static final String FILE_URI_COLUMN ="uri";
-    };
+    }
 }

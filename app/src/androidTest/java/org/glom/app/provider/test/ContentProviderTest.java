@@ -122,8 +122,6 @@ public class ContentProviderTest extends ProviderTestCase2<GlomContentProvider> 
             assertNull(mimeTypes);
             fail(); //This should not be reached: The exception should always be thrown.
         } catch (final IllegalArgumentException e) {
-            return;
         }
-
     }
 }
