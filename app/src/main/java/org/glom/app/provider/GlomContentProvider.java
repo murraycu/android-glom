@@ -341,6 +341,7 @@ public class GlomContentProvider extends ContentProvider {
                 throw new IllegalArgumentException("unsupported uri: " + uri);
         }
 
+        //TODO: Can we avoid passing a Sqlite cursor up as a ContentResolver cursor?
         return c;
     }
 

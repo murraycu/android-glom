@@ -91,6 +91,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         final String query = SqlUtils.buildSqlSelectWithWhereClause(document, getTableName(), fieldsToGet,
                 null, null, SQLDialect.SQLITE);
         final Cursor cursor = db.rawQuery(query, null);
+        activity.startManagingCursor(cursor);
 
         try {
             setListAdapter(new GlomCursorAdapter(
@@ -225,6 +226,7 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         }
 
         final String primaryKeyValue = cursor.getString(0); //TODO: Get primary key position.
+        cursor.close();
 
         mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
     }

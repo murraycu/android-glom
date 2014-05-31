@@ -317,6 +317,7 @@ public class Utils {
         }
 
         final String str = cursor.getString(index);
+        cursor.close();
         return Uri.parse(str);
     }
 }

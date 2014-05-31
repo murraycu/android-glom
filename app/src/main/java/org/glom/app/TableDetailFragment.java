@@ -106,6 +106,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
         final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
         mCursor = db.rawQuery(query, null);
+        activity.startManagingCursor(mCursor);
         if (mCursor.getCount() <= 0) { //In case the query returned no rows.
             Log.error("The query returned no rows: " + query);
         }
