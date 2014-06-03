@@ -8,6 +8,8 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.glom.app.libglom.Document;
+
 import java.util.List;
 
 /**
@@ -89,7 +91,11 @@ public class TableDataActivity extends DocumentActivity
 
     @Override
     public String getTableTitle(String tableName) {
-        return getDocument().getTableTitle(tableName, "" /* TODO */);
+        final Document document = getDocument();
+        if(document == null)
+            return null;
+
+        return document.getTableTitle(tableName, "" /* TODO */);
     }
 
     @Override

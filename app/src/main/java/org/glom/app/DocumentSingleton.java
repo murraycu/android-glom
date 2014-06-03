@@ -25,8 +25,7 @@ public class DocumentSingleton {
 
     private static final DocumentSingleton ourInstance = new DocumentSingleton();
 
-    //Don't let this ever be null, so we can avoid always checking getDocument() for null.
-    private Document mDocument = new Document();
+    private Document mDocument;
     private SQLiteDatabase mDatabase;
 
     private DocumentSingleton() {
@@ -113,9 +112,11 @@ public class DocumentSingleton {
         return mDocument;
     }
 
+    /*
     public void setDocument(final Document document) {
         this.mDocument = document;
     }
+    */
 
     public SQLiteDatabase getDatabase() {
         return mDatabase;

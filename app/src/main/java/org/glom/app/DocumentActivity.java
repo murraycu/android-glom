@@ -158,7 +158,13 @@ public class DocumentActivity extends Activity
     }
 
     private void showDocumentTitle() {
-        final String title = String.format("Glom: %s", getDocument().getDatabaseTitle("" /* TODO */));
+        String databaseTitle = "";
+        final Document document = getDocument();
+        if(document != null) {
+            databaseTitle = getDocument().getDatabaseTitle("" /* TODO */);
+        }
+
+        final String title = String.format("Glom: %s", databaseTitle);
         setTitle(title);
     }
 

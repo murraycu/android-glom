@@ -3,6 +3,8 @@ package org.glom.app;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
+import org.glom.app.libglom.Document;
+
 
 /**
  * An activity representing a list of Tables. This activity
@@ -101,7 +103,11 @@ public class TableNavActivity extends DocumentActivity
 
     @Override
     public String getTableTitle(String tableName) {
-        return getDocument().getTableTitle(tableName, "" /* TODO */);
+        final Document document = getDocument();
+        if(document == null)
+            return null;
+
+        return document.getTableTitle(tableName, "" /* TODO */);
     }
 
 
