@@ -34,7 +34,7 @@ public class GlomCursorAdapter extends CursorAdapter {
         //rowLayout.setTag("content");
 
         //Create the layout for the row:
-        mTextViews = new ArrayList<TextView>();
+        mTextViews = new ArrayList<>();
 
         final int MAX = 3; //TODO: Be more clever about how we don't use more than the available space.
         for (int i = 0; i < mFieldsToGet.size(); i++) {

@@ -234,7 +234,7 @@ public class Utils {
           * Gets a list to use when generating an SQL query.
           */
     protected static List<LayoutItemField> getFieldsToShowForSQLQuery(final Document document, final String tableName, final List<LayoutGroup> layoutGroupVec) {
-        final List<LayoutItemField> listLayoutFIelds = new ArrayList<LayoutItemField>();
+        final List<LayoutItemField> listLayoutFIelds = new ArrayList<>();
 
         // We will show the fields that the document says we should:
         for (final LayoutGroup layoutGroup : layoutGroupVec) {
@@ -260,7 +260,7 @@ public class Utils {
              */
     private static ArrayList<LayoutItemField> getFieldsToShowForSQLQueryAddGroup(final Document document, final String tableName, final LayoutGroup libglomLayoutGroup) {
 
-        final ArrayList<LayoutItemField> layoutItemFields = new ArrayList<LayoutItemField>();
+        final ArrayList<LayoutItemField> layoutItemFields = new ArrayList<>();
         final List<LayoutItem> items = libglomLayoutGroup.getItems();
         final int numItems = org.glom.app.libglom.Utils.safeLongToInt(items.size());
         for (int i = 0; i < numItems; i++) {

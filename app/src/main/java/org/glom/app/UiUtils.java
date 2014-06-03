@@ -133,7 +133,7 @@ public class UiUtils {
 
         final TextView textView = createTextView(context);
 
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<>();
         for (final LayoutItemField item : fieldsToGet) {
             result.add((int) getSuitableWidthForField(textView, item));
         }

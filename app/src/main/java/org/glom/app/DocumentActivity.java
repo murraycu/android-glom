@@ -180,7 +180,7 @@ public class DocumentActivity extends Activity
 
         // Put the table names in a list of TableNavItem,
         // so that ArrayAdapter will call TableNavItem.toString() to get the titles.
-        List<TableNavItem> tables = new ArrayList<TableNavItem>();
+        List<TableNavItem> tables = new ArrayList<>();
         for (final String tableName : tableNames) {
             if (document.getTableIsHidden(tableName)) {
                 continue;

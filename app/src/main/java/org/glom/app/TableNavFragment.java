@@ -73,14 +73,14 @@ public class TableNavFragment extends ListFragment {
 
         //For instance, if the app was started directly, instead of via a view intent.
         if (tables == null) {
-            tables = new ArrayList<TableNavItem>();
+            tables = new ArrayList<>();
         }
 
         final Activity activity = getActivity();
         if (activity == null)
             return;
 
-        setListAdapter(new ArrayAdapter<TableNavItem>(
+        setListAdapter(new ArrayAdapter<>(
                 activity,
                 android.R.layout.simple_list_item_activated_1, //TODO: Explain this.
                 android.R.id.text1, //TODO: Explain this.

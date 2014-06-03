@@ -42,7 +42,7 @@ public class TableDataActivity extends DocumentActivity
         List<TableNavItem> tables = getMainTableNames();
 
         menu.clear();
-        mTableActionIDs = new SparseArray<String>();
+        mTableActionIDs = new SparseArray<>();
 
         //For instance, if the app was started directly, instead of via a view intent.
         int id = 0;
