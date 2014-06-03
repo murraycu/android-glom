@@ -2,9 +2,12 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,7 +37,54 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link TableDetailActivity}
  * on handsets.
  */
-public class DatabaseListFragment extends ListFragment {
+public class DatabaseListFragment extends ListFragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int URL_LOADER = 0;
+    SimpleCursorAdapter mAdapter;
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        if (loaderId != URL_LOADER) {
+            return null;
+        }
+
+        /**
+         * The columns needed by the cursor adapter
+         */
+        final String[] PROJECTION = new String[] {
+                GlomSystem.Columns._ID, // 0
+                GlomSystem.Columns.TITLE_COLUMN, // 1
+        };
+
+        final Activity activity = getActivity();
+        return new CursorLoader(
+                activity,
+                GlomSystem.SYSTEMS_URI,
+                PROJECTION, // Return the note ID and title for each note.
+                null, // No where clause, return all records.
+                null, // No where clause, therefore no where column values.
+                null // Use the default sort order.
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        /*
+         * Moves the query results into the adapter, causing the
+         * ListView fronting this adapter to re-display.
+         */
+        mAdapter.changeCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+        /*
+         * Clears out the adapter's reference to the Cursor.
+         * This prevents memory leaks.
+         */
+        mAdapter.changeCursor(null);
+    }
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -128,22 +178,12 @@ public class DatabaseListFragment extends ListFragment {
 
         setHasOptionsMenu(true);
 
-        /**
-         * The columns needed by the cursor adapter
+        /*
+         * Initializes the CursorLoader. The URL_LOADER value is eventually passed
+         * to onCreateLoader().
          */
-        final String[] PROJECTION = new String[] {
-                GlomSystem.Columns._ID, // 0
-                GlomSystem.Columns.TITLE_COLUMN, // 1
-        };
+        getLoaderManager().initLoader(URL_LOADER, null, this);
 
-        final Activity activity = getActivity();
-        final Cursor cursor = activity.managedQuery( //TODO: Use CursorLoader instead.
-                GlomSystem.SYSTEMS_URI,
-                PROJECTION, // Return the note ID and title for each note.
-                null, // No where clause, return all records.
-                null, // No where clause, therefore no where column values.
-                null // Use the default sort order.
-        );
 
         // The names of the cursor columns to display in the view, initialized to the title column
         String[] dataColumns = { GlomSystem.Columns.TITLE_COLUMN };
@@ -151,16 +191,16 @@ public class DatabaseListFragment extends ListFragment {
         final int[] viewIDs = { android.R.id.text1 };
 
         //TODO: Don't use the deprecated constructor:
-        final SimpleCursorAdapter adapter
-                = new SimpleCursorAdapter(
+        mAdapter = new SimpleCursorAdapter(
                 getActivity(), // The Context for the ListView
                 android.R.layout.simple_list_item_1, // Points to the XML for a list item
-                cursor, // The cursor to get items from
+                null, // No cursor yet.
                 dataColumns,
-                viewIDs
+                viewIDs,
+                0 //No flags
         );
 
-        setListAdapter(adapter);
+        setListAdapter(mAdapter);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
