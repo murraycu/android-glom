@@ -6,5 +6,6 @@
     <string name="title_table_detail">Table Detail</string>
     <string name="title_table_list">Table Records</string>
     <string name="action_list">List</string>
+    <string name="action_delete">Delete</string>
 
 </resources>

@@ -2,11 +2,21 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CursorAdapter;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
@@ -49,6 +59,47 @@ public class DatabaseListFragment extends ListFragment {
         public void onDatabaseSelected(final long databaseId) {
         }
     };
+
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created - when startActionMode() was called
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.context_menu_database_list, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_delete:
+                    deleteSelectedDatabase();
+                    mode.finish(); // Action picked, so close the CAB
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+    };
+
+    ActionMode mActionMode;
+    int mLongClickPosition = 0;
 
     /**
      * The fragment's current callback object.
@@ -138,7 +189,45 @@ public class DatabaseListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        ListAdapter adapter = l.getAdapter();
+        final long databaseId = getDatabaseIdForItem(l, position);
+        if (databaseId == -1) {
+            Log.error("cursorAdapter.getCursorForItem() returned -1.");
+            return;
+        }
+
+        mCallbacks.onDatabaseSelected(databaseId);
+    }
+
+    private void deleteDatabase(long databaseId) {
+        if (databaseId == -1) {
+            Log.error("databaseId is -1.");
+            return;
+        }
+
+        //Tell the resolver to forget the database.
+        //(It also deletes the associated XML at the associate file/ URI.)
+        //TODO: Check that our ListView is updated automatically.
+        final ContentResolver resolver = getActivity().getContentResolver();
+        final ContentValues v = new ContentValues();
+        v.put(GlomSystem.Columns._ID, databaseId);
+
+        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, databaseId);
+        try {
+            resolver.delete(uriSystem, null, null);
+        } catch (final IllegalArgumentException e) {
+            Log.error("ContentResolver.insert() failed", e);
+        }
+    }
+
+    /**
+     * Returns -1 if no item is selected.
+     *
+     * @param listView
+     * @param position
+     * @return
+     */
+    private long getDatabaseIdForItem(final ListView listView, int position) {
+        ListAdapter adapter = listView.getAdapter();
 
         //When the ListView has header views, our adaptor will be wrapped by HeaderViewListAdapter:
         if (adapter instanceof HeaderViewListAdapter) {
@@ -148,7 +237,7 @@ public class DatabaseListFragment extends ListFragment {
 
         if (!(adapter instanceof CursorAdapter)) {
             Log.error("Unexpected Adaptor class: " + adapter.getClass().toString());
-            return;
+            return -1;
         }
 
         // CursorAdapter.getItem() returns a  Cursor but that seems to be completely undocumented:
@@ -157,10 +246,44 @@ public class DatabaseListFragment extends ListFragment {
         final Cursor cursor = (Cursor) cursorAdapter.getItem(position /* - 1 if we have a header */);
         if (cursor == null) {
             Log.error("cursorAdapter.getItem() returned null.");
-            return;
         }
 
         final long databaseId = cursor.getLong(0);
-        mCallbacks.onDatabaseSelected(databaseId);
+        cursor.close();
+        return databaseId;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        final ListView listView = getListView();
+        if (listView == null) {
+            return;
+        }
+
+        //Respond to long-clicks by offering a contextual action bar:
+        listView.setLongClickable(true);
+
+        //Note that we use setOnItemLongClickListener(), not  setOnLongClickListener().
+        listView.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                mLongClickPosition = position;
+                mActionMode = getActivity().startActionMode(mActionModeCallback);
+                view.setSelected(true);
+                return true;
+            }
+        });
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    private void deleteSelectedDatabase()
+    {
+        final ListView listView = getListView();
+        final long databaseId = getDatabaseIdForItem(listView, mLongClickPosition);
+        deleteDatabase(databaseId);
+
+        //final CursorAdapter cursorAdapter = (CursorAdapter)listView.getAdapter();
+        //CursorAdapter.notifyDataSetChanged();
     }
 }

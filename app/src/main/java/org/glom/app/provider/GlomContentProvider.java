@@ -126,11 +126,13 @@ public class GlomContentProvider extends ContentProvider {
         int affected;
 
         switch (match) {
+            //TODO: Do not support this because it would delete everything in one go?
             case MATCHER_ID_SYSTEMS:
                 affected = getDb().delete(DatabaseHelper.TABLE_NAME_SYSTEMS,
                         (!TextUtils.isEmpty(selection) ?
                                 " AND (" + selection + ')' : ""),
                         selectionArgs);
+                //TODO: Delete all associated files too.
                 break;
             case MATCHER_ID_SYSTEM:
                 final long systemId = ContentUris.parseId(uri);
@@ -139,6 +141,7 @@ public class GlomContentProvider extends ContentProvider {
                                 + (!TextUtils.isEmpty(selection) ?
                                 " AND (" + selection + ')' : ""),
                         selectionArgs);
+                //TODO: Delete the associated files too.
                 break;
             //TODO?: case MATCHER_ID_FILE:
             default:
