@@ -172,9 +172,9 @@ public class DatabaseListFragment extends ListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //TODO?
+        //TODO? super.onCreateView(inflater, container, savedInstanceState);
 
-        //final View rootView = inflater.inflate(R.layout.fragment_database_list, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_database_list, container, false);
 
         setHasOptionsMenu(true);
 
@@ -190,7 +190,6 @@ public class DatabaseListFragment extends ListFragment
 
         final int[] viewIDs = { android.R.id.text1 };
 
-        //TODO: Don't use the deprecated constructor:
         mAdapter = new SimpleCursorAdapter(
                 getActivity(), // The Context for the ListView
                 android.R.layout.simple_list_item_1, // Points to the XML for a list item
@@ -202,7 +201,7 @@ public class DatabaseListFragment extends ListFragment
 
         setListAdapter(mAdapter);
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return rootView;
     }
 
     @Override

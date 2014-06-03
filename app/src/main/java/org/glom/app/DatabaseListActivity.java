@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 /**
- * An activity representing a list of databases/douments/systems.
+ * An activity representing a list of databases/documents/systems.
  * <p/>
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link DatabaseListFragment}.
@@ -16,7 +16,7 @@ public class DatabaseListActivity extends Activity implements DatabaseListFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_table_list);
+        setContentView(R.layout.activity_database_list);
 
         // savedInstanceState is non-null when there is fragment state
         // saved from previous configurations of this activity
@@ -34,14 +34,15 @@ public class DatabaseListActivity extends Activity implements DatabaseListFragme
             DatabaseListFragment fragment = new DatabaseListFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
-                    .add(R.id.table_data_container, fragment)
+                    .add(R.id.database_list, fragment)
                     .commit();
         }
     }
 
-    private TableListFragment getDatabaseListFragment() {
-        return ((TableListFragment) getFragmentManager()
-                .findFragmentById(R.id.table_list));
+    //TODO: Use this to call update() sometimes?
+    private DatabaseListFragment getDatabaseListFragment() {
+        return ((DatabaseListFragment) getFragmentManager()
+                .findFragmentById(R.id.database_list));
     }
 
     @Override
