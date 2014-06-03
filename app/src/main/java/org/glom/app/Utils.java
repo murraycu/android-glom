@@ -34,11 +34,6 @@ import org.glom.app.libglom.layout.LayoutItemField;
 import org.glom.app.libglom.layout.LayoutItemPortal;
 import org.glom.app.provider.GlomSystem;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
