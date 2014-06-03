@@ -156,7 +156,6 @@ public class DatabaseListFragment extends ListFragment
      * The fragment's current callback object.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
-    private List<LayoutItemField> mFieldsToGet; //A cache.
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
