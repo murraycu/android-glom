@@ -244,8 +244,7 @@ public class DocumentActivity extends Activity
         }
 
         try {
-            final InputStream stream = resolver.openInputStream(fileUri);
-            return stream;
+            return  resolver.openInputStream(fileUri);
         } catch (FileNotFoundException e) {
             org.glom.app.Log.error("load() failed.", e);
             return null;

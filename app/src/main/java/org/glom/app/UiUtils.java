@@ -50,15 +50,16 @@ public class UiUtils {
             // have an appropriate value for each screen size/dpi.
             final int paddingInDp = 16;
             final float scale = context.getResources().getDisplayMetrics().density;
-            final int dpAsPixels = (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels
-            return dpAsPixels;
+
+            //Get the dp as pixels:
+            return (int) (paddingInDp * scale + 0.5f); // See http://developer.android.com/guide/practices/screens_support.html#dips-pels
         }
 
         return size;
     }
 
     static TextView createTextView(Context context) {
-        final TextView textView = new TextView(context);
+        return new TextView(context);
 
         /*
         ViewGroup.LayoutParams params = textView.getLayoutParams();
@@ -72,7 +73,7 @@ public class UiUtils {
         textView.setLayoutParams(params);
         */
 
-        return textView;
+        //return textView;
     }
 
     /**
@@ -96,8 +97,7 @@ public class UiUtils {
         //TODO:
         final float widthExample = measureText(textView, exampleText);
         final float widthTitle = measureText(textView, item.getTitleOrName(""));
-        final float width = max(widthExample, widthTitle);
-        return width;
+        return max(widthExample, widthTitle);
     }
 
     /**
