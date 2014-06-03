@@ -26,9 +26,9 @@ import org.jooq.SQLDialect;
 import java.util.List;
 
 /**
- * A fragment representing a single Table detail screen.
+ * A fragment representing a single Table list screen.
  * This fragment is either contained in a {@link org.glom.app.TableNavActivity}
- * in two-pane mode (on tablets) or a {@link org.glom.app.TableDetailActivity}
+ * in two-pane mode (on tablets) or a {@link org.glom.app.TableListActivity}
  * on handsets.
  */
 public class TableListFragment extends ListFragment
