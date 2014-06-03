@@ -2,7 +2,9 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.app.LoaderManager;
 import android.content.Context;
+import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
@@ -29,7 +31,37 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link org.glom.app.TableDetailActivity}
  * on handsets.
  */
-public class TableListFragment extends ListFragment implements TableDataFragment {
+public class TableListFragment extends ListFragment
+        implements TableDataFragment, LoaderManager.LoaderCallbacks<Cursor> {
+
+    //This must be a static inner class because android.app.LoaderManagerImpl checks
+    //for that at runtime.
+    public static final class GlomCursorLoader extends SimpleCursorLoader {
+        final TableListFragment mFragment;
+
+        public GlomCursorLoader(final Context context, final TableListFragment fragment) {
+            super(context);
+            mFragment = fragment;
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            final Document document = DocumentSingleton.getInstance().getDocument();
+            final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
+
+            final List<LayoutItemField> fieldsToGet = mFragment.getFieldsToShow();
+            final String query = SqlUtils.buildSqlSelectWithWhereClause(document, mFragment.getTableName(), fieldsToGet,
+                null, null, SQLDialect.SQLITE);
+            final Cursor cursor = db.rawQuery(query, null);
+
+            if (cursor != null) {
+                cursor.getCount();
+            }
+
+            return cursor;
+        }
+    }
+
     private String mTableName;
 
     /**
@@ -37,6 +69,38 @@ public class TableListFragment extends ListFragment implements TableDataFragment
      */
     private Callbacks mCallbacks = sDummyCallbacks;
     private List<LayoutItemField> mFieldsToGet; //A cache.
+
+    private static final int URL_LOADER = 0;
+    GlomCursorAdapter mAdapter;
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        if (loaderId != URL_LOADER) {
+            return null;
+        }
+
+        final Activity activity = getActivity();
+        return new GlomCursorLoader(activity, this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        /*
+         * Moves the query results into the adapter, causing the
+         * ListView fronting this adapter to re-display.
+         */
+        mAdapter.changeCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+        /*
+         * Clears out the adapter's reference to the Cursor.
+         * This prevents memory leaks.
+         */
+        mAdapter.changeCursor(null);
+     }
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,6 +132,12 @@ public class TableListFragment extends ListFragment implements TableDataFragment
 
         setHasOptionsMenu(true);
 
+        /*
+         * Initializes the CursorLoader. The URL_LOADER value is eventually passed
+         * to onCreateLoader().
+         */
+        getLoaderManager().initLoader(URL_LOADER, null, this);
+
         update();
 
 
@@ -84,27 +154,22 @@ public class TableListFragment extends ListFragment implements TableDataFragment
         if (activity == null)
             return;
 
-        final Document document = DocumentSingleton.getInstance().getDocument();
-        final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
-
         final List<LayoutItemField> fieldsToGet = getFieldsToShow();
-        final String query = SqlUtils.buildSqlSelectWithWhereClause(document, getTableName(), fieldsToGet,
-                null, null, SQLDialect.SQLITE);
-        final Cursor cursor = db.rawQuery(query, null);
-        activity.startManagingCursor(cursor);
+
+        mAdapter = new GlomCursorAdapter(
+                activity,
+                null, //No cursor yet.
+                fieldsToGet);
 
         try {
-            setListAdapter(new GlomCursorAdapter(
-                    activity,
-                    cursor,
-                    fieldsToGet));
+            setListAdapter(mAdapter);
         } catch (final Exception e) {
             // We can get a RuntimeException from SimpleCursorAdaptor if:
             // -there is no _id field (we provide this as an alias)
             // or if
             // -there we try to show a "from" field that is not in the query.
             // And we can get an Exception from SQLiteCursor if we qualify the "from" field name with the table name.
-            Log.error("glom", "setListAdapter() failed for query: " + query + "\n with exception: " + e.getMessage());
+            Log.error("glom", "setListAdapter() failed for query  with exception: " + e.getMessage());
         }
 
         // We can't add the header view (column titles) here because getListView()
