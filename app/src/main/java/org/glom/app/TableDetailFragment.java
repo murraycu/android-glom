@@ -170,7 +170,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
                             value = mCursor.getString(columnIndex);
                         }
                     } catch (final IllegalArgumentException e) {
-                        Log.error("Exception while getting value", e);
+                        Log.error("IllegalArgumentException while getting value", e);
                     } catch (final Exception e) {
                         Log.error("Exception while getting value", e);
                     }
