@@ -42,6 +42,7 @@ public class DocumentActivity extends Activity
      */
     protected boolean mTwoPane = false; //Set by derived constructors sometimes.
     private Uri mUri;
+    private boolean mCurrentlyLoadingDocument = false;
 
     protected boolean hasDocument() {
         //The Activity's Intent should have either a URI or a databaseId:
@@ -102,6 +103,7 @@ public class DocumentActivity extends Activity
 
         //Load the document asynchronously.
         //We respond when it finishes in onDocumentLoadingFinished.
+        mCurrentlyLoadingDocument = true;
         final DocumentLoadTask task = new DocumentLoadTask();
         task.execute(mStream);
 
@@ -251,6 +253,10 @@ public class DocumentActivity extends Activity
         }
     }
 
+    public boolean currentlyLoadingDocument() {
+        return mCurrentlyLoadingDocument;
+    }
+
     //This loads the document in an AsyncTask because it can take a noticeably long time,
     //and we don't want to make the UI unresponsive.
     private class DocumentLoadTask extends AsyncTask<InputStream, Integer, Boolean> {
@@ -279,9 +285,8 @@ public class DocumentActivity extends Activity
 
             showDocumentTitle();
 
+            mCurrentlyLoadingDocument = false;
             onDocumentLoadingFinished(result);
         }
-
-
     }
 }
