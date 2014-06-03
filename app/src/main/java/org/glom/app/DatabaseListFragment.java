@@ -99,14 +99,15 @@ public class DatabaseListFragment extends ListFragment
         /**
          * Callback for when a database has been selected.
          */
-        public void onDatabaseSelected(final long databaseId);
+        public void onSystemSelected(final long systemId);
 
     }
 
     static final Callbacks sDummyCallbacks = new Callbacks() {
 
         @Override
-        public void onDatabaseSelected(final long databaseId) {
+        public void onSystemSelected(final long systemId
+        ) {
         }
     };
 
@@ -228,13 +229,13 @@ public class DatabaseListFragment extends ListFragment
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        final long databaseId = getDatabaseIdForItem(l, position);
-        if (databaseId == -1) {
+        final long systemId = getSystemIdForItem(l, position);
+        if (systemId == -1) {
             Log.error("cursorAdapter.getCursorForItem() returned -1.");
             return;
         }
 
-        mCallbacks.onDatabaseSelected(databaseId);
+        mCallbacks.onSystemSelected(systemId);
     }
 
     private void deleteDatabase(long databaseId) {
@@ -265,7 +266,7 @@ public class DatabaseListFragment extends ListFragment
      * @param position
      * @return
      */
-    private long getDatabaseIdForItem(final ListView listView, int position) {
+    private long getSystemIdForItem(final ListView listView, int position) {
         ListAdapter adapter = listView.getAdapter();
 
         //When the ListView has header views, our adaptor will be wrapped by HeaderViewListAdapter:
@@ -287,9 +288,9 @@ public class DatabaseListFragment extends ListFragment
             Log.error("cursorAdapter.getItem() returned null.");
         }
 
-        final long databaseId = cursor.getLong(0);
+        final long systemId = cursor.getLong(0);
         cursor.close();
-        return databaseId;
+        return systemId;
     }
 
     @Override
@@ -319,8 +320,8 @@ public class DatabaseListFragment extends ListFragment
     private void deleteSelectedDatabase()
     {
         final ListView listView = getListView();
-        final long databaseId = getDatabaseIdForItem(listView, mLongClickPosition);
-        deleteDatabase(databaseId);
+        final long systemId = getSystemIdForItem(listView, mLongClickPosition);
+        deleteDatabase(systemId);
 
         //final CursorAdapter cursorAdapter = (CursorAdapter)listView.getAdapter();
         //CursorAdapter.notifyDataSetChanged();

@@ -46,9 +46,9 @@ public class DatabaseListActivity extends Activity implements DatabaseListFragme
     }
 
     @Override
-    public void onDatabaseSelected(final long databaseId) {
+    public void onSystemSelected(final long systemId) {
         final Intent intent = new Intent(this, TableNavActivity.class);
-        intent.putExtra(TableNavActivity.ARG_DATABASE_ID, databaseId);
+        intent.putExtra(DocumentActivity.ARG_SYSTEM_ID, systemId);
 
         startActivity(intent);
     }
