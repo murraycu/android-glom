@@ -2,6 +2,7 @@ package org.glom.app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 /**
  * An activity representing a single record of a single Table. This
@@ -13,6 +14,8 @@ import android.os.Bundle;
  * more than a {@link TableDetailFragment}.
  */
 public class TableDetailActivity extends TableDataActivity {
+
+    private String mPkValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +42,9 @@ public class TableDetailActivity extends TableDataActivity {
             // TODO: Find a simpler way to just pass this through to the fragment.
             // For instance, pass the intent.getExtras() as the bundle?.
             final Intent intent = getIntent();
-            final String pkValue = intent.getStringExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE);
+            mPkValue = intent.getStringExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE);
             arguments.putString(TableDetailFragment.ARG_PRIMARY_KEY_VALUE,
-                    pkValue);
+                    mPkValue);
 
             final TableDetailFragment fragment = new TableDetailFragment();
             fragment.setArguments(arguments);
@@ -69,4 +72,27 @@ public class TableDetailActivity extends TableDataActivity {
                 .findFragmentById(R.id.table_data_container));
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        final int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            // This ID represents the Home or Up button. In the case of this
+            // activity, the Up button is shown. Use NavUtils to allow users
+            // to navigate up one level in the application structure. For
+            // more details, see the Navigation pattern on Android Design:
+            //
+            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+            //
+            final Intent intent = new Intent(this, TableListActivity.class);
+            intent.putExtra(ARG_SYSTEM_ID, getSystemId());
+            intent.putExtra(TableDataFragment.ARG_TABLE_NAME, mTableName);
+            intent.putExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, mPkValue);
+            navigateUpTo(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 }

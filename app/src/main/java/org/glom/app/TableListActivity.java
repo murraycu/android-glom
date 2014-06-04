@@ -1,6 +1,8 @@
 package org.glom.app;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 /**
  * An activity representing a list of records in a single Table. This
@@ -60,5 +62,28 @@ public class TableListActivity extends TableDataActivity {
     private TableListFragment getTableListFragment() {
         return ((TableListFragment) getFragmentManager()
                 .findFragmentById(R.id.table_data_container));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        final int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            // This ID represents the Home or Up button. In the case of this
+            // activity, the Up button is shown. Use NavUtils to allow users
+            // to navigate up one level in the application structure. For
+            // more details, see the Navigation pattern on Android Design:
+            //
+            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+            //
+            final Intent intent = new Intent(this, TableNavActivity.class);
+            intent.putExtra(ARG_SYSTEM_ID, getSystemId());
+            intent.putExtra(TableDataFragment.ARG_TABLE_NAME, mTableName);
+            navigateUpTo(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

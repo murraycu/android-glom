@@ -66,6 +66,8 @@ public class TableDataActivity extends DocumentActivity
         final int id = item.getItemId();
 
         if (id == android.R.id.home) {
+            //Derived Activities should handle this.
+
             // This ID represents the Home or Up button. In the case of this
             // activity, the Up button is shown. Use NavUtils to allow users
             // to navigate up one level in the application structure. For
