@@ -145,6 +145,11 @@ public class DocumentsSingleton {
 
         final ContentResolver resolver = context.getContentResolver();
         final InputStream stream = getInputStreamForExisting(resolver, systemId);
+        if (stream == null) {
+            Log.error("getInputStreamForExisting() returned null for systemId=" + systemId);
+            return false;
+        }
+
         final long resultSystemId = load(systemId, stream, context);
         return resultSystemId != -1;
     }
