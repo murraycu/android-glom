@@ -68,6 +68,15 @@ public class GlomContentProvider extends ContentProvider {
 
     private static final String[] FILE_MIME_TYPES = new String[]{"application/x-glom"};
 
+    /**
+     * There are 2 tables: systems and files.
+     * The systems table has a uri field that specifies a record in the files tables.
+     * The files table has a (standard for openInput/OutputStream()) _data field that
+     * contains the URI of the .glom Document file for the system.
+     *
+     * The location and creation of the SQLite database is left entirely up to the SQLiteOpenHelper
+     * class. We just store its name in the Document.
+     */
     private static class DatabaseHelper extends SQLiteOpenHelper {
         private static final String DATABASE_NAME = "systems.db";
         private static final int DATABASE_VERSION = 1;
