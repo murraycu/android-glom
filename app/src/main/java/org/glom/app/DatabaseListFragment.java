@@ -237,9 +237,9 @@ public class DatabaseListFragment extends ListFragment
         mCallbacks.onSystemSelected(systemId);
     }
 
-    private void deleteDatabase(long databaseId) {
-        if (databaseId == -1) {
-            Log.error("databaseId is -1.");
+    private void deleteDatabase(long systemId) {
+        if (systemId == -1) {
+            Log.error("systemId is -1.");
             return;
         }
 
@@ -248,9 +248,9 @@ public class DatabaseListFragment extends ListFragment
         //TODO: Check that our ListView is updated automatically.
         final ContentResolver resolver = getActivity().getContentResolver();
         final ContentValues v = new ContentValues();
-        v.put(GlomSystem.Columns._ID, databaseId);
+        v.put(GlomSystem.Columns._ID, systemId);
 
-        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, databaseId);
+        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, systemId);
         try {
             resolver.delete(uriSystem, null, null);
         } catch (final IllegalArgumentException e) {

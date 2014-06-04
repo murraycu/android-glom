@@ -3,8 +3,6 @@ package org.glom.app;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -13,7 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import org.glom.app.libglom.Document;
-import org.glom.app.provider.GlomSystem;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,7 +52,7 @@ public class DocumentActivity extends Activity
     private DocumentLoadExistingTask mTaskLoadingExisting;
 
     protected boolean hasDocument() {
-        //The Activity's Intent should have either a URI or a databaseId:
+        //The Activity's Intent should have either a URI or a systemId:
         if(hasUri())
             return true;
 
