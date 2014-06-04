@@ -89,7 +89,8 @@ public class DocumentActivity extends Activity
         mSystemId = intent.getLongExtra(ARG_SYSTEM_ID, -1);
         if(mSystemId != -1) {
             //Reopen a previously-opened database:
-            mStream = getInputStreamForExisting(databaseId);
+            //TODO: Ask the singleton for this, so we can cache the documents instead of repeatedly reloading.
+            mStream = getInputStreamForExisting(getContentResolver(), mSystemId);
         } else {
             mUri = intent.getData();
             if (mUri != null) {
@@ -253,9 +254,7 @@ public class DocumentActivity extends Activity
         return mUri != null;
     }
 
-    public InputStream getInputStreamForExisting(long databaseId) {
-        final ContentResolver resolver = getContentResolver();
-
+    public static InputStream getInputStreamForExisting(final ContentResolver resolver, long databaseId) {
         final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, databaseId);
         final Uri fileUri = Utils.buildFileContentUri(uriSystem, resolver);
         if (fileUri == null) {

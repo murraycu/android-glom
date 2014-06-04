@@ -3,11 +3,13 @@ package org.glom.app;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +23,7 @@ import android.widget.TextView;
 
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.layout.LayoutItemField;
-import org.jooq.SQLDialect;
+import org.glom.app.provider.GlomSystem;
 
 import java.util.List;
 
@@ -34,35 +36,9 @@ import java.util.List;
 public class TableListFragment extends ListFragment
         implements TableDataFragment, LoaderManager.LoaderCallbacks<Cursor> {
 
-    //This must be a static inner class because android.app.LoaderManagerImpl checks
-    //for that at runtime.
-    public static final class GlomCursorLoader extends SimpleCursorLoader {
-        final TableListFragment mFragment;
-
-        public GlomCursorLoader(final Context context, final TableListFragment fragment) {
-            super(context);
-            mFragment = fragment;
-        }
-
-        @Override
-        public Cursor loadInBackground() {
-            final Document document = DocumentSingleton.getInstance().getDocument();
-            final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
-
-            final List<LayoutItemField> fieldsToGet = mFragment.getFieldsToShow();
-            final String query = SqlUtils.buildSqlSelectWithWhereClause(document, mFragment.getTableName(), fieldsToGet,
-                null, null, SQLDialect.SQLITE);
-            final Cursor cursor = db.rawQuery(query, null);
-
-            if (cursor != null) {
-                cursor.getCount();
-            }
-
-            return cursor;
-        }
-    }
-
+    private long mSystemId;
     private String mTableName;
+    private boolean mActivityCreated = false;
 
     /**
      * The fragment's current callback object.
@@ -71,7 +47,7 @@ public class TableListFragment extends ListFragment
     private List<LayoutItemField> mFieldsToGet; //A cache.
 
     private static final int URL_LOADER = 0;
-    GlomCursorAdapter mAdapter;
+    GlomCursorAdapter  mAdapter;
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
@@ -79,8 +55,41 @@ public class TableListFragment extends ListFragment
             return null;
         }
 
+        /**
+         * The columns needed by the cursor adapter
+         */
+        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
+
         final Activity activity = getActivity();
-        return new GlomCursorLoader(activity, this);
+
+        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, getSystemId());
+        final Uri.Builder builder = uriSystem.buildUpon();
+        builder.appendPath(GlomSystem.TABLE_URI_PART);
+        builder.appendPath(getTableName());
+
+        final String[] fieldNames = getFieldNamesToGet();
+
+        return new CursorLoader(
+                activity,
+                builder.build(),
+                fieldNames, // Return the note ID and title for each note.
+                null, // No where clause, return all records.
+                null, // No where clause, therefore no where column values.
+                null // Use the default sort order.
+        );
+    }
+
+    private String[] getFieldNamesToGet() {
+        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
+        final String[] result = new String[fieldsToGet.size()];
+
+        int i = 0;
+        for(final LayoutItemField field : fieldsToGet) {
+            result[i] = field.getSqlTableOrJoinAliasName(getTableName()) + "." + field.getName();
+            ++i;
+        }
+
+        return result;
     }
 
     @Override
@@ -136,14 +145,7 @@ public class TableListFragment extends ListFragment
 
         setHasOptionsMenu(true);
 
-        /*
-         * Initializes the CursorLoader. The URL_LOADER value is eventually passed
-         * to onCreateLoader().
-         */
-        getLoaderManager().initLoader(URL_LOADER, null, this);
-
         update();
-
 
         return rootView;
     }
@@ -158,7 +160,23 @@ public class TableListFragment extends ListFragment
         if (activity == null)
             return;
 
+        //Don't do any more if the activity is in the middle of
+        //asynchronously loading the document. Otherwise
+        //we would risk getting half-loaded information here.
+        final DocumentActivity docActivity = (DocumentActivity)activity;
+        if(docActivity.currentlyLoadingDocument()) {
+            return;
+        }
+
+        addListViewHeader();
+
         final List<LayoutItemField> fieldsToGet = getFieldsToShow();
+        if(fieldsToGet.isEmpty()) {
+            //Maybe the document hasn't loaded yet.
+            return;
+        }
+
+        final int[] viewIDs = { android.R.id.text1 };
 
         mAdapter = new GlomCursorAdapter(
                 activity,
@@ -176,23 +194,63 @@ public class TableListFragment extends ListFragment
             Log.error("glom", "setListAdapter() failed for query  with exception: " + e.getMessage());
         }
 
+        /*
+         * Initializes the CursorLoader. The URL_LOADER value is eventually passed
+         * to onCreateLoader().
+         * We generally don't want to do this until we know that the document has been loaded.
+         */
+        getLoaderManager().initLoader(URL_LOADER, null, this);
+
         // We can't add the header view (column titles) here because getListView()
         // won't work until onActivityCreated() so we do it there._
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        mActivityCreated = true; //Let addListViewHeader() succeed.
+        addListViewHeader();
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    private void addListViewHeader() {
+        if(!mActivityCreated) {
+            //Don't even try to call getListView() if onActivityCreated() has not yet been called.
+            return;
+        }
+
         final ListView listView = getListView();
         if (listView == null) {
             return;
         }
 
+        if (listView.getHeaderViewsCount() > 0) {
+            //We don't need to do it again.
+            return;
+        }
+
+        //Don't do any more if the activity is in the middle of
+        //asynchronously loading the document. Otherwise
+        //we would risk getting half-loaded information here.
         final Activity activity = getActivity();
+        if(activity == null) {
+            return;
+        }
+
+        final DocumentActivity docActivity = (DocumentActivity)activity;
+        if(docActivity.currentlyLoadingDocument()) {
+            return;
+        }
+
         final Context context = activity.getApplicationContext();
         final LinearLayout headerLayout = new LinearLayout(context);
 
         //TODO: Check for nulls and an empty list.
         final List<LayoutItemField> fieldsToGet = getFieldsToShow();
+        if ((fieldsToGet == null) || fieldsToGet.isEmpty()) {
+            return;
+        }
+
         final List<Integer> widths = UiUtils.getSuitableWidths(context, fieldsToGet);
 
         final int MAX = 3; //TODO: Be more clever about how we don't use more than the available space.
@@ -224,15 +282,22 @@ public class TableListFragment extends ListFragment
         }
 
         listView.addHeaderView(headerLayout);
-
-        super.onActivityCreated(savedInstanceState);
     }
 
     private List<LayoutItemField> getFieldsToShow() {
         if (mFieldsToGet == null) {
             final Document document = DocumentSingleton.getInstance().getDocument();
-            mFieldsToGet = Utils.getFieldsToShowForSQLQuery(document, getTableName(),
-                    document.getDataLayoutGroups("list", getTableName()));
+            if (document != null) {
+                mFieldsToGet = Utils.getFieldsToShowForSQLQuery(document, getTableName(),
+                        document.getDataLayoutGroups("list", getTableName()));
+            }
+        }
+
+        //If it's empty, make sure that we try again later,
+        //when the document might be loaded.
+        //TODO: We already avoid calling this while loading.
+        if((mFieldsToGet != null) && mFieldsToGet.isEmpty()) {
+            mFieldsToGet = null;
         }
 
         return mFieldsToGet;

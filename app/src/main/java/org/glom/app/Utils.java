@@ -228,7 +228,7 @@ public class Utils {
     /*
           * Gets a list to use when generating an SQL query.
           */
-    protected static List<LayoutItemField> getFieldsToShowForSQLQuery(final Document document, final String tableName, final List<LayoutGroup> layoutGroupVec) {
+    public static List<LayoutItemField> getFieldsToShowForSQLQuery(final Document document, final String tableName, final List<LayoutGroup> layoutGroupVec) {
         final List<LayoutItemField> listLayoutFIelds = new ArrayList<>();
 
         // We will show the fields that the document says we should:

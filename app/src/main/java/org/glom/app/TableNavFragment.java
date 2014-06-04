@@ -69,16 +69,25 @@ public class TableNavFragment extends ListFragment {
     }
 
     public void update() {
+        final Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        //Don't do any more if the activity is in the middle of
+        //asynchronously loading the document. Otherwise
+        //we would risk getting half-loaded information here.
+        final DocumentActivity docActivity = (DocumentActivity)activity;
+        if(docActivity.currentlyLoadingDocument()) {
+            return;
+        }
+
         List<TableNavItem> tables = mCallbacks.getMainTableNames();
 
         //For instance, if the app was started directly, instead of via a view intent.
         if (tables == null) {
             tables = new ArrayList<>();
         }
-
-        final Activity activity = getActivity();
-        if (activity == null)
-            return;
 
         setListAdapter(new ArrayAdapter<>(
                 activity,

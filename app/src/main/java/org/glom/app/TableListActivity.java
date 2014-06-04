@@ -50,8 +50,11 @@ public class TableListActivity extends TableDataActivity {
 
         //Tell the list of tables to show the contents of the document:
         TableListFragment fragment = getTableListFragment();
-        if (fragment != null)
+        if (fragment != null) {
             fragment.update();
+        } else {
+            Log.error("Couldn't get TableListFragment.");
+        }
     }
 
     private TableListFragment getTableListFragment() {

@@ -14,6 +14,8 @@ public class GlomSystem {
     public static final Uri SYSTEMS_URI = Uri.parse("content://" +
             AUTHORITY + "/" + GlomContentProvider.SYSTEM);
 
+    public static final String TABLE_URI_PART = "table";
+
     // The URI for the list of all GlomSystems:
     public static final Uri FILE_URI = Uri.parse("content://" +
             AUTHORITY + "/" + GlomContentProvider.FILE);
