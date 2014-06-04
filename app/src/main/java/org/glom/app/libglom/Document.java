@@ -1916,6 +1916,10 @@ public class Document {
     public Field getTablePrimaryKeyField(final String tableName) {
         Field primaryKey = null;
         final List<Field> fieldsVec = getTableFields(tableName);
+        if(fieldsVec == null) {
+            return null;
+        }
+
         for (int i = 0; i < Utils.safeLongToInt(fieldsVec.size()); i++) {
             final Field field = fieldsVec.get(i);
             if (field.getPrimaryKey()) {
