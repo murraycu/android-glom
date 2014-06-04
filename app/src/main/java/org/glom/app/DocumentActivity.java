@@ -51,7 +51,8 @@ public class DocumentActivity extends Activity
     protected boolean mTwoPane = false; //Set by derived constructors sometimes.
     private Uri mUri;
     private boolean mCurrentlyLoadingDocument = false;
-    private DocumentLoadTask mTaskLoading;
+    private DocumentLoadStreamTask mTaskLoadingStream;
+    private DocumentLoadExistingTask mTaskLoadingExisting;
 
     protected boolean hasDocument() {
         //The Activity's Intent should have either a URI or a databaseId:
@@ -70,12 +71,20 @@ public class DocumentActivity extends Activity
         }
 
         try {
-            mStream.close();
+            if (mStream != null) {
+                mStream.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         mStream = null;
+
+        //Check that we now have a Document:
+        final Document document = documentSingleton.getDocument(mSystemId);
+        if(document == null) {
+            org.glom.app.Log.error("The existing system could not be found. System ID=" + mSystemId);
+        }
 
         //TODO: Notify other Activities that the shared document has changed?
         //And somehow invalidate/close activities those activities if it's a different document?
@@ -89,10 +98,15 @@ public class DocumentActivity extends Activity
 
         mSystemId = intent.getLongExtra(ARG_SYSTEM_ID, -1);
         if(mSystemId != -1) {
-            //Reopen a previously-opened database:
-            //TODO: Ask the singleton for this, so we can cache the documents instead of repeatedly reloading.
-            mStream = getInputStreamForExisting(getContentResolver(), mSystemId);
+            //Reload a previously-opened database:
+            //Load the document asynchronously.
+            //We respond when it finishes in onDocumentLoadingFinished.
+            mCurrentlyLoadingDocument = true;
+            mTaskLoadingExisting = new DocumentLoadExistingTask();
+            mTaskLoadingExisting.execute(getSystemId());
         } else {
+            //Load the new document.
+            //We will then have a SystemID for it so we can get it (or the databse) again easily.
             mUri = intent.getData();
             if (mUri != null) {
                 try {
@@ -101,20 +115,20 @@ public class DocumentActivity extends Activity
                     e.printStackTrace();
                     return;
                 }
+
+                if (mStream == null) {
+                    org.glom.app.Log.error("stream is null.");
+                    return;
+                }
+
+                //Load the document asynchronously.
+                //We respond when it finishes in onDocumentLoadingFinished.
+                mCurrentlyLoadingDocument = true;
+                mTaskLoadingStream = new DocumentLoadStreamTask();
+                mTaskLoadingStream.setSystemId(getSystemId());
+                mTaskLoadingStream.execute(mStream);
             }
         }
-
-        if (mStream == null) {
-            org.glom.app.Log.error("stream is null.");
-            return;
-        }
-
-        //Load the document asynchronously.
-        //We respond when it finishes in onDocumentLoadingFinished.
-        mCurrentlyLoadingDocument = true;
-        mTaskLoading = new DocumentLoadTask();
-        mTaskLoading.setSystemId(getSystemId());
-        mTaskLoading.execute(mStream);
 
         //This lets us know what MIME Type to mention in the intent filter in the manifest file,
         //as long as we cannot register a more specific MIME type.
@@ -256,29 +270,13 @@ public class DocumentActivity extends Activity
         return mUri != null;
     }
 
-    public static InputStream getInputStreamForExisting(final ContentResolver resolver, long databaseId) {
-        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, databaseId);
-        final Uri fileUri = Utils.buildFileContentUri(uriSystem, resolver);
-        if (fileUri == null) {
-            org.glom.app.Log.error("buildFileContentUri() failed.");
-            return null;
-        }
-
-        try {
-            return  resolver.openInputStream(fileUri);
-        } catch (FileNotFoundException e) {
-            org.glom.app.Log.error("load() failed.", e);
-            return null;
-        }
-    }
-
     public boolean currentlyLoadingDocument() {
         return mCurrentlyLoadingDocument;
     }
 
-    //This loads the document in an AsyncTask because it can take a noticeably long time,
+    //This loads the document from a stream in an AsyncTask because it can take a noticeably long time,
     //and we don't want to make the UI unresponsive.
-    private class DocumentLoadTask extends AsyncTask<InputStream, Integer, Boolean> {
+    private class DocumentLoadStreamTask extends AsyncTask<InputStream, Integer, Boolean> {
 
         private long systemId = -1;
 
@@ -324,7 +322,40 @@ public class DocumentActivity extends Activity
             mCurrentlyLoadingDocument = false;
 
             //Remember the System ID if loading the document created a new one in the ContentProvider:
-            setSystemId(mTaskLoading.getSystemId());
+            setSystemId(mTaskLoadingStream.getSystemId());
+
+            onDocumentLoadingFinished(result);
+        }
+    }
+
+    //This loads the document from a stream in an AsyncTask because it can take a noticeably long time,
+    //and we don't want to make the UI unresponsive.
+    private class DocumentLoadExistingTask extends AsyncTask<Long, Integer, Boolean> {
+        @Override
+        protected Boolean doInBackground(final Long... params) {
+
+            if (params.length > 0) {
+                return documentSingleton.loadExisting(params[0], getApplicationContext());
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onProgressUpdate(final Integer... progress) {
+            super.onProgressUpdate();
+
+            showDocumentLoadProgress();
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+
+            showDocumentTitle();
+
+            mCurrentlyLoadingDocument = false;
 
             onDocumentLoadingFinished(result);
         }

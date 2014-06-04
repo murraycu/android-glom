@@ -16,7 +16,7 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import org.glom.app.DbHelper;
-import org.glom.app.DocumentActivity;
+import org.glom.app.DocumentsSingleton;
 import org.glom.app.Log;
 import org.glom.app.SqlUtils;
 import org.glom.app.Utils;
@@ -439,7 +439,7 @@ public class GlomContentProvider extends ContentProvider {
 
         //TODO: Use a cache of loaded documents, discarding them at appropriate times,
         //though we cannot share that with the UI because it is in a separate process.
-        final InputStream stream = DocumentActivity.getInputStreamForExisting(context.getContentResolver(), systemId);
+        final InputStream stream = DocumentsSingleton.getInputStreamForExisting(context.getContentResolver(), systemId);
         if (stream == null) {
             Log.error("stream is null.");
             return null;

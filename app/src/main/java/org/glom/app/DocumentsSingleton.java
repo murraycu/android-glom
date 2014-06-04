@@ -39,6 +39,22 @@ public class DocumentsSingleton {
         return ourInstance;
     }
 
+    public static InputStream getInputStreamForExisting(final ContentResolver resolver, long databaseId) {
+        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, databaseId);
+        final Uri fileUri = Utils.buildFileContentUri(uriSystem, resolver);
+        if (fileUri == null) {
+            Log.error("buildFileContentUri() failed.");
+            return null;
+        }
+
+        try {
+            return  resolver.openInputStream(fileUri);
+        } catch (FileNotFoundException e) {
+            Log.error("load() failed.", e);
+            return null;
+        }
+    }
+
     /**
      * Load the document.
      * @param systemId The existing system ID, or -1.
@@ -122,7 +138,21 @@ public class DocumentsSingleton {
         return systemId;
     }
 
+    public boolean loadExisting(long systemId, final Context context) {
+        final Document document = getDocument(systemId);
+        if(document != null)
+            return true; //It has already been loaded.
+
+        final ContentResolver resolver = context.getContentResolver();
+        final InputStream stream = getInputStreamForExisting(resolver, systemId);
+        final long resultSystemId = load(systemId, stream, context);
+        return resultSystemId != -1;
+    }
+
     public Document getDocument(long systemId) {
+        //We don' try to load it here if it's not in the map already,
+        //because that could take time so the caller should request that
+        //specifically using an AsyncTask.
         return mDocumentMap.get(systemId);
     }
 

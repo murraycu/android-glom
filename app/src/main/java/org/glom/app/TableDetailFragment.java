@@ -247,6 +247,10 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         final Context context = activity.getApplicationContext();
 
         final Document document = getDocument();
+        if (document == null) {
+            return;
+        }
+
         final List<LayoutGroup> groups = document.getDataLayoutGroups("details", getTableName());
 
         final List<LayoutItemField> fieldsToGet = getFieldsToShow();
