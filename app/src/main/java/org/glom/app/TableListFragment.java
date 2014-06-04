@@ -114,9 +114,13 @@ public class TableListFragment extends ListFragment
         super.onCreate(savedInstanceState);
 
         final Bundle bundle = getArguments();
+
+        //TODO: Avoid duplicate with TableDetailFragment.onCreate():
+        if ((bundle != null) && bundle.containsKey(DocumentActivity.ARG_SYSTEM_ID)) {
+            setSystemId(bundle.getLong(DocumentActivity.ARG_SYSTEM_ID));
+        }
+
         if ((bundle != null) && bundle.containsKey(ARG_TABLE_NAME)) {
-            // In a real-world scenario, use a Loader
-            // to load content from a content provider.
             setTableName(bundle.getString(ARG_TABLE_NAME));
         }
     }
@@ -252,6 +256,16 @@ public class TableListFragment extends ListFragment
 
         // Reset the active callbacks interface to the dummy implementation.
         mCallbacks = sDummyCallbacks;
+    }
+
+    @Override
+    public long getSystemId() {
+        return mSystemId;
+    }
+
+    @Override
+    public void setSystemId(long systemId) {
+        mSystemId = systemId;
     }
 
     @Override

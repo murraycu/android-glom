@@ -37,6 +37,10 @@ public interface TableDataFragment {
         }
     };
 
+    public long getSystemId();
+
+    public void setSystemId(final long systemId);
+
     public String getTableName();
 
     public void setTableName(final String tableName);

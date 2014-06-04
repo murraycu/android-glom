@@ -32,7 +32,9 @@ public class TableListActivity extends TableDataActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(TableListFragment.ARG_TABLE_NAME,
+            arguments.putLong(ARG_SYSTEM_ID,
+                    getSystemId());
+            arguments.putString(TableDataFragment.ARG_TABLE_NAME,
                     mTableName);
             TableListFragment fragment = new TableListFragment();
             fragment.setArguments(arguments);

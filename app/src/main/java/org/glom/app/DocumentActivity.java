@@ -30,6 +30,14 @@ import java.util.List;
 public class DocumentActivity extends Activity
         implements TableNavCallbacks {
 
+    /**
+     * The intent argument representing the database system ID (in the ContentProvider) that this activity
+     * displays.
+     * The activity will get either this (for an already-opened file) or a URL of an example file.
+     */
+    public static final String ARG_SYSTEM_ID = "system_id";
+    long mSystemId;
+
     private final DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
 
     //We reference this while it's loading,
@@ -49,9 +57,7 @@ public class DocumentActivity extends Activity
         if(hasUri())
             return true;
 
-        final Intent intent = getIntent();
-        final long databaseId = intent.getLongExtra(TableNavActivity.ARG_DATABASE_ID, -1);
-        return (databaseId != -1);
+        return (mSystemId != -1);
     }
 
     private void showDocumentLoadProgress() {
@@ -80,8 +86,8 @@ public class DocumentActivity extends Activity
 
         final Intent intent = getIntent();
 
-        final long databaseId = intent.getLongExtra(TableNavActivity.ARG_DATABASE_ID, -1);
-        if(databaseId != -1) {
+        mSystemId = intent.getLongExtra(ARG_SYSTEM_ID, -1);
+        if(mSystemId != -1) {
             //Reopen a previously-opened database:
             mStream = getInputStreamForExisting(databaseId);
         } else {
@@ -126,7 +132,8 @@ public class DocumentActivity extends Activity
             // adding or replacing the detail fragment using a
             // fragment transaction.
             final Bundle arguments = new Bundle();
-            arguments.putString(TableDetailFragment.ARG_TABLE_NAME, tableName);
+            arguments.putLong(ARG_SYSTEM_ID, getSystemId());
+            arguments.putString(TableDataFragment.ARG_TABLE_NAME, tableName);
 
             Fragment fragment;
             if (primaryKeyValue == null) {
@@ -151,7 +158,8 @@ public class DocumentActivity extends Activity
                 intent.putExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, primaryKeyValue);
             }
 
-            intent.putExtra(TableDetailFragment.ARG_TABLE_NAME, tableName);
+            intent.putExtra(ARG_SYSTEM_ID, getSystemId());
+            intent.putExtra(TableDataFragment.ARG_TABLE_NAME, tableName);
 
             startActivity(intent);
         }
@@ -232,6 +240,10 @@ public class DocumentActivity extends Activity
 
     protected SQLiteDatabase getDatabase() {
         return documentSingleton.getDatabase();
+    }
+
+    protected long getSystemId() {
+        return mSystemId;
     }
 
     /**

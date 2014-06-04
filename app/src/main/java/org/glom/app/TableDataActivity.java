@@ -27,7 +27,7 @@ public class TableDataActivity extends DocumentActivity
         super.onCreate(savedInstanceState);
 
         final Intent intent = getIntent();
-        mTableName = intent.getStringExtra(TableDetailFragment.ARG_TABLE_NAME);
+        mTableName = intent.getStringExtra(TableDataFragment.ARG_TABLE_NAME);
 
         // Show the Up button in the action bar.
         final ActionBar actionBar = getActionBar();
