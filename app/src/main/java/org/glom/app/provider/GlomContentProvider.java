@@ -352,6 +352,9 @@ public class GlomContentProvider extends ContentProvider {
                 }
 
                 final String tableName = uriParts.get(size - 1);
+
+                //Note: The UriMatcher will not even match the URI if this id (#) is -1
+                //so we will never reach this code then:
                 final String systemIdStr = uriParts.get(size - 3);
                 final int systemId = Integer.parseInt(systemIdStr);
 
@@ -418,6 +421,7 @@ public class GlomContentProvider extends ContentProvider {
                         GlomSystem.FILE_URI); //TODO: More precise?
                 break;
             default:
+                //This could be because of an invalid -1 ID in the # position.
                 throw new IllegalArgumentException("unsupported uri: " + uri);
         }
 
