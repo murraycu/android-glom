@@ -27,7 +27,6 @@ import org.jooq.SQLDialect;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 public class GlomContentProvider extends ContentProvider {
@@ -81,6 +80,8 @@ public class GlomContentProvider extends ContentProvider {
     }
 
     private static final String[] FILE_MIME_TYPES = new String[]{"application/x-glom"};
+
+    private final DocumentsSingleton documentSingleton = DocumentsSingleton.getInstance();
 
     /**
      * There are 2 tables: systems and files.
@@ -436,22 +437,11 @@ public class GlomContentProvider extends ContentProvider {
     //TODO: Use long for the systemId as elsewhere?
     private Document getDocumentForSystem(int systemId) {
         final Context context = getContext();
-
-        //TODO: Use a cache of loaded documents, discarding them at appropriate times,
-        //though we cannot share that with the UI because it is in a separate process.
-        final InputStream stream = DocumentsSingleton.getInputStreamForExisting(context.getContentResolver(), systemId);
-        if (stream == null) {
-            Log.error("stream is null.");
+        if(!documentSingleton.loadExisting(systemId, context)) {
             return null;
         }
 
-        final Document document = new Document();
-        if(!document.load(stream)) {
-            Log.error("Document.load() failed.");
-            return null;
-        }
-
-        return document;
+        return documentSingleton.getDocument(systemId);
     }
 
     private SQLiteDatabase getDatabaseForDocument(final Document document) {
