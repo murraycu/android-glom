@@ -1,5 +1,9 @@
 package org.glom.app;
 
+import android.database.sqlite.SQLiteDatabase;
+
+import org.glom.app.libglom.Document;
+
 import java.util.List;
 
 /**
@@ -40,6 +44,10 @@ public interface TableDataFragment {
     public long getSystemId();
 
     public void setSystemId(final long systemId);
+
+    public Document getDocument();
+
+    public SQLiteDatabase getDatabase();
 
     public String getTableName();
 

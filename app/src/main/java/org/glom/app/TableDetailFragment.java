@@ -106,7 +106,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
     private List<LayoutItemField> getFieldsToShow() {
         if (mFieldsToGet == null) {
-            final Document document = DocumentSingleton.getInstance().getDocument();
+            final Document document = getDocument();
             mFieldsToGet = Utils.getFieldsToShowForSQLQuery(document, getTableName(),
                     document.getDataLayoutGroups("details", getTableName()));
         }
@@ -179,6 +179,16 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
     }
 
     @Override
+    public Document getDocument() {
+        return DocumentsSingleton.getInstance().getDocument(getSystemId());
+    }
+
+    @Override
+    public SQLiteDatabase getDatabase() {
+        return DocumentsSingleton.getInstance().getDatabase(getSystemId());
+    }
+
+    @Override
     public String getTableName() {
         return mTableName;
     }
@@ -236,7 +246,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
         final Context context = activity.getApplicationContext();
 
-        final Document document = DocumentSingleton.getInstance().getDocument();
+        final Document document = getDocument();
         final List<LayoutGroup> groups = document.getDataLayoutGroups("details", getTableName());
 
         final List<LayoutItemField> fieldsToGet = getFieldsToShow();
@@ -252,7 +262,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         primaryKeyValue.setText(mPkValue);
         final String query = SqlUtils.buildSqlSelectWithKey(document, getTableName(), fieldsToGet, primaryKey, primaryKeyValue, SQLDialect.SQLITE);
 
-        final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
+        final SQLiteDatabase db = getDatabase();
         mCursor = db.rawQuery(query, null);
         activity.startManagingCursor(mCursor);
         if (mCursor.getCount() <= 0) { //In case the query returned no rows.

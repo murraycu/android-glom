@@ -38,7 +38,7 @@ public class DocumentActivity extends Activity
     public static final String ARG_SYSTEM_ID = "system_id";
     long mSystemId;
 
-    private final DocumentSingleton documentSingleton = DocumentSingleton.getInstance();
+    private final DocumentsSingleton documentSingleton = DocumentsSingleton.getInstance();
 
     //We reference this while it's loading,
     //just so we can close it when loading has finished.
@@ -51,6 +51,7 @@ public class DocumentActivity extends Activity
     protected boolean mTwoPane = false; //Set by derived constructors sometimes.
     private Uri mUri;
     private boolean mCurrentlyLoadingDocument = false;
+    private DocumentLoadTask mTaskLoading;
 
     protected boolean hasDocument() {
         //The Activity's Intent should have either a URI or a databaseId:
@@ -111,8 +112,9 @@ public class DocumentActivity extends Activity
         //Load the document asynchronously.
         //We respond when it finishes in onDocumentLoadingFinished.
         mCurrentlyLoadingDocument = true;
-        final DocumentLoadTask task = new DocumentLoadTask();
-        task.execute(mStream);
+        mTaskLoading = new DocumentLoadTask();
+        mTaskLoading.setSystemId(getSystemId());
+        mTaskLoading.execute(mStream);
 
         //This lets us know what MIME Type to mention in the intent filter in the manifest file,
         //as long as we cannot register a more specific MIME type.
@@ -236,11 +238,11 @@ public class DocumentActivity extends Activity
     }
 
     protected Document getDocument() {
-        return documentSingleton.getDocument();
+        return documentSingleton.getDocument(getSystemId());
     }
 
     protected SQLiteDatabase getDatabase() {
-        return documentSingleton.getDatabase();
+        return documentSingleton.getDatabase(getSystemId());
     }
 
     protected long getSystemId() {
@@ -278,11 +280,28 @@ public class DocumentActivity extends Activity
     //and we don't want to make the UI unresponsive.
     private class DocumentLoadTask extends AsyncTask<InputStream, Integer, Boolean> {
 
+        private long systemId = -1;
+
+        public long getSystemId() {
+            return systemId;
+        }
+
+        public void setSystemId(long systemId) {
+            this.systemId = systemId;
+        }
+
         @Override
         protected Boolean doInBackground(final InputStream... params) {
 
             if (params.length > 0) {
-                return documentSingleton.load(params[0], getApplicationContext());
+                //TODO: Find a way to pass this to the DocumentLoadTask.execute() instead of
+                //hoping that it hasn't changed since the DocumentLoadTask was created.
+                //
+                //systemId will be -1 if we are loading a new (example) document that is not yet
+                //in the content provider.
+                final long systemId = documentSingleton.load(getSystemId(), params[0], getApplicationContext());
+                setSystemId(systemId);
+                return (systemId != -1); //For the onPostExecute() parameter.
             }
 
             return false;
@@ -303,6 +322,10 @@ public class DocumentActivity extends Activity
             showDocumentTitle();
 
             mCurrentlyLoadingDocument = false;
+
+            //Remember the System ID if loading the document created a new one in the ContentProvider:
+            setSystemId(mTaskLoading.getSystemId());
+
             onDocumentLoadingFinished(result);
         }
     }

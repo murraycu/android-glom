@@ -17,7 +17,6 @@ import android.text.TextUtils;
 
 import org.glom.app.DbHelper;
 import org.glom.app.DocumentActivity;
-import org.glom.app.DocumentSingleton;
 import org.glom.app.Log;
 import org.glom.app.SqlUtils;
 import org.glom.app.Utils;

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -287,7 +288,7 @@ public class TableListFragment extends ListFragment
 
     private List<LayoutItemField> getFieldsToShow() {
         if (mFieldsToGet == null) {
-            final Document document = DocumentSingleton.getInstance().getDocument();
+            final Document document = getDocument();
             if (document != null) {
                 mFieldsToGet = Utils.getFieldsToShowForSQLQuery(document, getTableName(),
                         document.getDataLayoutGroups("list", getTableName()));
@@ -332,6 +333,16 @@ public class TableListFragment extends ListFragment
     @Override
     public void setSystemId(long systemId) {
         mSystemId = systemId;
+    }
+
+    @Override
+    public Document getDocument() {
+        return DocumentsSingleton.getInstance().getDocument(getSystemId());
+    }
+
+    @Override
+    public SQLiteDatabase getDatabase() {
+        return DocumentsSingleton.getInstance().getDatabase(getSystemId());
     }
 
     @Override
