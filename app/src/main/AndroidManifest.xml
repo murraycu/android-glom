@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="org.glom.app.DatabaseListActivity"
-            android:label="@string/title_database_tables" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,7 +21,7 @@
 
         <activity
             android:name="org.glom.app.TableNavActivity"
-            android:label="@string/app_name"
+            android:label="@string/title_database_tables"
             android:parentActivityName="org.glom.app.DatabaseListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
