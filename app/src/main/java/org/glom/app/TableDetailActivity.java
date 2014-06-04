@@ -51,4 +51,22 @@ public class TableDetailActivity extends TableDataActivity {
         }
     }
 
+    @Override
+    protected void onDocumentLoadingFinished(Boolean result) {
+        super.onDocumentLoadingFinished(result);
+
+        //Tell the list of tables to show the contents of the document:
+        TableDetailFragment fragment = getTableDetailFragment();
+        if (fragment != null) {
+            fragment.update();
+        } else {
+            Log.error("Couldn't get TableListFragment.");
+        }
+    }
+
+    private TableDetailFragment getTableDetailFragment() {
+        return ((TableDetailFragment) getFragmentManager()
+                .findFragmentById(R.id.table_data_container));
+    }
+
 }

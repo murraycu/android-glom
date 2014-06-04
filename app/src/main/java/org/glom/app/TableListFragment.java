@@ -155,6 +155,7 @@ public class TableListFragment extends ListFragment
         ((TextView) rootView.findViewById(R.id.textView)).setText(title);
     }
 
+    @Override
     public void update() {
         final Activity activity = getActivity();
         if (activity == null)
@@ -202,7 +203,7 @@ public class TableListFragment extends ListFragment
         getLoaderManager().initLoader(URL_LOADER, null, this);
 
         // We can't add the header view (column titles) here because getListView()
-        // won't work until onActivityCreated() so we do it there._
+        // won't work until onActivityCreated() so we do it there.
     }
 
     @Override

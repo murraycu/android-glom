@@ -52,6 +52,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
      * The fragment's current callback object.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
+    private View mRootView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -91,48 +92,16 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final Activity activity = getActivity();
-        final Context context = activity.getApplicationContext();
+        mRootView = inflater.inflate(R.layout.fragment_table_detail, container, false);
+        assert mRootView != null;
 
-        final Document document = DocumentSingleton.getInstance().getDocument();
-        final List<LayoutGroup> groups = document.getDataLayoutGroups("details", getTableName());
-
-        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
-
-        final Field primaryKey = document.getTablePrimaryKeyField(getTableName());
-        if (primaryKey == null) {
-            Log.error("Couldn't find primary key in table. Returning null.");
-            return null;
-        }
-
-        //TODO: Do not expect the ID to be a string:
-        final TypedDataItem primaryKeyValue = new TypedDataItem();
-        primaryKeyValue.setText(mPkValue);
-        final String query = SqlUtils.buildSqlSelectWithKey(document, getTableName(), fieldsToGet, primaryKey, primaryKeyValue, SQLDialect.SQLITE);
-
-        final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
-        mCursor = db.rawQuery(query, null);
-        activity.startManagingCursor(mCursor);
-        if (mCursor.getCount() <= 0) { //In case the query returned no rows.
-            Log.error("The query returned no rows: " + query);
-        }
-
-        mCursor.moveToFirst(); //There should only be one anyway.
-
-        final View rootView = inflater.inflate(R.layout.fragment_table_detail, container, false);
-        assert rootView != null;
-
-        showTableTitle(rootView);
+        showTableTitle(mRootView);
 
         setHasOptionsMenu(true);
 
-        //Look at each group in the layout:
-        final TableLayout tableLayout = getTableLayout(rootView);
-        for (final LayoutGroup group : groups) {
-            addGroupToLayout(context, tableLayout, group);
-        }
+        update();
 
-        return rootView;
+        return mRootView;
     }
 
     private List<LayoutItemField> getFieldsToShow() {
@@ -246,5 +215,61 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
     private TableLayout getTableLayout(final View rootView) {
         return ((TableLayout) rootView.findViewById(R.id.tableLayout));
+    }
+
+    @Override
+    public void update() {
+        //TODO: Separate building the UI and showing the data in the UI,
+        //so we can show a different record in the same table without rebuilding the UI.
+
+        final Activity activity = getActivity();
+        if (activity == null)
+            return;
+
+        //Don't do any more if the activity is in the middle of
+        //asynchronously loading the document. Otherwise
+        //we would risk getting half-loaded information here.
+        final DocumentActivity docActivity = (DocumentActivity)activity;
+        if(docActivity.currentlyLoadingDocument()) {
+            return;
+        }
+
+        final Context context = activity.getApplicationContext();
+
+        final Document document = DocumentSingleton.getInstance().getDocument();
+        final List<LayoutGroup> groups = document.getDataLayoutGroups("details", getTableName());
+
+        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
+
+        final Field primaryKey = document.getTablePrimaryKeyField(getTableName());
+        if (primaryKey == null) {
+            Log.error("Couldn't find primary key in table. Returning null.");
+            return;
+        }
+
+        //TODO: Do not expect the ID to be a string:
+        final TypedDataItem primaryKeyValue = new TypedDataItem();
+        primaryKeyValue.setText(mPkValue);
+        final String query = SqlUtils.buildSqlSelectWithKey(document, getTableName(), fieldsToGet, primaryKey, primaryKeyValue, SQLDialect.SQLITE);
+
+        final SQLiteDatabase db = DocumentSingleton.getInstance().getDatabase();
+        mCursor = db.rawQuery(query, null);
+        activity.startManagingCursor(mCursor);
+        if (mCursor.getCount() <= 0) { //In case the query returned no rows.
+            Log.error("The query returned no rows: " + query);
+        }
+
+        mCursor.moveToFirst(); //There should only be one anyway.
+
+        //Look at each group in the layout:
+        if(mRootView == null) {
+            Log.error("mRootView is null.");
+            return;
+        }
+
+        final TableLayout tableLayout = getTableLayout(mRootView);
+        for (final LayoutGroup group : groups) {
+            addGroupToLayout(context, tableLayout, group);
+        }
     }
 }
