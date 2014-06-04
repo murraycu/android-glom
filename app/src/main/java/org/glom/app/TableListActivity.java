@@ -59,6 +59,6 @@ public class TableListActivity extends TableDataActivity {
 
     private TableListFragment getTableListFragment() {
         return ((TableListFragment) getFragmentManager()
-                .findFragmentById(R.id.table_list));
+                .findFragmentById(R.id.table_data_container));
     }
 }
