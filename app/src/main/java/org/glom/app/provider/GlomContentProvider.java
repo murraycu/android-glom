@@ -356,7 +356,7 @@ public class GlomContentProvider extends ContentProvider {
                 //Note: The UriMatcher will not even match the URI if this id (#) is -1
                 //so we will never reach this code then:
                 final String systemIdStr = uriParts.get(size - 3);
-                final int systemId = Integer.parseInt(systemIdStr);
+                final long systemId = Long.parseLong(systemIdStr);
 
                 final Document document = getDocumentForSystem(systemId);
                 if(document == null) {
@@ -434,8 +434,7 @@ public class GlomContentProvider extends ContentProvider {
             document.getDataLayoutGroups("list", tableName));
     }
 
-    //TODO: Use long for the systemId as elsewhere?
-    private Document getDocumentForSystem(int systemId) {
+    private Document getDocumentForSystem(long systemId) {
         final Context context = getContext();
         if(!documentSingleton.loadExisting(systemId, context)) {
             return null;
