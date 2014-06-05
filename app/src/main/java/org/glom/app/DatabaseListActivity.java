@@ -47,6 +47,10 @@ public class DatabaseListActivity extends Activity implements DatabaseListFragme
 
     @Override
     public void onSystemSelected(final long systemId) {
+        navigateToSystem(systemId);
+    }
+
+    private void navigateToSystem(long systemId) {
         final Intent intent = new Intent(this, TableNavActivity.class);
         intent.putExtra(DocumentActivity.ARG_SYSTEM_ID, systemId);
 
