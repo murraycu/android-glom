@@ -126,8 +126,8 @@ public class TableListFragment extends ListFragment
         final Bundle bundle = getArguments();
 
         //TODO: Avoid duplicate with TableDetailFragment.onCreate():
-        if ((bundle != null) && bundle.containsKey(DocumentActivity.ARG_SYSTEM_ID)) {
-            setSystemId(bundle.getLong(DocumentActivity.ARG_SYSTEM_ID));
+        if ((bundle != null) && bundle.containsKey(GlomActivity.ARG_SYSTEM_ID)) {
+            setSystemId(bundle.getLong(GlomActivity.ARG_SYSTEM_ID));
         }
 
         if ((bundle != null) && bundle.containsKey(ARG_TABLE_NAME)) {

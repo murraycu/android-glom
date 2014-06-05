@@ -62,8 +62,8 @@ public class TableNavActivity extends DocumentActivity
     }
 
     @Override
-    protected void onDocumentLoadingFinished(Boolean result) {
-        super.onDocumentLoadingFinished(result);
+    protected void onDocumentLoadingFinished() {
+        super.onDocumentLoadingFinished();
 
         //Tell the list of tables to show the contents of the document:
         TableNavFragment fragment = getTableNavFragment();

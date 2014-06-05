@@ -47,10 +47,10 @@ public class TableListActivity extends TableDataActivity {
     }
 
     @Override
-    protected void onDocumentLoadingFinished(Boolean result) {
-        super.onDocumentLoadingFinished(result);
+    protected void onDocumentLoadingFinished() {
+        super.onDocumentLoadingFinished();
 
-        //Tell the list of tables to show the contents of the document:
+        //Tell the fragment to show the contents of the document:
         TableListFragment fragment = getTableListFragment();
         if (fragment != null) {
             fragment.update();

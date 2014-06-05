@@ -1,7 +1,5 @@
 package org.glom.app;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 /**
@@ -10,7 +8,7 @@ import android.os.Bundle;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link DatabaseListFragment}.
  */
-public class DatabaseListActivity extends Activity implements DatabaseListFragment.Callbacks {
+public class DatabaseListActivity extends GlomActivity implements DatabaseListFragment.Callbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +46,5 @@ public class DatabaseListActivity extends Activity implements DatabaseListFragme
     @Override
     public void onSystemSelected(final long systemId) {
         navigateToSystem(systemId);
-    }
-
-    private void navigateToSystem(long systemId) {
-        final Intent intent = new Intent(this, TableNavActivity.class);
-        intent.putExtra(DocumentActivity.ARG_SYSTEM_ID, systemId);
-
-        startActivity(intent);
     }
 }
