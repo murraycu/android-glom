@@ -7,5 +7,8 @@
     <string name="title_table_list">Table Records</string>
     <string name="action_list">List</string>
     <string name="action_delete">Delete</string>
+    <string name="title_alert_create_new">New Glom System</string>
+    <string name="message_alert_create_new">Create new local Glom database system from the example file?</string>
+    <string name="button_alert_create_new">Create</string>
 
 </resources>

@@ -1,6 +1,8 @@
 package org.glom.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -135,25 +137,45 @@ public class GlomActivity extends Activity {
             //We will then have a SystemID for it so we can get it (or the database) again easily.
             mUri = intent.getData();
             if (mUri != null) {
-                try {
-                    mStream = getContentResolver().openInputStream(mUri);
-                } catch (final FileNotFoundException e) {
-                    e.printStackTrace();
-                    return;
-                }
 
-                if (mStream == null) {
-                    org.glom.app.Log.error("stream is null.");
-                    return;
-                }
+                //Ask the user whether they want to create a new local Glom system/database:
 
-                //Load the document asynchronously.
-                //We respond when it finishes in onDocumentLoadingExampleFinished.
-                mCurrentlyLoadingDocument = true;
-                mTaskLoadingExampleStream = new DocumentLoadExampleStreamTask();
-                mTaskLoadingExampleStream.execute(mStream);
+                final AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.title_alert_create_new)
+                        .setMessage(R.string.message_alert_create_new)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+
+                        //Generic yes/no buttons are confusing:
+                        .setPositiveButton(R.string.button_alert_create_new, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                GlomActivity.this.createNewSystem();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null).show();
+                dialog.show();
             }
         }
+    }
+
+    private void createNewSystem() {
+        try {
+            mStream = getContentResolver().openInputStream(mUri);
+        } catch (final FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        if (mStream == null) {
+            org.glom.app.Log.error("stream is null.");
+            return;
+        }
+
+        //Load the document asynchronously.
+        //We respond when it finishes in onDocumentLoadingExampleFinished.
+        mCurrentlyLoadingDocument = true;
+        mTaskLoadingExampleStream = new DocumentLoadExampleStreamTask();
+        mTaskLoadingExampleStream.execute(mStream);
     }
 
     protected void navigateToSystem(long systemId) {
