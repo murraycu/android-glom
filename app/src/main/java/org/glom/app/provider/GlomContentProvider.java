@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.BaseColumns;
@@ -27,7 +28,9 @@ import org.jooq.SQLDialect;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GlomContentProvider extends ContentProvider {
 
@@ -80,6 +83,21 @@ public class GlomContentProvider extends ContentProvider {
 
     private static final String[] FILE_MIME_TYPES = new String[]{"application/x-glom"};
 
+
+    /** A map of GlomContentProvider projection column names to underlying Sqlite column names
+     * for /system/ URIs, mapping to the systems tables.
+     */
+    private static Map<String, String> sSystemsProjectionMap;
+
+    static {
+        sSystemsProjectionMap = new HashMap<String, String>();
+
+        sSystemsProjectionMap.put(BaseColumns._ID, BaseColumns._ID);
+        sSystemsProjectionMap.put(GlomSystem.Columns.TITLE_COLUMN, DatabaseHelper.DB_COLUMN_NAME_TITLE);
+        sSystemsProjectionMap.put(GlomSystem.Columns.FILE_URI_COLUMN, DatabaseHelper.DB_COLUMN_NAME_FILE_URI);
+    }
+
+
     private final DocumentsSingleton documentSingleton = DocumentsSingleton.getInstance();
 
     /**
@@ -96,8 +114,8 @@ public class GlomContentProvider extends ContentProvider {
         private static final int DATABASE_VERSION = 1;
 
         private static final String TABLE_NAME_SYSTEMS = "systems";
-        private static final String DB_COLUMN_NAME_TITLE = "title"; //TODO: Internationalization
-        private static final String DB_COLUMN_NAME_FILE_URI = "uri"; //The content URI for a file in the files table.
+        protected static final String DB_COLUMN_NAME_TITLE = "title"; //TODO: Internationalization of its contents.
+        protected static final String DB_COLUMN_NAME_FILE_URI = "uri"; //The content URI for a file in the files table.
 
         private static final String TABLE_NAME_FILES = "files";
         private static final String DB_COLUMN_NAME_FILE_DATA = "_data"; //The real URI
@@ -317,24 +335,34 @@ public class GlomContentProvider extends ContentProvider {
 
         Cursor c;
         switch (match) {
-            case MATCHER_ID_SYSTEMS:
+            case MATCHER_ID_SYSTEMS: {
                 // query the database for all database systems:
-                c = getDb().query(DatabaseHelper.TABLE_NAME_SYSTEMS, projection,
+                final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+                builder.setTables(DatabaseHelper.TABLE_NAME_SYSTEMS);
+                builder.setProjectionMap(sSystemsProjectionMap);
+                c = builder.query(getDb(), projection,
                         selection, selectionArgs,
                         null, null, orderBy);
 
                 c.setNotificationUri(getContext().getContentResolver(),
                         GlomSystem.CONTENT_URI);
                 break;
+             }
             case MATCHER_ID_SYSTEM: {
                 // query the database for a specific database system:
                 final long systemId = ContentUris.parseId(uri);
-                c = getDb().query(DatabaseHelper.TABLE_NAME_SYSTEMS, projection,
-                        BaseColumns._ID + " = " + systemId + //TODO: Use ? to avoid SQL Injection.
-                                (!TextUtils.isEmpty(selection) ?
-                                        " AND (" + selection + ')' : ""),
-                        selectionArgs, null, null, orderBy
-                );
+
+                final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
+                builder.setTables(DatabaseHelper.TABLE_NAME_SYSTEMS);
+                builder.setProjectionMap(sSystemsProjectionMap);
+                builder.appendWhere(BaseColumns._ID + " = " + systemId); //TODO: Use ? to avoid SQL Injection.
+                c = builder.query(getDb(), projection,
+                        selection, selectionArgs,
+                        null, null, orderBy);
+
+                c = builder.query(getDb(), projection,
+                        selection, selectionArgs,
+                        null, null, orderBy);
                 c.setNotificationUri(getContext().getContentResolver(),
                         GlomSystem.CONTENT_URI); //TODO: More precise?
                 break;

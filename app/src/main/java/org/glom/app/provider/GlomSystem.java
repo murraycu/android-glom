@@ -33,6 +33,7 @@ public class GlomSystem {
     public static final Uri CONTENT_URI = SYSTEMS_URI;
 
     public static final class Columns implements BaseColumns {
+        //The ID is BaseColumns._ID;
         public static final String TITLE_COLUMN = "title";
         public static final String FILE_URI_COLUMN ="uri";
     }
