@@ -48,7 +48,7 @@ public class DocumentActivity extends Activity
     protected boolean mTwoPane = false; //Set by derived constructors sometimes.
     private Uri mUri;
     private boolean mCurrentlyLoadingDocument = false;
-    private DocumentLoadStreamTask mTaskLoadingStream;
+    private DocumentLoadExampleStreamTask mTaskLoadingExampleStream;
     private DocumentLoadExistingTask mTaskLoadingExisting;
 
     protected boolean hasDocument() {
@@ -102,8 +102,8 @@ public class DocumentActivity extends Activity
             mTaskLoadingExisting = new DocumentLoadExistingTask();
             mTaskLoadingExisting.execute(getSystemId());
         } else {
-            //Load the new document.
-            //We will then have a SystemID for it so we can get it (or the databse) again easily.
+            //Load the new (example) document.
+            //We will then have a SystemID for it so we can get it (or the database) again easily.
             mUri = intent.getData();
             if (mUri != null) {
                 try {
@@ -121,9 +121,9 @@ public class DocumentActivity extends Activity
                 //Load the document asynchronously.
                 //We respond when it finishes in onDocumentLoadingFinished.
                 mCurrentlyLoadingDocument = true;
-                mTaskLoadingStream = new DocumentLoadStreamTask();
-                mTaskLoadingStream.setSystemId(getSystemId());
-                mTaskLoadingStream.execute(mStream);
+                mTaskLoadingExampleStream = new DocumentLoadExampleStreamTask();
+                mTaskLoadingExampleStream.setSystemId(getSystemId());
+                mTaskLoadingExampleStream.execute(mStream);
             }
         }
 
@@ -273,7 +273,7 @@ public class DocumentActivity extends Activity
 
     //This loads the document from a stream in an AsyncTask because it can take a noticeably long time,
     //and we don't want to make the UI unresponsive.
-    private class DocumentLoadStreamTask extends AsyncTask<InputStream, Integer, Boolean> {
+    private class DocumentLoadExampleStreamTask extends AsyncTask<InputStream, Integer, Boolean> {
 
         private long systemId = -1;
 
@@ -289,12 +289,7 @@ public class DocumentActivity extends Activity
         protected Boolean doInBackground(final InputStream... params) {
 
             if (params.length > 0) {
-                //TODO: Find a way to pass this to the DocumentLoadTask.execute() instead of
-                //hoping that it hasn't changed since the DocumentLoadTask was created.
-                //
-                //systemId will be -1 if we are loading a new (example) document that is not yet
-                //in the content provider.
-                final long systemId = documentSingleton.load(getSystemId(), params[0], getApplicationContext());
+                final long systemId = documentSingleton.loadExample(params[0], getApplicationContext());
                 setSystemId(systemId);
                 return (systemId != -1); //For the onPostExecute() parameter.
             }
@@ -319,7 +314,7 @@ public class DocumentActivity extends Activity
             mCurrentlyLoadingDocument = false;
 
             //Remember the System ID if loading the document created a new one in the ContentProvider:
-            setSystemId(mTaskLoadingStream.getSystemId());
+            setSystemId(mTaskLoadingExampleStream.getSystemId());
 
             onDocumentLoadingFinished(result);
         }

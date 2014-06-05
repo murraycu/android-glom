@@ -57,13 +57,14 @@ public class DocumentsSingleton {
     }
 
     /**
-     * Load the document.
-     * @param systemId The existing system ID, or -1.
+     * Load an example document, storing it in the ContentProvider and creating a local Sqlite
+     * database for it, containing the example data.
+     *
      * @param inputStream A stream for the .glom document's XML file.
      * @param context
-     * @return The system ID for the resulting database system - maybe an existing one, or -1 on failure.
+     * @return The system ID for the resulting database system, or -1 on failure.
      */
-    public long load(long systemId, final InputStream inputStream, final Context context) {
+    public long loadExample(final InputStream inputStream, final Context context) {
 
         //Make sure we start with a fresh Document:
         final Document document = new Document();
@@ -71,83 +72,80 @@ public class DocumentsSingleton {
             return -1;
         }
 
-        if (document.getIsExampleFile()) {
-            //Create a SQLite database:
-            final SelfHosterSqlite selfHosterSqlite = new SelfHosterSqlite(document, context);
-            if (!selfHosterSqlite.createAndSelfHostFromExample()) {
-                Log.error("createAndSelfHostFromExample() failed.");
-                return -1;
-            }
-
-            //Tell the document what SQLite database to use:
-            //TODO: Doesn't SelfHosterSqlite do this for us?
-            document.setConnectionDatabase(selfHosterSqlite.getSqlDatabaseName());
-
-
-            //Tell the Content Provider to remember this new document/database/system:
-            //We check this as early as possible to avoid a bigger cleanup if it fails.
-            final ContentResolver resolver = context.getContentResolver();
-            final ContentValues v = new ContentValues();
-
-            //We store the document/database title so that the ContentResolver can return a simple
-            //list of the systems without looking in each document. TODO: Maybe we should just let
-            //GlomContentProvider cache them.
-            //TODO: This (or some other cache in future?) should be reset if the user's locale changes.
-            //
-            //Change the title slightly if one already exists wit this title, to avoid user confusion:
-            final String originalTitle = document.getDatabaseTitle("");
-            String title = originalTitle;
-            int suffix = 0;
-            while(documentWithTitleExists(title, context)) {
-                title = originalTitle + suffix;
-                ++suffix;
-            }
-
-            v.put(GlomSystem.Columns.TITLE_COLUMN, title);
-
-            Uri uriSystem;
-            try {
-                uriSystem = resolver.insert(GlomSystem.CONTENT_URI, v);
-            } catch (final IllegalArgumentException e) {
-                Log.error("ContentResolver.insert() failed", e);
-                return -1;
-            }
-
-            //Write the document's XML to the content URI now associated with the Glom system in the content provider:
-            final Uri fileContentUri = Utils.buildFileContentUri(uriSystem, resolver);
-            if (fileContentUri == null) {
-                Log.error("buildFileContentUri() failed.");
-                return -1;
-            }
-
-            try {
-                final OutputStream stream = resolver.openOutputStream(fileContentUri);
-                if(!document.save(stream)) {
-                    Log.error("Document save() failed.");
-                    return -1;
-                }
-                stream.close();
-            } catch (FileNotFoundException e) {
-                Log.error("Failed to save file.", e);
-                return -1;
-            } catch (IOException e) {
-                Log.error("Failed to save file.", e);
-                return -1;
-            }
-
-            //The provided systemID should be -1 because this document wasn't in the ContentProvider yet.
-            systemId = ContentUris.parseId(uriSystem);
-            setDatabase(systemId, selfHosterSqlite.getSqlDatabase());
-
-            //TODO: re-load it now from the ContentProvider?
-        } else {
-            //Get the name for the sqlite database that already exists and set up mDatabase.
-            //TODO: Error checking?
-            final String dbName = document.getConnectionDatabase();
-            final DbHelper helper = new DbHelper(context, dbName);
-            final SQLiteDatabase sqliteDatabase = helper.getWritableDatabase();
-            setDatabase(systemId, sqliteDatabase);
+        if (!document.getIsExampleFile()) {
+            Log.error("The .glom file is not an example file.");
+            return -1;
         }
+
+        //Create a SQLite database:
+        final SelfHosterSqlite selfHosterSqlite = new SelfHosterSqlite(document, context);
+        if (!selfHosterSqlite.createAndSelfHostFromExample()) {
+            Log.error("createAndSelfHostFromExample() failed.");
+            return -1;
+        }
+
+        //Tell the document what SQLite database to use:
+        //TODO: Doesn't SelfHosterSqlite do this for us?
+        document.setConnectionDatabase(selfHosterSqlite.getSqlDatabaseName());
+
+
+        //Tell the Content Provider to remember this new document/database/system:
+        //We check this as early as possible to avoid a bigger cleanup if it fails.
+        final ContentResolver resolver = context.getContentResolver();
+        final ContentValues v = new ContentValues();
+
+        //We store the document/database title so that the ContentResolver can return a simple
+        //list of the systems without looking in each document. TODO: Maybe we should just let
+        //GlomContentProvider cache them.
+        //TODO: This (or some other cache in future?) should be reset if the user's locale changes.
+        //
+        //Change the title slightly if one already exists wit this title, to avoid user confusion:
+        final String originalTitle = document.getDatabaseTitle("");
+        String title = originalTitle;
+        int suffix = 0;
+        while(documentWithTitleExists(title, context)) {
+            title = originalTitle + suffix;
+            ++suffix;
+        }
+
+        v.put(GlomSystem.Columns.TITLE_COLUMN, title);
+
+        Uri uriSystem;
+        try {
+            uriSystem = resolver.insert(GlomSystem.CONTENT_URI, v);
+        } catch (final IllegalArgumentException e) {
+            Log.error("ContentResolver.insert() failed", e);
+            return -1;
+        }
+
+        //Write the document's XML to the content URI now associated with the Glom system in the content provider:
+        final Uri fileContentUri = Utils.buildFileContentUri(uriSystem, resolver);
+        if (fileContentUri == null) {
+            Log.error("buildFileContentUri() failed.");
+            return -1;
+        }
+
+        try {
+            final OutputStream stream = resolver.openOutputStream(fileContentUri);
+            if(!document.save(stream)) {
+                Log.error("Document save() failed.");
+                return -1;
+            }
+            stream.close();
+        } catch (FileNotFoundException e) {
+            Log.error("Failed to save file.", e);
+            return -1;
+        } catch (IOException e) {
+            Log.error("Failed to save file.", e);
+            return -1;
+        }
+
+        //The provided systemID should be -1 because this document wasn't in the ContentProvider yet.
+        final long systemId = ContentUris.parseId(uriSystem);
+
+        setDatabase(systemId, selfHosterSqlite.getSqlDatabase());
+
+        //TODO: re-load it now from the ContentProvider?
 
         mDocumentMap.put(systemId, document);
 
@@ -171,7 +169,7 @@ public class DocumentsSingleton {
     }
 
     public boolean loadExisting(long systemId, final Context context) {
-        final Document document = getDocument(systemId);
+        Document document = getDocument(systemId);
         if(document != null)
             return true; //It has already been loaded.
 
@@ -182,8 +180,23 @@ public class DocumentsSingleton {
             return false;
         }
 
-        final long resultSystemId = load(systemId, stream, context);
-        return resultSystemId != -1;
+        //Make sure we start with a fresh Document:
+        document = new Document();
+        if (!document.load(stream)) {
+            return false;
+        }
+
+        //Get the name for the sqlite database that already exists and set up mDatabase.
+        //TODO: Error checking?
+        final String dbName = document.getConnectionDatabase();
+        final DbHelper helper = new DbHelper(context, dbName);
+        final SQLiteDatabase sqliteDatabase = helper.getWritableDatabase();
+
+        //Store them in this cache:
+        setDatabase(systemId, sqliteDatabase);
+        mDocumentMap.put(systemId, document);
+
+        return true;
     }
 
     public Document getDocument(long systemId) {
