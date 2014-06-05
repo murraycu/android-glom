@@ -209,6 +209,8 @@ public class DocumentsSingleton {
     }
 
     public void setInCache(long systemId, final Document document, final SQLiteDatabase database) {
+        //TODO: Simply wipe the maps each time, so we only ever remember one?
+        //Maybe no app would ever use two at once.
         mDocumentMap.put(systemId, document);
         mDatabaseMap.put(systemId, database);
     }
