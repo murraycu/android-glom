@@ -275,7 +275,7 @@ public class DatabaseListFragment extends ListFragment
         }
 
         if (!(adapter instanceof CursorAdapter)) {
-            Log.error("Unexpected Adaptor class: " + adapter.getClass().toString());
+            Log.error("Unexpected Adapter class: " + adapter.getClass().toString());
             return -1;
         }
 

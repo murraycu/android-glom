@@ -188,7 +188,7 @@ public class TableListFragment extends ListFragment
         try {
             setListAdapter(mAdapter);
         } catch (final Exception e) {
-            // We can get a RuntimeException from SimpleCursorAdaptor if:
+            // We can get a RuntimeException from SimpleCursorAdapter if:
             // -there is no _id field (we provide this as an alias)
             // or if
             // -there we try to show a "from" field that is not in the query.
@@ -368,7 +368,7 @@ public class TableListFragment extends ListFragment
         }
 
         if (!(adapter instanceof CursorAdapter)) {
-            Log.error("Unexpected Adaptor class: " + adapter.getClass().toString());
+            Log.error("Unexpected Adapter class: " + adapter.getClass().toString());
             return;
         }
 
@@ -382,10 +382,7 @@ public class TableListFragment extends ListFragment
         }
 
         final String primaryKeyValue = cursor.getString(0); //TODO: Get primary key position.
-
-        //Closing the cursor from getItem() here breaks notification when deleting items.
-        //As mentioned above, CursorAdapter.getItem() has no documentation.
-        // cursor.close();
+        cursor.close();
 
         mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
     }

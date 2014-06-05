@@ -133,7 +133,7 @@ public class SqlUtils {
         final List<UsesRelationship> listRelationships = buildSqlSelectAddFieldsToGet(selectStep, tableName,
                 fieldsToGet, sortClause, false /* extraJoin */);
 
-        // Android's CursorAdaptor and SimpleCursorAdaptor need the primary key to be called "_id"
+        // Android's CursorAdapter and SimpleCursorAdapter need the primary key to be called "_id"
         // so we add an extra "theid as _id" alias:
         Field pk = document.getTablePrimaryKeyField(tableName);
         if (pk != null) {
