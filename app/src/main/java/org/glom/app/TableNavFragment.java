@@ -84,7 +84,7 @@ public class TableNavFragment extends ListFragment {
 
         List<TableNavItem> tables = mCallbacks.getMainTableNames();
 
-        //For instance, if the app was started directly, instead of via a view intent.
+        //For instance, if the activity was started directly somehow, instead of via a view intent.
         if (tables == null) {
             tables = new ArrayList<>();
         }

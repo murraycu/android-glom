@@ -33,7 +33,8 @@ public class DocumentActivity extends Activity
      * The activity will get either this (for an already-opened file) or a URL of an example file.
      */
     public static final String ARG_SYSTEM_ID = "system_id";
-    long mSystemId;
+
+    private long mSystemId;
 
     private final DocumentsSingleton documentSingleton = DocumentsSingleton.getInstance();
 
@@ -50,6 +51,15 @@ public class DocumentActivity extends Activity
     private boolean mCurrentlyLoadingDocument = false;
     private DocumentLoadExampleStreamTask mTaskLoadingExampleStream;
     private DocumentLoadExistingTask mTaskLoadingExisting;
+
+
+    protected long getSystemId() {
+        return mSystemId;
+    }
+
+    protected void setSystemId(long systemId) {
+        this.mSystemId = systemId;
+    }
 
     protected boolean hasDocument() {
         //The Activity's Intent should have either a URI or a systemId:
@@ -122,7 +132,6 @@ public class DocumentActivity extends Activity
                 //We respond when it finishes in onDocumentLoadingFinished.
                 mCurrentlyLoadingDocument = true;
                 mTaskLoadingExampleStream = new DocumentLoadExampleStreamTask();
-                mTaskLoadingExampleStream.setSystemId(getSystemId());
                 mTaskLoadingExampleStream.execute(mStream);
             }
         }
@@ -256,10 +265,6 @@ public class DocumentActivity extends Activity
         return documentSingleton.getDatabase(getSystemId());
     }
 
-    protected long getSystemId() {
-        return mSystemId;
-    }
-
     /**
      * Whether we have a URI that is (or is being) parsed as a document.
      */
@@ -281,16 +286,15 @@ public class DocumentActivity extends Activity
             return systemId;
         }
 
-        public void setSystemId(long systemId) {
-            this.systemId = systemId;
-        }
-
         @Override
         protected Boolean doInBackground(final InputStream... params) {
 
             if (params.length > 0) {
                 final long systemId = documentSingleton.loadExample(params[0], getApplicationContext());
-                setSystemId(systemId);
+
+                //Remember the System ID because loading the example document created a new one in the ContentProvider:
+                DocumentActivity.this.setSystemId(systemId);
+
                 return (systemId != -1); //For the onPostExecute() parameter.
             }
 
@@ -312,9 +316,6 @@ public class DocumentActivity extends Activity
             showDocumentTitle();
 
             mCurrentlyLoadingDocument = false;
-
-            //Remember the System ID if loading the document created a new one in the ContentProvider:
-            setSystemId(mTaskLoadingExampleStream.getSystemId());
 
             onDocumentLoadingFinished(result);
         }
