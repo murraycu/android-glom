@@ -66,7 +66,7 @@ public class DocumentActivity extends Activity
         if(hasUri())
             return true;
 
-        return (mSystemId != -1);
+        return (getSystemId() != -1);
     }
 
     private void showDocumentLoadProgress() {
@@ -88,9 +88,9 @@ public class DocumentActivity extends Activity
         mStream = null;
 
         //Check that we now have a Document:
-        final Document document = documentSingleton.getDocument(mSystemId);
+        final Document document = documentSingleton.getDocument(getSystemId());
         if(document == null) {
-            org.glom.app.Log.error("The existing system could not be found. System ID=" + mSystemId);
+            org.glom.app.Log.error("The existing system could not be found. System ID=" + getSystemId());
         }
 
         //TODO: Notify other Activities that the shared document has changed?
@@ -103,8 +103,8 @@ public class DocumentActivity extends Activity
 
         final Intent intent = getIntent();
 
-        mSystemId = intent.getLongExtra(ARG_SYSTEM_ID, -1);
-        if(mSystemId != -1) {
+        setSystemId(intent.getLongExtra(ARG_SYSTEM_ID, -1));
+        if(getSystemId() != -1) {
             //Reload a previously-opened database:
             //Load the document asynchronously.
             //We respond when it finishes in onDocumentLoadingFinished.
