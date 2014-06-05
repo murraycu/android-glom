@@ -10,15 +10,22 @@ public class GlomSystem {
     public static final String AUTHORITY =
             "org.glom.app";
 
-    // The URI for the list of all GlomSystems:
+    /** The URI for the list of all Glom Systems,
+     * or part of the URI for a single Glom System.
+     */
     public static final Uri SYSTEMS_URI = Uri.parse("content://" +
-            AUTHORITY + "/" + GlomContentProvider.SYSTEM);
+            AUTHORITY + "/" + GlomContentProvider.URI_PART_SYSTEM);
 
     public static final String TABLE_URI_PART = "table";
 
-    // The URI for the list of all GlomSystems:
+    /** The URI for the list of all (.glom XML) files,
+     * or part of the URI for a single file.
+     * Clients don't need to build a /file/ URI -
+     * they will get a /file/ URI from the GlomSystem.Columns.FILE_URI_COLUMN column
+     * in the result from a SYSTEMS_URI query.
+     */
     public static final Uri FILE_URI = Uri.parse("content://" +
-            AUTHORITY + "/" + GlomContentProvider.FILE);
+            AUTHORITY + "/" + GlomContentProvider.URI_PART_FILE);
 
     /**
      * The content:// style URI for this table

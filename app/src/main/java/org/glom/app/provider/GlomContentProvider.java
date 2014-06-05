@@ -31,10 +31,9 @@ import java.util.List;
 
 public class GlomContentProvider extends ContentProvider {
 
-    //TODO: Improve the variables' names:
-    public static final String SYSTEM = "system";
-    public static final String FILE = "file";
-    public static final String TABLE = "table";
+    public static final String URI_PART_SYSTEM = "system";
+    public static final String URI_PART_FILE = "file";
+    public static final String URI_PART_TABLE = "table";
 
     /**
      * The MIME type of {@link GlomSystem#CONTENT_URI} providing a directory of notes.
@@ -67,16 +66,16 @@ public class GlomContentProvider extends ContentProvider {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         // A URI for the list of all systems:
-        sUriMatcher.addURI(GlomSystem.AUTHORITY, SYSTEM, MATCHER_ID_SYSTEMS);
+        sUriMatcher.addURI(GlomSystem.AUTHORITY, URI_PART_SYSTEM, MATCHER_ID_SYSTEMS);
 
         // A URI for a single system:
-        sUriMatcher.addURI(GlomSystem.AUTHORITY, SYSTEM + "/#", MATCHER_ID_SYSTEM);
+        sUriMatcher.addURI(GlomSystem.AUTHORITY, URI_PART_SYSTEM + "/#", MATCHER_ID_SYSTEM);
 
         // A URI for a single system's list of records:
-        sUriMatcher.addURI(GlomSystem.AUTHORITY, SYSTEM + "/#/" + TABLE + "/*", MATCHER_ID_SYSTEM_TABLE_RECORDS);
+        sUriMatcher.addURI(GlomSystem.AUTHORITY, URI_PART_SYSTEM + "/#/" + URI_PART_TABLE + "/*", MATCHER_ID_SYSTEM_TABLE_RECORDS);
 
         // A URI for a single file:
-        sUriMatcher.addURI(GlomSystem.AUTHORITY, FILE + "/#", MATCHER_ID_FILE);
+        sUriMatcher.addURI(GlomSystem.AUTHORITY, URI_PART_FILE + "/#", MATCHER_ID_FILE);
     }
 
     private static final String[] FILE_MIME_TYPES = new String[]{"application/x-glom"};
