@@ -143,11 +143,10 @@ public class DocumentsSingleton {
         //The provided systemID should be -1 because this document wasn't in the ContentProvider yet.
         final long systemId = ContentUris.parseId(uriSystem);
 
-        setDatabase(systemId, selfHosterSqlite.getSqlDatabase());
+        //Store them in this cache:
+        setInCache(systemId, document, selfHosterSqlite.getSqlDatabase());
 
         //TODO: re-load it now from the ContentProvider?
-
-        mDocumentMap.put(systemId, document);
 
         return systemId;
     }
@@ -193,8 +192,7 @@ public class DocumentsSingleton {
         final SQLiteDatabase sqliteDatabase = helper.getWritableDatabase();
 
         //Store them in this cache:
-        setDatabase(systemId, sqliteDatabase);
-        mDocumentMap.put(systemId, document);
+        setInCache(systemId, document, sqliteDatabase);
 
         return true;
     }
@@ -206,17 +204,12 @@ public class DocumentsSingleton {
         return mDocumentMap.get(systemId);
     }
 
-    /*
-    public void setDocument(final Document document) {
-        this.mDocument = document;
-    }
-    */
-
     public SQLiteDatabase getDatabase(long systemId) {
         return mDatabaseMap.get(systemId);
     }
 
-    public void setDatabase(long systemId, final SQLiteDatabase database) {
+    public void setInCache(long systemId, final Document document, final SQLiteDatabase database) {
+        mDocumentMap.put(systemId, document);
         mDatabaseMap.put(systemId, database);
     }
 }
