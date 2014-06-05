@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
@@ -87,7 +88,22 @@ public class DocumentsSingleton {
             //We check this as early as possible to avoid a bigger cleanup if it fails.
             final ContentResolver resolver = context.getContentResolver();
             final ContentValues v = new ContentValues();
-            v.put(GlomSystem.Columns.TITLE_COLUMN, document.getDatabaseTitle(""));
+
+            //We store the document/database title so that the ContentResolver can return a simple
+            //list of the systems without looking in each document. TODO: Maybe we should just let
+            //GlomContentProvider cache them.
+            //TODO: This (or some other cache in future?) should be reset if the user's locale changes.
+            //
+            //Change the title slightly if one already exists wit this title, to avoid user confusion:
+            final String originalTitle = document.getDatabaseTitle("");
+            String title = originalTitle;
+            int suffix = 0;
+            while(documentWithTitleExists(title, context)) {
+                title = originalTitle + suffix;
+                ++suffix;
+            }
+
+            v.put(GlomSystem.Columns.TITLE_COLUMN, title);
 
             Uri uriSystem;
             try {
@@ -136,6 +152,22 @@ public class DocumentsSingleton {
         mDocumentMap.put(systemId, document);
 
         return systemId;
+    }
+
+    private boolean documentWithTitleExists(final String title, final Context context) {
+        final ContentResolver resolver = context.getContentResolver();
+
+        final String[] projection = new String[] {GlomSystem.Columns._ID};
+        final String selection = GlomSystem.Columns.TITLE_COLUMN + "=?";
+        final String[] selectionArgs = new String[] {title};
+        final Cursor cursor = resolver.query(GlomSystem.SYSTEMS_URI, projection, selection, selectionArgs, null);
+        boolean result = true;
+        if ((cursor == null || (cursor.getCount() <= 0))) {
+            return false; //No systems have that title.
+        }
+
+        cursor.close(); //TODO: Should we do this?
+        return result;
     }
 
     public boolean loadExisting(long systemId, final Context context) {
