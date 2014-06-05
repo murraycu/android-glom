@@ -36,6 +36,8 @@ public class TableDetailActivity extends TableDataActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             final Bundle arguments = new Bundle();
+            arguments.putLong(ARG_SYSTEM_ID,
+                    getSystemId()); //Obtained in the super class.
             arguments.putString(TableDetailFragment.ARG_TABLE_NAME,
                     mTableName); //Obtained in the super class.
 

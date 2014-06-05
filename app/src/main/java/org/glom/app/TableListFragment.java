@@ -37,7 +37,7 @@ import java.util.List;
 public class TableListFragment extends ListFragment
         implements TableDataFragment, LoaderManager.LoaderCallbacks<Cursor> {
 
-    private long mSystemId;
+    private long mSystemId = -1;
     private String mTableName;
     private boolean mActivityCreated = false;
 

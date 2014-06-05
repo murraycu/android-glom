@@ -40,7 +40,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
      */
     public static final String ARG_PRIMARY_KEY_VALUE = "pk_value";
 
-    private long mSystemId;
+    private long mSystemId = -1;
     private String mTableName;
     private String mPkValue;
     private Cursor mCursor;
