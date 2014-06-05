@@ -312,7 +312,7 @@ public class Utils {
         }
 
         final String str = cursor.getString(index);
-        cursor.close();
+        cursor.close(); //TODO: Should we do this?
         return Uri.parse(str);
     }
 }

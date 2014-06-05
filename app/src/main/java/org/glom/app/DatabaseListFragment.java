@@ -288,7 +288,11 @@ public class DatabaseListFragment extends ListFragment
         }
 
         final long systemId = cursor.getLong(0);
-        cursor.close();
+
+        //Closing the cursor from getItem() here breaks notification when deleting items.
+        //As mentioned above, CursorAdapter.getItem() has no documentation.
+        // cursor.close();
+
         return systemId;
     }
 

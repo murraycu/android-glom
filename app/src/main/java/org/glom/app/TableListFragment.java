@@ -382,7 +382,10 @@ public class TableListFragment extends ListFragment
         }
 
         final String primaryKeyValue = cursor.getString(0); //TODO: Get primary key position.
-        cursor.close();
+
+        //Closing the cursor from getItem() here breaks notification when deleting items.
+        //As mentioned above, CursorAdapter.getItem() has no documentation.
+        // cursor.close();
 
         mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
     }
