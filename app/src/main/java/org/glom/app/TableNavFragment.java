@@ -91,8 +91,8 @@ public class TableNavFragment extends ListFragment {
 
         setListAdapter(new ArrayAdapter<>(
                 activity,
-                android.R.layout.simple_list_item_activated_1, //TODO: Explain this.
-                android.R.id.text1, //TODO: Explain this.
+                android.R.layout.simple_list_item_activated_1, //The layout for a row.
+                android.R.id.text1, //The ID of a TextView in the row.
                 tables));
     }
 
