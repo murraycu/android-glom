@@ -310,6 +310,12 @@ public class DatabaseListFragment extends ListFragment
         listView.setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                //mActionMode is stored just so we can check for null here
+                //to avoid opening a second contextual menu.
+                if (mActionMode != null) {
+                    return false;
+                }
+
                 mLongClickPosition = position;
                 mActionMode = getActivity().startActionMode(mActionModeCallback);
                 view.setSelected(true);
