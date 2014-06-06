@@ -1,5 +1,6 @@
 package org.glom.app;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -19,6 +20,7 @@ import java.io.InputStream;
  *
  * Created by murrayc on 6/5/14.
  */
+@SuppressLint("Registered") //This is a base class for other Activities.
 public class GlomActivity extends Activity {
 
     /**
