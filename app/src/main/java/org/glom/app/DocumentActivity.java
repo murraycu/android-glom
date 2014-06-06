@@ -171,10 +171,6 @@ public class DocumentActivity extends GlomActivity
         return documentSingleton.getDocument(getSystemId());
     }
 
-    protected SQLiteDatabase getDatabase() {
-        return documentSingleton.getDatabase(getSystemId());
-    }
-
     /**
      * Whether we have a URI that is (or is being) parsed as a document.
      */
