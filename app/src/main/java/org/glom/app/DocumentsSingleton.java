@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.util.LongSparseArray;
 
 import org.glom.app.libglom.Document;
 import org.glom.app.provider.GlomSystem;
@@ -30,8 +31,8 @@ public class DocumentsSingleton {
     private static final DocumentsSingleton ourInstance = new DocumentsSingleton();
 
     //A map of system IDs to Documents.
-    private Map<Long, Document> mDocumentMap = new HashMap<Long, Document>();
-    private Map<Long, SQLiteDatabase> mDatabaseMap = new HashMap<Long, SQLiteDatabase>();
+    private LongSparseArray<Document> mDocumentMap = new LongSparseArray<Document>();
+    private LongSparseArray<SQLiteDatabase> mDatabaseMap = new LongSparseArray<SQLiteDatabase>();
 
     private DocumentsSingleton() {
     }
