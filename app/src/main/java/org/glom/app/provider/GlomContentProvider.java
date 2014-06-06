@@ -90,7 +90,7 @@ public class GlomContentProvider extends ContentProvider {
     private static final Map<String, String> sSystemsProjectionMap;
 
     static {
-        sSystemsProjectionMap = new HashMap<String, String>();
+        sSystemsProjectionMap = new HashMap<>();
 
         sSystemsProjectionMap.put(BaseColumns._ID, BaseColumns._ID);
         sSystemsProjectionMap.put(GlomSystem.Columns.TITLE_COLUMN, DatabaseHelper.DB_COLUMN_NAME_TITLE);
