@@ -32,8 +32,6 @@ public class GlomActivity extends Activity {
     protected final DocumentsSingleton documentSingleton = DocumentsSingleton.getInstance();
     protected Uri mUri;
     protected boolean mCurrentlyLoadingDocument = false;
-    private DocumentLoadExampleStreamTask mTaskLoadingExampleStream;
-    private DocumentLoadExistingTask mTaskLoadingExisting;
 
     //We reference this while it's loading,
     //just so we can close it when loading has finished.
@@ -132,7 +130,7 @@ public class GlomActivity extends Activity {
             //Load the document asynchronously.
             //We respond when it finishes in onDocumentLoadingExistingFinished().
             mCurrentlyLoadingDocument = true;
-            mTaskLoadingExisting = new DocumentLoadExistingTask();
+            DocumentLoadExistingTask mTaskLoadingExisting = new DocumentLoadExistingTask();
             mTaskLoadingExisting.execute(getSystemId());
         } else {
             //Load the new (example) document.
@@ -176,7 +174,7 @@ public class GlomActivity extends Activity {
         //Load the document asynchronously.
         //We respond when it finishes in onDocumentLoadingExampleFinished.
         mCurrentlyLoadingDocument = true;
-        mTaskLoadingExampleStream = new DocumentLoadExampleStreamTask();
+        DocumentLoadExampleStreamTask mTaskLoadingExampleStream = new DocumentLoadExampleStreamTask();
         mTaskLoadingExampleStream.execute(mStream);
     }
 
