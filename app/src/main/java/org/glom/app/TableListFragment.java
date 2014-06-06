@@ -56,11 +56,6 @@ public class TableListFragment extends ListFragment
             return null;
         }
 
-        /**
-         * The columns needed by the cursor adapter
-         */
-        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
-
         final Activity activity = getActivity();
 
         final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, getSystemId());
@@ -177,8 +172,6 @@ public class TableListFragment extends ListFragment
             //Maybe the document hasn't loaded yet.
             return;
         }
-
-        final int[] viewIDs = { android.R.id.text1 };
 
         mAdapter = new GlomCursorAdapter(
                 activity,

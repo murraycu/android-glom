@@ -359,10 +359,6 @@ public class GlomContentProvider extends ContentProvider {
                 c = builder.query(getDb(), projection,
                         selection, selectionArgs,
                         null, null, orderBy);
-
-                c = builder.query(getDb(), projection,
-                        selection, selectionArgs,
-                        null, null, orderBy);
                 c.setNotificationUri(getContext().getContentResolver(),
                         GlomSystem.CONTENT_URI); //TODO: More precise?
                 break;
