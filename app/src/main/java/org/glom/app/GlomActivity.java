@@ -188,13 +188,6 @@ public class GlomActivity extends Activity {
     //This loads the document from a stream in an AsyncTask because it can take a noticeably long time,
     //and we don't want to make the UI unresponsive.
     protected class DocumentLoadExampleStreamTask extends AsyncTask<InputStream, Integer, Boolean> {
-
-        private long systemId = -1;
-
-        public long getSystemId() {
-            return systemId;
-        }
-
         @Override
         protected Boolean doInBackground(final InputStream... params) {
 
