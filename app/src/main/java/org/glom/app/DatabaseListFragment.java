@@ -26,10 +26,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import org.glom.app.libglom.layout.LayoutItemField;
 import org.glom.app.provider.GlomSystem;
-
-import java.util.List;
 
 /**
  * A fragment representing a single Table detail screen.
