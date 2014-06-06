@@ -63,7 +63,7 @@ public class GlomContentProvider extends ContentProvider {
     private static final int MATCHER_ID_SYSTEM = 2;
     private static final int MATCHER_ID_SYSTEM_TABLE_RECORDS = 3;
     private static final int MATCHER_ID_FILE = 4;
-    private static UriMatcher sUriMatcher;
+    private static final UriMatcher sUriMatcher;
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -87,7 +87,7 @@ public class GlomContentProvider extends ContentProvider {
     /** A map of GlomContentProvider projection column names to underlying Sqlite column names
      * for /system/ URIs, mapping to the systems tables.
      */
-    private static Map<String, String> sSystemsProjectionMap;
+    private static final Map<String, String> sSystemsProjectionMap;
 
     static {
         sSystemsProjectionMap = new HashMap<String, String>();

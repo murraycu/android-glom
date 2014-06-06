@@ -111,7 +111,7 @@ public class DatabaseListFragment extends ListFragment
         }
     };
 
-    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+    private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
 
         // Called when the action mode is created - when startActionMode() was called
         @Override

@@ -44,7 +44,7 @@ import java.util.Map.Entry;
  */
 public class SelfHoster {
 
-    protected boolean selfHostingActive = false;
+    protected final boolean selfHostingActive = false;
     protected Document document = null;
     private String filePath;
 

@@ -31,8 +31,8 @@ public class DocumentsSingleton {
     private static final DocumentsSingleton ourInstance = new DocumentsSingleton();
 
     //A map of system IDs to Documents.
-    private LongSparseArray<Document> mDocumentMap = new LongSparseArray<Document>();
-    private LongSparseArray<SQLiteDatabase> mDatabaseMap = new LongSparseArray<SQLiteDatabase>();
+    private final LongSparseArray<Document> mDocumentMap = new LongSparseArray<Document>();
+    private final LongSparseArray<SQLiteDatabase> mDatabaseMap = new LongSparseArray<SQLiteDatabase>();
 
     private DocumentsSingleton() {
     }
