@@ -87,11 +87,14 @@ public class UiUtils {
         switch (item.getGlomType()) {
             case TYPE_NUMERIC:
                 exampleText = "1234.5678";
+                break;
             case TYPE_TEXT:
                 exampleText = "abcdefghijklmnopqrstu";
+                break;
             default:
                 //TODO: Handle other types too
                 exampleText = "abcdefghijklmnopqrstu";
+                break;
         }
 
         //TODO:
