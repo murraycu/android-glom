@@ -67,17 +67,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
         final Bundle bundle = getArguments();
         if ((bundle != null)) {
-            if (!bundle.containsKey(TableDataActivity.ARG_SYSTEM_ID)) {
-                Log.error("The bundle doesn't contain the table name.");
-            } else {
-                setSystemId(bundle.getLong(TableDataActivity.ARG_SYSTEM_ID));
-            }
-
-            if (!bundle.containsKey(ARG_TABLE_NAME)) {
-                Log.error("The bundle doesn't contain the table name.");
-            } else {
-                setTableName(bundle.getString(ARG_TABLE_NAME));
-            }
+            UiUtils.parseBundleForTableDataFragment(this, bundle);
 
             if (!bundle.containsKey(ARG_PRIMARY_KEY_VALUE)) {
                 Log.error("The bundle doesn't contain the primary key value.");

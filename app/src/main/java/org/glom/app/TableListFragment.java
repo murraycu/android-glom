@@ -118,16 +118,7 @@ public class TableListFragment extends ListFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle bundle = getArguments();
-
-        //TODO: Avoid duplicate with TableDetailFragment.onCreate():
-        if ((bundle != null) && bundle.containsKey(GlomActivity.ARG_SYSTEM_ID)) {
-            setSystemId(bundle.getLong(GlomActivity.ARG_SYSTEM_ID));
-        }
-
-        if ((bundle != null) && bundle.containsKey(ARG_TABLE_NAME)) {
-            setTableName(bundle.getString(ARG_TABLE_NAME));
-        }
+        UiUtils.parseBundleForTableDataFragment(this, getArguments());
     }
 
     @Override

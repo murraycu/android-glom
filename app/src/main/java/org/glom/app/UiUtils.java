@@ -23,6 +23,7 @@ package org.glom.app;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.widget.TextView;
 
 import org.glom.app.libglom.layout.LayoutItemField;
@@ -142,5 +143,16 @@ class UiUtils {
         }
 
         return result;
+    }
+
+    static void parseBundleForTableDataFragment(final TableDataFragment fragment, final Bundle bundle) {
+        //TODO: Avoid duplicate with TableDetailFragment.onCreate():
+        if ((bundle != null) && bundle.containsKey(GlomActivity.ARG_SYSTEM_ID)) {
+            fragment.setSystemId(bundle.getLong(GlomActivity.ARG_SYSTEM_ID));
+        }
+
+        if ((bundle != null) && bundle.containsKey(TableDataFragment.ARG_TABLE_NAME)) {
+            fragment.setTableName(bundle.getString(TableDataFragment.ARG_TABLE_NAME));
+        }
     }
 }
