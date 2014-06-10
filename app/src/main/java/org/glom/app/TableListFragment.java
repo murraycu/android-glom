@@ -23,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.glom.app.libglom.Document;
+import org.glom.app.libglom.Field;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.glom.app.provider.GlomSystem;
 
@@ -46,6 +47,7 @@ public class TableListFragment extends ListFragment
      */
     private Callbacks mCallbacks = sDummyCallbacks;
     private List<LayoutItemField> mFieldsToGet; //A cache.
+    private int mPrimaryKeyIndex = -1;//A cache. A position in mFieldsToGet.
 
     private static final int URL_LOADER = 0;
     private GlomCursorAdapter mAdapter;
@@ -365,9 +367,51 @@ public class TableListFragment extends ListFragment
             return;
         }
 
-        final String primaryKeyValue = cursor.getString(0); //TODO: Get primary key position.
-        cursor.close();
+        final int primaryKeyIndex = getPrimaryKeyIndex();
+        if (primaryKeyIndex != -1) {
+            final String primaryKeyValue = cursor.getString(primaryKeyIndex);
+            cursor.close();
+            mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
+        } else {
+            cursor.close();
+        }
+    }
 
-        mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
+    /** Returns the index of the primary key in the database query's result cursor,
+     * or -1 if no primary key could be found.
+     * @return
+     */
+    private int getPrimaryKeyIndex() {
+        if(mPrimaryKeyIndex != -1) {
+            return mPrimaryKeyIndex;
+        }
+
+        int i = -1;
+        final List<LayoutItemField> fieldsToShow = getFieldsToShow();
+        for (final LayoutItemField item : fieldsToShow) {
+            ++i;
+
+            if (item == null) {
+                continue;
+            }
+
+            if (item.getHasRelationshipName()) {
+                continue;
+            }
+
+
+            final Field field = item.getFullFieldDetails();
+            if (field == null) {
+                continue;
+            }
+
+            if (field.getPrimaryKey()) {
+                mPrimaryKeyIndex = i;
+                break;
+            }
+
+        }
+
+        return mPrimaryKeyIndex;
     }
 }
