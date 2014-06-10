@@ -9,12 +9,11 @@
     android:padding="16dp"
     tools:context="org.glom.app.DatabaseListFragment">
 
-    <ListView
-        android:id="@id/android:list"
+    <include
+        layout="@android:layout/list_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:drawSelectorOnTop="false"
-        android:layout_alignParentTop="true" />
+        android:layout_marginTop="16dp" />
 
 
 </RelativeLayout>
