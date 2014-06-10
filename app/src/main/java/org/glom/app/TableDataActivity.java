@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import org.glom.app.libglom.Document;
+import org.glom.app.libglom.TypedDataItem;
 
 import java.util.List;
 
@@ -101,7 +102,7 @@ public class TableDataActivity extends DocumentActivity
     }
 
     @Override
-    public void onRecordSelected(final String tableName, final String primaryKeyValue) {
+    public void onRecordSelected(final String tableName, final TypedDataItem primaryKeyValue) {
         navigate(tableName, primaryKeyValue);
     }
 }

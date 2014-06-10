@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 
 import org.glom.app.libglom.Document;
+import org.glom.app.libglom.TypedDataItem;
 
 
 /**
@@ -90,7 +91,7 @@ public class TableNavActivity extends DocumentActivity
      * indicating that the record with the given ID was selected.
      */
     @Override
-    public void onRecordSelected(final String tableName, final String primaryKeyValue) {
+    public void onRecordSelected(final String tableName, final TypedDataItem primaryKeyValue) {
         navigate(tableName, primaryKeyValue);
     }
 

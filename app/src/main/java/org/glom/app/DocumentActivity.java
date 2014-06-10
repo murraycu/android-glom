@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.glom.app.libglom.Document;
+import org.glom.app.libglom.TypedDataItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +65,7 @@ public class DocumentActivity extends GlomActivity
      * @param tableName
      * @param primaryKeyValue
      */
-    protected void navigate(final String tableName, final String primaryKeyValue) {
+    protected void navigate(final String tableName, final TypedDataItem primaryKeyValue) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -78,7 +79,7 @@ public class DocumentActivity extends GlomActivity
                 fragment = new TableListFragment();
             } else {
                 fragment = new TableDetailFragment();
-                arguments.putString(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, primaryKeyValue);
+                arguments.putSerializable(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, primaryKeyValue);
             }
 
             fragment.setArguments(arguments);

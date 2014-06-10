@@ -3,6 +3,7 @@ package org.glom.app;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.glom.app.libglom.Document;
+import org.glom.app.libglom.TypedDataItem;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public interface TableDataFragment {
         }
 
         @Override
-        public void onRecordSelected(final String tableName, final String primaryKeyValue) {
+        public void onRecordSelected(final String tableName, final TypedDataItem primaryKeyValue) {
         }
 
         @Override
@@ -78,7 +79,7 @@ public interface TableDataFragment {
         /**
          * Callback for when a record has been selected.
          */
-        public void onRecordSelected(final String tableName, final String primaryKeyValue);
+        public void onRecordSelected(final String tableName, final TypedDataItem primaryKeyValue);
 
     }
 }

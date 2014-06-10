@@ -25,6 +25,7 @@ import org.glom.app.libglom.layout.LayoutItem;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.jooq.SQLDialect;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -42,7 +43,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
     private long mSystemId = -1;
     private String mTableName;
-    private String mPkValue;
+    private TypedDataItem mPkValue;
     private Cursor mCursor;
 
     private List<LayoutItemField> mFieldsToGet; //A cache.
@@ -72,7 +73,10 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
             if (!bundle.containsKey(ARG_PRIMARY_KEY_VALUE)) {
                 Log.error("The bundle doesn't contain the primary key value.");
             } else {
-                mPkValue = bundle.getString(ARG_PRIMARY_KEY_VALUE);
+                final Serializable object = bundle.getSerializable(ARG_PRIMARY_KEY_VALUE);
+                if ((object != null) && object.getClass().isAssignableFrom(TypedDataItem.class)) {
+                    mPkValue = (TypedDataItem)object;
+                }
             }
         }
 
@@ -251,10 +255,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
             return;
         }
 
-        //TODO: Do not expect the ID to be a string:
-        final TypedDataItem primaryKeyValue = new TypedDataItem();
-        primaryKeyValue.setText(mPkValue);
-        final String query = SqlUtils.buildSqlSelectWithKey(document, getTableName(), fieldsToGet, primaryKey, primaryKeyValue, SQLDialect.SQLITE);
+        final String query = SqlUtils.buildSqlSelectWithKey(document, getTableName(), fieldsToGet, primaryKey, mPkValue, SQLDialect.SQLITE);
 
         final SQLiteDatabase db = getDatabase();
         mCursor = db.rawQuery(query, null);

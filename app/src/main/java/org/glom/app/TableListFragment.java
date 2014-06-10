@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;
+import org.glom.app.libglom.TypedDataItem;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.glom.app.provider.GlomSystem;
 
@@ -377,10 +378,47 @@ public class TableListFragment extends ListFragment
             primaryKeyIndex = cursor.getColumnIndex(BaseColumns._ID);
         }
 
-        final String primaryKeyValue = cursor.getString(primaryKeyIndex);
+        final Field fieldPrimaryKey = getPrimaryKeyField();
+        final TypedDataItem primaryKeyValue = getFieldValueFromCursor(cursor, fieldPrimaryKey, primaryKeyIndex);
         cursor.close();
 
         mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
+    }
+
+    private Field getPrimaryKeyField() {
+        final Document document = getDocument();
+        if (document == null) {
+            return null;
+        }
+
+        return document.getTablePrimaryKeyField(getTableName());
+    }
+
+    private TypedDataItem getFieldValueFromCursor(final Cursor cursor, final Field field, int primaryKeyIndex) {
+        final TypedDataItem result = new TypedDataItem();
+
+        switch (field.getGlomType()) {
+            case TYPE_BOOLEAN:
+                //Sqlite has no boolean type.
+                if (cursor.isNull(primaryKeyIndex)) {
+                    result.setBoolean(false);
+                } else {
+                    result.setBoolean(cursor.getShort(primaryKeyIndex) != 0); //TODO: Check that we use this type for booleans.
+                }
+
+                break;
+            case TYPE_NUMERIC:
+                result.setNumber(cursor.getDouble(primaryKeyIndex));
+                break;
+            case TYPE_TEXT:
+                result.setText(cursor.getString(primaryKeyIndex));
+                // TODO: case TYPE_TIME;
+                // TODO: case TYPE_IMAGE:
+            default:
+                return null;
+        }
+
+        return result;
     }
 
     /** Returns the index of the primary key in the database query's result cursor,

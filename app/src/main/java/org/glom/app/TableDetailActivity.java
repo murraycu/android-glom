@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import org.glom.app.libglom.TypedDataItem;
+
 /**
  * An activity representing a single record of a single Table. This
  * activity is only used on handset devices. On tablet-size devices,
@@ -14,8 +16,6 @@ import android.view.MenuItem;
  * more than a {@link TableDetailFragment}.
  */
 public class TableDetailActivity extends TableDataActivity {
-
-    private String mPkValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +44,12 @@ public class TableDetailActivity extends TableDataActivity {
             // TODO: Find a simpler way to just pass this through to the fragment.
             // For instance, pass the intent.getExtras() as the bundle?.
             final Intent intent = getIntent();
-            mPkValue = intent.getStringExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE);
-            arguments.putString(TableDetailFragment.ARG_PRIMARY_KEY_VALUE,
-                    mPkValue);
+
+            final Object pkValue = intent.getSerializableExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE);
+            if (pkValue.getClass().isAssignableFrom(TypedDataItem.class)) {
+                arguments.putSerializable(TableDetailFragment.ARG_PRIMARY_KEY_VALUE,
+                        (TypedDataItem) pkValue);
+            }
 
             final TableDetailFragment fragment = new TableDetailFragment();
             fragment.setArguments(arguments);
@@ -90,7 +93,6 @@ public class TableDetailActivity extends TableDataActivity {
             final Intent intent = new Intent(this, TableListActivity.class);
             intent.putExtra(ARG_SYSTEM_ID, getSystemId());
             intent.putExtra(TableDataFragment.ARG_TABLE_NAME, mTableName);
-            intent.putExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, mPkValue);
             navigateUpTo(intent);
             return true;
         }
