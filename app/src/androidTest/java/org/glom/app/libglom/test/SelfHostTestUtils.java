@@ -42,7 +42,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * @author Murray Cumming <murrayc@openismus.com>
  */
-public class SelfHostTestUtils {
+class SelfHostTestUtils {
     static public void testExampleMusiccollectionData(final SelfHosterSqlite selfHoster, final Document document) {
         assertTrue(document != null);
 

@@ -12,7 +12,7 @@ import java.util.List;
  * fragment and activity implementations separate.
  * http://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
  */
-public interface TableNavCallbacks {
+interface TableNavCallbacks {
     /**
      * Callback for when an item has been selected.
      */

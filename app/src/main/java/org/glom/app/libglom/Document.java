@@ -1657,7 +1657,7 @@ public class Document {
      * @param layoutField
      * @return
      */
-    public Relationship getFieldUsedInRelationshipToOne(final String tableName, final LayoutItemField layoutField) {
+    Relationship getFieldUsedInRelationshipToOne(final String tableName, final LayoutItemField layoutField) {
 
         if (layoutField == null) {
             Log.e("android-glom", "layoutField was null");

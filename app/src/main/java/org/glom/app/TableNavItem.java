@@ -4,7 +4,7 @@ package org.glom.app;
  * This is just something to give to ArrayAdapter
  * so it can call toString() on something to get a human-readable title (table title) for an ID (table name).
  */
-public class TableNavItem {
+class TableNavItem {
     public final String tableName;
     public final String tableTitle;
 

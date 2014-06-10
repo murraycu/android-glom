@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Created by murrayc on 5/16/14.
  */
-public class GlomCursorAdapter extends CursorAdapter {
+class GlomCursorAdapter extends CursorAdapter {
     private final List<LayoutItemField> mFieldsToGet;
     private List<TextView> mTextViews;
 

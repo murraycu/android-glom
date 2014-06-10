@@ -16,7 +16,7 @@ public class GlomSystem {
     public static final Uri SYSTEMS_URI = Uri.parse("content://" +
             AUTHORITY + "/" + GlomContentProvider.URI_PART_SYSTEM);
 
-    public static final String TABLE_URI_PART = "table";
+    public static final String TABLE_URI_PART = GlomContentProvider.URI_PART_TABLE;
 
     /** The URI for the list of all (.glom XML) files,
      * or part of the URI for a single file.

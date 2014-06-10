@@ -35,7 +35,7 @@ import static java.lang.Math.max;
 /**
  * Created by murrayc on 5/21/14.
  */
-public class UiUtils {
+class UiUtils {
     public static int getStandardItemPadding(final Context context) {
         //TODO: Use  listPreferredItemPaddingStart instead, if we can discover what SDK version has it.
         final int[] attrs = new int[]{android.R.attr.listPreferredItemPaddingLeft};

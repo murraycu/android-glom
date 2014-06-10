@@ -21,7 +21,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link TableNavCallbacks}
  * interface.
  */
-public class TableNavFragment extends ListFragment {
+class TableNavFragment extends ListFragment {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
