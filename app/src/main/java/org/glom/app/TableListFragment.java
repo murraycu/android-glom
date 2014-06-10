@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -367,14 +368,19 @@ public class TableListFragment extends ListFragment
             return;
         }
 
-        final int primaryKeyIndex = getPrimaryKeyIndex();
-        if (primaryKeyIndex != -1) {
-            final String primaryKeyValue = cursor.getString(primaryKeyIndex);
-            cursor.close();
-            mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
-        } else {
-            cursor.close();
+
+        int primaryKeyIndex = getPrimaryKeyIndex();
+
+        //Use the extra _id column (added for ListView/ListFragment) if the layout did not
+        //specify that we should show the primary Key.
+        if (primaryKeyIndex == -1) {
+            primaryKeyIndex = cursor.getColumnIndex(BaseColumns._ID);
         }
+
+        final String primaryKeyValue = cursor.getString(primaryKeyIndex);
+        cursor.close();
+
+        mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
     }
 
     /** Returns the index of the primary key in the database query's result cursor,
