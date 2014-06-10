@@ -124,7 +124,8 @@ public class TableListFragment extends ListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //TODO? super.onCreateView(inflater, container, savedInstanceState);
+        // We would only call the base class's onCreateView if we wanted the default layout:
+        // super.onCreateView(inflater, container, savedInstanceState);
 
         final View rootView = inflater.inflate(R.layout.fragment_table_list, container, false);
 
@@ -231,7 +232,6 @@ public class TableListFragment extends ListFragment
         final Context context = activity.getApplicationContext();
         final LinearLayout headerLayout = new LinearLayout(context);
 
-        //TODO: Check for nulls and an empty list.
         final List<LayoutItemField> fieldsToGet = getFieldsToShow();
         if ((fieldsToGet == null) || fieldsToGet.isEmpty()) {
             return;
