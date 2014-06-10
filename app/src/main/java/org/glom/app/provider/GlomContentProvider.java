@@ -297,15 +297,17 @@ public class GlomContentProvider extends ContentProvider {
             //TODO? getContext().getContentResolver().notifyChange(fileId, null);
         }
 
-        // insert the initialValues, and the fileID, into a new database row
-        valuesToUse.put(DatabaseHelper.DB_COLUMN_NAME_FILE_URI, fileUri.toString());
-        final long rowId = db.insertOrThrow(DatabaseHelper.TABLE_NAME_SYSTEMS,
-                DatabaseHelper.DB_COLUMN_NAME_TITLE, valuesToUse);
-        if (rowId >= 0) {
-            final Uri systemUri = ContentUris.withAppendedId(
-                    GlomSystem.CONTENT_URI, rowId);
-            getContext().getContentResolver().notifyChange(systemUri, null);
-            return systemUri; //The URI of the newly-added GlomSystem.
+        if (fileUri != null) {
+            // insert the initialValues, and the fileID, into a new database row
+            valuesToUse.put(DatabaseHelper.DB_COLUMN_NAME_FILE_URI, fileUri.toString());
+            final long rowId = db.insertOrThrow(DatabaseHelper.TABLE_NAME_SYSTEMS,
+                    DatabaseHelper.DB_COLUMN_NAME_TITLE, valuesToUse);
+            if (rowId >= 0) {
+                final Uri systemUri = ContentUris.withAppendedId(
+                        GlomSystem.CONTENT_URI, rowId);
+                getContext().getContentResolver().notifyChange(systemUri, null);
+                return systemUri; //The URI of the newly-added GlomSystem.
+            }
         }
 
         throw new SQLException("Failed to insert row into " + uri);
