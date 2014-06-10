@@ -3,7 +3,6 @@ package org.glom.app;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import org.glom.app.libglom.Document;
