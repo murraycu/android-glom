@@ -20,6 +20,7 @@
 package org.glom.app;
 
 import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.text.TextUtils;
 
 import org.glom.app.libglom.DataItem;
@@ -138,7 +139,7 @@ public class SqlUtils {
         Field pk = document.getTablePrimaryKeyField(tableName);
         if (pk != null) {
             final org.jooq.Field<?> fieldPk = createField(tableName, pk.getName());
-            selectStep = selectStep.select(fieldPk.as("_id"));
+            selectStep = selectStep.select(fieldPk.as(BaseColumns._ID));
         }
 
         final Table<Record> table = DSL.tableByName(tableName);
