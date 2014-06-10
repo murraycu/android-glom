@@ -19,6 +19,9 @@
 
 package org.glom.app.libglom;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.glom.app.libglom.Field.GlomFieldType;
 
 import java.util.Date;
@@ -26,13 +29,34 @@ import java.util.Date;
 /**
  * This specialization of DataItem can hold a primary key item.
  */
-@SuppressWarnings("serial")
-public class TypedDataItem extends DataItem {
+public class TypedDataItem extends DataItem implements Parcelable  {
     private boolean empty = true;
     private GlomFieldType type = GlomFieldType.TYPE_INVALID;
     private String unknown = null;
 
     public TypedDataItem() {
+    }
+
+    private TypedDataItem(Parcel in) {
+        //Get the type:
+        type = GlomFieldType.valueOf(in.readString());
+
+        //Get the value, depending on the type:
+        switch (type) {
+            case TYPE_BOOLEAN:
+                setBoolean(in.readInt() != 0);
+                break;
+            case TYPE_NUMERIC:
+                setNumber(in.readDouble());
+                break;
+            case TYPE_TEXT:
+                setText(in.readString());
+                break;
+            //TODO: case TYPE_DATE:
+            //TODOcase TYPE_TIME:
+            default:
+                break;
+        }
     }
 
     public boolean isEmpty() {
@@ -151,4 +175,42 @@ public class TypedDataItem extends DataItem {
         return type;
     }
 
+    public static final Parcelable.Creator<DataItem> CREATOR
+            = new Parcelable.Creator<DataItem>() {
+        public DataItem createFromParcel(Parcel in) {
+            return new TypedDataItem(in);
+        }
+
+        public DataItem[] newArray(int size) {
+            return new DataItem[size];
+        }
+    };
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int i) {
+        out.writeString(type.name());
+
+        //Wrte the value, depending on the type:
+        switch (type) {
+            case TYPE_BOOLEAN:
+                out.writeInt(getBoolean() ? 1 : 0);
+                break;
+            case TYPE_NUMERIC:
+                out.writeDouble(getNumber());
+                break;
+            case TYPE_TEXT:
+                out.writeString(getText());
+                break;
+            //TODO: case TYPE_DATE:
+            //TODOcase TYPE_TIME:
+            default:
+                break;
+        }
+    }
 }

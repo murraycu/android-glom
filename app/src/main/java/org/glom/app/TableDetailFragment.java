@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +26,6 @@ import org.glom.app.libglom.layout.LayoutItem;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.jooq.SQLDialect;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -73,7 +73,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
             if (!bundle.containsKey(ARG_PRIMARY_KEY_VALUE)) {
                 Log.error("The bundle doesn't contain the primary key value.");
             } else {
-                final Serializable object = bundle.getSerializable(ARG_PRIMARY_KEY_VALUE);
+                final Parcelable object = bundle.getParcelable(ARG_PRIMARY_KEY_VALUE);
                 if ((object != null) && object.getClass().isAssignableFrom(TypedDataItem.class)) {
                     mPkValue = (TypedDataItem)object;
                 }

@@ -45,9 +45,9 @@ public class TableDetailActivity extends TableDataActivity {
             // For instance, pass the intent.getExtras() as the bundle?.
             final Intent intent = getIntent();
 
-            final Object pkValue = intent.getSerializableExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE);
-            if (pkValue.getClass().isAssignableFrom(TypedDataItem.class)) {
-                arguments.putSerializable(TableDetailFragment.ARG_PRIMARY_KEY_VALUE,
+            final Object pkValue = intent.getParcelableExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE);
+            if ((pkValue != null) && pkValue.getClass().isAssignableFrom(TypedDataItem.class)) {
+                arguments.putParcelable(TableDetailFragment.ARG_PRIMARY_KEY_VALUE,
                         (TypedDataItem) pkValue);
             }
 

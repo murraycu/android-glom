@@ -79,7 +79,7 @@ public class DocumentActivity extends GlomActivity
                 fragment = new TableListFragment();
             } else {
                 fragment = new TableDetailFragment();
-                arguments.putSerializable(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, primaryKeyValue);
+                arguments.putParcelable(TableDetailFragment.ARG_PRIMARY_KEY_VALUE, primaryKeyValue);
             }
 
             fragment.setArguments(arguments);

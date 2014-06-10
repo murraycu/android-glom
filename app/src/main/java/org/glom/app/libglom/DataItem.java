@@ -19,14 +19,13 @@
 
 package org.glom.app.libglom;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
  * This Data Transfer Object (DTO) is used to send a data item between the client and the server.
  */
 @SuppressWarnings("serial")
-public class DataItem implements Serializable {
+public class DataItem  {
 
     private String text;
     private boolean bool;
@@ -80,7 +79,7 @@ public class DataItem implements Serializable {
      * This is not used in DataItem instances that are passed from the server to the client.
      * This is only used locally to recreate database data.
      *
-     * @param bytes
+     * @param imageData
      */
     public void setImageData(final byte[] imageData) {
         this.imageData = imageData;
@@ -117,5 +116,4 @@ public class DataItem implements Serializable {
                 return null;
         }
     }
-
 }
