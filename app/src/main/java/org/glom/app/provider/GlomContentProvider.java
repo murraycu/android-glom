@@ -41,14 +41,14 @@ public class GlomContentProvider extends ContentProvider {
     /**
      * The MIME type of {@link GlomSystem#CONTENT_URI} providing a directory of notes.
      */
-    public static final String CONTENT_TYPE =
+    private static final String CONTENT_TYPE =
             "vnd.android.cursor.dir/vnd.glom.system";
 
     /**
      * The MIME type of a {@link GlomSystem#CONTENT_URI} sub-directory of a single
      * item.
      */
-    public static final String CONTENT_SYSTEM_TYPE =
+    private static final String CONTENT_SYSTEM_TYPE =
             "vnd.android.cursor.item/vnd.glom.system";
 
     /**

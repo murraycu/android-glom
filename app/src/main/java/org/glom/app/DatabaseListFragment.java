@@ -38,7 +38,7 @@ public class DatabaseListFragment extends ListFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int URL_LOADER = 0;
-    SimpleCursorAdapter mAdapter;
+    private SimpleCursorAdapter mAdapter;
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
@@ -100,7 +100,7 @@ public class DatabaseListFragment extends ListFragment
 
     }
 
-    static final Callbacks sDummyCallbacks = new Callbacks() {
+    private static final Callbacks sDummyCallbacks = new Callbacks() {
 
         @Override
         public void onSystemSelected(final long systemId
@@ -146,8 +146,8 @@ public class DatabaseListFragment extends ListFragment
         }
     };
 
-    ActionMode mActionMode;
-    int mLongClickPosition = 0;
+    private ActionMode mActionMode;
+    private int mLongClickPosition = 0;
 
     /**
      * The fragment's current callback object.

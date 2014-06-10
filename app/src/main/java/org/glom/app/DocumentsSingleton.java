@@ -41,7 +41,7 @@ public class DocumentsSingleton {
         return ourInstance;
     }
 
-    public static InputStream getInputStreamForExisting(final ContentResolver resolver, long systemId) {
+    private static InputStream getInputStreamForExisting(final ContentResolver resolver, long systemId) {
         final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, systemId);
         final Uri fileUri = Utils.buildFileContentUri(uriSystem, resolver);
         if (fileUri == null) {

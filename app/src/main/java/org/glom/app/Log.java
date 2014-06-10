@@ -26,7 +26,7 @@ package org.glom.app;
  */
 public class Log {
 
-    public static final String LOG_TAG = "glom";
+    private static final String LOG_TAG = "glom";
 
     /* A replacement for StringUtils.defaultString(),
                  * because Android's TextUtils doesn't have it.

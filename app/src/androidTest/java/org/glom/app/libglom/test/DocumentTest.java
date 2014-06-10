@@ -51,8 +51,8 @@ public class DocumentTest extends AndroidTestCase {
 
     private static final String defaultLocale = "";
     private static final String germanLocale = "de";
-    static InputStream inputStreamMusicCollection; //TODO: Do not reuse this.
-    static InputStream inputStreamFilmManager;
+    private static InputStream inputStreamMusicCollection; //TODO: Do not reuse this.
+    private static InputStream inputStreamFilmManager;
     private static Document document;
 
     /*

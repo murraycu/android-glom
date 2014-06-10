@@ -35,7 +35,7 @@ public class GlomActivity extends Activity {
 
     //We reference this while it's loading,
     //just so we can close it when loading has finished.
-    InputStream mStream;
+    private InputStream mStream;
     private long mSystemId;
 
     private void showDocumentLoadProgress() {
@@ -187,7 +187,7 @@ public class GlomActivity extends Activity {
 
     //This loads the document from a stream in an AsyncTask because it can take a noticeably long time,
     //and we don't want to make the UI unresponsive.
-    protected class DocumentLoadExampleStreamTask extends AsyncTask<InputStream, Integer, Boolean> {
+    private class DocumentLoadExampleStreamTask extends AsyncTask<InputStream, Integer, Boolean> {
         @Override
         protected Boolean doInBackground(final InputStream... params) {
 
@@ -223,7 +223,7 @@ public class GlomActivity extends Activity {
 
     //This loads the document from a stream in an AsyncTask because it can take a noticeably long time,
     //and we don't want to make the UI unresponsive.
-    protected class DocumentLoadExistingTask extends AsyncTask<Long, Integer, Boolean> {
+    private class DocumentLoadExistingTask extends AsyncTask<Long, Integer, Boolean> {
         @Override
         protected Boolean doInBackground(final Long... params) {
 

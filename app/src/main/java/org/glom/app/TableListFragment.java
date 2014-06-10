@@ -48,7 +48,7 @@ public class TableListFragment extends ListFragment
     private List<LayoutItemField> mFieldsToGet; //A cache.
 
     private static final int URL_LOADER = 0;
-    GlomCursorAdapter  mAdapter;
+    private GlomCursorAdapter mAdapter;
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
