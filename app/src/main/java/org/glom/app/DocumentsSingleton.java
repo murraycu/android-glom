@@ -159,13 +159,13 @@ public class DocumentsSingleton {
         final String selection = GlomSystem.Columns.TITLE_COLUMN + "=?";
         final String[] selectionArgs = new String[] {title};
         final Cursor cursor = resolver.query(GlomSystem.SYSTEMS_URI, projection, selection, selectionArgs, null);
-        boolean result = true;
+
         if ((cursor == null || (cursor.getCount() <= 0))) {
             return false; //No systems have that title.
         }
 
         cursor.close(); //TODO: Should we do this?
-        return result;
+        return true;
     }
 
     public boolean loadExisting(long systemId, final Context context) {
