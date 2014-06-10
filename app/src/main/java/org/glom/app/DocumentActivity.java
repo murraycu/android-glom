@@ -20,11 +20,17 @@ import java.util.List;
 public class DocumentActivity extends GlomActivity
         implements TableNavCallbacks {
 
+    /** Whether this activity uses two panes by using fragments.
+     */
+    public void setTwoPane() {
+        this.mTwoPane = true;
+    }
+
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    protected boolean mTwoPane = false; //Set by derived constructors sometimes.
+    private boolean mTwoPane = false; //Set by derived constructors sometimes.
 
 
     protected boolean hasDocument() {
