@@ -20,6 +20,7 @@
 package org.glom.app;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
@@ -258,14 +259,14 @@ public class SelfHosterSqlite extends SelfHoster {
         // Actually create the table
         final String query = "CREATE TABLE " + quoteAndEscapeSqlId(tableName) + " (" + sqlFields + ");";
 
-        db.execSQL(query);
-
-        tableCreationSucceeded = true;
-        if (!tableCreationSucceeded) {
-            System.out.println("recreatedDatabase(): CREATE TABLE() failed.");
+        try {
+            db.execSQL(query);
+        } catch (final SQLException e) {
+            Log.error("Exception from CREATE TABLE query", e);
+            return false;
         }
 
-        return tableCreationSucceeded;
+        return true;
     }
 
     /**
