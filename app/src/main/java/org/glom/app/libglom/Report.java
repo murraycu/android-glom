@@ -3,8 +3,6 @@ package org.glom.app.libglom;
 import org.glom.app.libglom.layout.LayoutGroup;
 
 public class Report extends Translatable {
-
-    private static final long serialVersionUID = 4175542775362775834L;
     private LayoutGroup layoutGroup = new LayoutGroup();
 
     /**

@@ -2008,7 +2008,6 @@ public class Document {
         HOSTING_MODE_POSTGRES_CENTRAL, HOSTING_MODE_POSTGRES_SELF, HOSTING_MODE_SQLITE, HOSTING_MODE_MYSQL_CENTRAL, HOSTING_MODE_MYSQL_SELF
     }
 
-    @SuppressWarnings("serial")
     private static class TableInfo extends Translatable {
         private final Hashtable<String, Field> fieldsMap = new Hashtable<>();
         private final Hashtable<String, Relationship> relationshipsMap = new Hashtable<>();

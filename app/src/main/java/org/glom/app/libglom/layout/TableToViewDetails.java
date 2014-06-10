@@ -19,13 +19,11 @@
 
 package org.glom.app.libglom.layout;
 
-import java.io.Serializable;
 
 /**
  * @author Murray Cumming <murrayc@openismus.com>
  */
-public class TableToViewDetails implements Serializable {
-    private static final long serialVersionUID = 4649142373796447016L;
+public class TableToViewDetails {
 
     public String tableName;
     public UsesRelationship usesRelationship;

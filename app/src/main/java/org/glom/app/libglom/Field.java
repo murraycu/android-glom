@@ -3,8 +3,6 @@ package org.glom.app.libglom;
 import org.glom.app.libglom.layout.Formatting;
 
 public class Field extends Translatable {
-
-    private static final long serialVersionUID = 5297785500678189743L;
     private GlomFieldType glomFieldType; // TODO: = glom_field_type.TYPE_INVALID;
     private boolean primaryKey = false;
     private boolean uniqueKey = false;

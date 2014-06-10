@@ -3,8 +3,6 @@ package org.glom.app.libglom;
 import android.text.TextUtils;
 
 public class Relationship extends Translatable {
-
-    private static final long serialVersionUID = 851415917396362167L;
     private String fromTable = "";
     private String fromField = "";
     private String toTable = "";

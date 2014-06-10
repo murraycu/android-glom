@@ -28,5 +28,4 @@ import org.glom.app.libglom.Translatable;
  * @author Murray Cumming <murrayc@murrayc.com>
  */
 public class StaticText extends Translatable {
-    private static final long serialVersionUID = -2841723294651514059L;
 }

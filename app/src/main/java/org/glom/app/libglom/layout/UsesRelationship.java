@@ -21,12 +21,10 @@ package org.glom.app.libglom.layout;
 
 import org.glom.app.libglom.Relationship;
 
-import java.io.Serializable;
-
 /**
  * @author Murray Cumming <murrayc@openismus.com>
  */
-public interface UsesRelationship extends Serializable {
+public interface UsesRelationship {
 
     public abstract Relationship getRelationship();
 

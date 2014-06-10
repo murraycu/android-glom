@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import org.glom.app.libglom.Relationship;
 
 public class UsesRelationshipImpl implements UsesRelationship {
-    private static final long serialVersionUID = -3778108396526473307L;
     private Relationship relationship;
     private Relationship relatedRelationship;
 

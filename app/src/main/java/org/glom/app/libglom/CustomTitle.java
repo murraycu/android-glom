@@ -23,7 +23,6 @@ package org.glom.app.libglom;
  * @author Ben Konrath <ben@bagu.org>
  */
 public class CustomTitle extends Translatable {
-    private static final long serialVersionUID = 7125683003211773249L;
     private boolean useCustomTitle = false;
 
     public boolean getUseCustomTitle() {

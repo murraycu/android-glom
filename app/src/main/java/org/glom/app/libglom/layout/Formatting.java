@@ -5,11 +5,8 @@ import android.util.Log;
 
 import org.glom.app.libglom.NumericFormat;
 
-import java.io.Serializable;
+public class Formatting {
 
-public class Formatting implements Serializable {
-
-    private static final long serialVersionUID = -2848253819745789939L;
     private HorizontalAlignment horizontalAlignment = HorizontalAlignment.HORIZONTAL_ALIGNMENT_AUTO;
     // @formatter:on
     private int multilineHeightLines = 1;

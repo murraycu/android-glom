@@ -7,7 +7,6 @@ import org.glom.app.libglom.layout.LayoutItemField;
 
 public class LayoutItemGroupBy extends LayoutGroup {
 
-    private static final long serialVersionUID = -672753948682122432L;
     private LayoutItemField fieldGroupBy = null;
     private LayoutGroup secondaryFields = null;
 

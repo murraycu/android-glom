@@ -2,12 +2,10 @@ package org.glom.app.libglom;
 
 import android.text.TextUtils;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
-public class Translatable implements Serializable {
+public class Translatable  {
 
-    private static final long serialVersionUID = 700462080795724363L;
     // A map of localeID to title:
     private final TranslationsMap translationsMap = new TranslationsMap();
     private String name = "";
@@ -99,7 +97,5 @@ public class Translatable implements Serializable {
 
     // We use HashMap instead of Hashtable or TreeMap because GWT only supports HashMap.
     public static class TranslationsMap extends HashMap<String, String> {
-
-        private static final long serialVersionUID = 1275019181399622213L;
     }
 }

@@ -9,17 +9,8 @@ import org.glom.app.libglom.Relationship;
 
 public class LayoutItemField extends LayoutItemWithFormatting implements UsesRelationship {
 
-    private static final long serialVersionUID = -7101706636312130106L;
-    /*
-     * Don't make this final, because that breaks GWT compilation. See
-     * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
-     */
-    private final/* final */ UsesRelationship usesRel = new UsesRelationshipImpl();
-    /*
-     * Don't make this final, because that breaks GWT serialization. See
-     * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
-     */
-    private final/* final */ CustomTitle customTitle = new CustomTitle();
+    private final UsesRelationship usesRel = new UsesRelationshipImpl();
+    private final CustomTitle customTitle = new CustomTitle();
     private Field field;
     private boolean useDefaultFormatting = true;
     // Extras:

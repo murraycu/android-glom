@@ -1,10 +1,7 @@
 package org.glom.app.libglom;
 
-import java.io.Serializable;
 
-public class NumericFormat implements Serializable {
-
-    private static final long serialVersionUID = -71135742094755989L;
+public class NumericFormat {
 
     /**
      * String to use as the currency symbol. When the symbol is shown in the UI, a space is appended to the string, and

@@ -5,13 +5,7 @@ import android.text.TextUtils;
 import org.glom.app.libglom.Relationship;
 
 public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
-    private static final long serialVersionUID = 4952677991725269830L;
-
-    /*
-     * Don't make this final, because that breaks GWT serialization. See
-     * http://code.google.com/p/google-web-toolkit/issues/detail?id=1054
-     */
-    private final/* final */ UsesRelationship usesRel = new UsesRelationshipImpl();
+    private final UsesRelationship usesRel = new UsesRelationshipImpl();
     private NavigationType navigationType = NavigationType.NAVIGATION_AUTOMATIC;
     private UsesRelationship navigationRelationshipSpecific = null;
 
