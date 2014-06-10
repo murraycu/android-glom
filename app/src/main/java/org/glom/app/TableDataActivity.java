@@ -63,33 +63,27 @@ public class TableDataActivity extends DocumentActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        //Handle the Home and List items, for instance:
+        if(super.onOptionsItemSelected(item))
+            return true;
+
         // Handle presses on the action bar items
         final int id = item.getItemId();
 
-        if (id == android.R.id.home) {
-            //Derived Activities should handle this.
+        final String tableName = mTableActionIDs.get(id);
+        if (tableName != null) {
+            navigate(tableName, null);
 
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            navigateUpTo(new Intent(this, TableNavActivity.class));
             return true;
-        } else if (id == R.id.option_menu_item_list) {
-            navigate(mTableName, null);
-        } else {
-            final String tableName = mTableActionIDs.get(id);
-            if (tableName != null) {
-                navigate(tableName, null);
-
-                return true;
-            }
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
+    }
+
+    @Override
+    protected void navigateToList() {
+        navigate(mTableName, null);
     }
 
     @Override

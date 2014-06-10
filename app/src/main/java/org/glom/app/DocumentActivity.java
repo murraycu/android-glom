@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.TypedDataItem;
@@ -171,6 +172,39 @@ public class DocumentActivity extends GlomActivity
         });
 
         return tables;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        final int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            //Derived Activities should handle this.
+
+            // This ID represents the Home or Up button. In the case of this
+            // activity, the Up button is shown. Use NavUtils to allow users
+            // to navigate up one level in the application structure. For
+            // more details, see the Navigation pattern on Android Design:
+            //
+            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
+            //
+            navigateUpTo(new Intent(this, TableNavActivity.class));
+            return true;
+        } else if (id == R.id.option_menu_item_list) {
+            //This menu item can be added to non-table-specific activities by
+            //a child fragment that is table-specific.
+            //TODO: Scroll to the record that was showing in the Details view?
+            navigateToList();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /** Navigate to the list of the current table,
+     * for derived classes that have a concept of a current table.
+     */
+    protected void navigateToList() {
     }
 
     protected Document getDocument() {

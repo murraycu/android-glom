@@ -1,5 +1,6 @@
 package org.glom.app;
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
@@ -102,6 +103,25 @@ public class TableNavActivity extends DocumentActivity
             return null;
 
         return document.getTableTitle(tableName, "" /* TODO */);
+    }
+
+    @Override
+    protected void navigateToList() {
+        final FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager == null) {
+            return;
+        }
+
+        //Get the table name currently in use by the fragment:
+        final Fragment fragment = fragmentManager.findFragmentById( R.id.table_data_container);
+        if(fragment != null) { //TODO: && (fragment.getClass().isAssignableFrom(TableDataFragment.class))) {
+            final TableDataFragment dataFragment = (TableDataFragment)fragment;
+            if (dataFragment == null) {
+                return;
+            }
+
+            navigate(dataFragment.getTableName(), null);
+        }
     }
 
 
