@@ -455,7 +455,7 @@ public class GlomContentProvider extends ContentProvider {
                 //and what joins those particular relationships would need, then use
                 //QueryBuilder to mention those tables and joins.
 
-                final List<LayoutItemField> fieldsToGet = getFieldsToShowForList(document, uriParts.tableName);
+                final List<LayoutItemField> fieldsToGet = getFieldsToShowForDetails(document, uriParts.tableName);
                 final Field pkField = document.getTablePrimaryKeyField(uriParts.tableName);
 
                 final TypedDataItem pkValue = new TypedDataItem();
@@ -564,6 +564,11 @@ public class GlomContentProvider extends ContentProvider {
     private List<LayoutItemField> getFieldsToShowForList(final Document document, final String tableName) {
         return Utils.getFieldsToShowForSQLQuery(document, tableName,
             document.getDataLayoutGroups("list", tableName));
+    }
+
+    private List<LayoutItemField> getFieldsToShowForDetails(final Document document, final String tableName) {
+        return Utils.getFieldsToShowForSQLQuery(document, tableName,
+                document.getDataLayoutGroups("details", tableName));
     }
 
     private Document getDocumentForSystem(long systemId) {
