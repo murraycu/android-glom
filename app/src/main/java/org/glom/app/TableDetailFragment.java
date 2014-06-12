@@ -138,16 +138,21 @@ public class TableDetailFragment extends Fragment
         return mFieldsToGet;
     }
 
-    private void addGroupToLayout(final Context context, TableLayout tableLayout, LayoutGroup group) {
+    private void addGroupToLayout(final Context context, final TableLayout parentTableLayout, final LayoutGroup group) {
+        //Add a child TableLayout for the group:
+        final TableRow row = new TableRow(context);
+        parentTableLayout.addView(row);
+        final TableLayout innerTableLayout = new TableLayout(context);
+        row.addView(innerTableLayout);
 
         //Add the group title:
         final String groupTitle = group.getTitle(""); //TODO: Internationalization.
         if(!TextUtils.isEmpty(groupTitle)) {
             final TextView textViewGroupTitle = createTitleTextView(context, group, ":"); //TODO: Internationalization.
 
-            final TableRow row = new TableRow(context);
-            tableLayout.addView(row);
-            row.addView(textViewGroupTitle);
+            final TableRow innerRow = new TableRow(context);
+            innerTableLayout.addView(innerRow);
+            innerRow.addView(textViewGroupTitle);
         }
 
         //Add the child items:
@@ -163,7 +168,6 @@ public class TableDetailFragment extends Fragment
                 //TODO: Implement showing related records.
             } else if (item instanceof LayoutGroup) {
                 final LayoutGroup innerGroup = (LayoutGroup) item;
-                final TableLayout innerTableLayout = new TableLayout(context);
                 addGroupToLayout(context, innerTableLayout, innerGroup);
             } else if (item instanceof LayoutItemField) {
                 final LayoutItemField field = (LayoutItemField) item;
@@ -199,7 +203,7 @@ public class TableDetailFragment extends Fragment
             } else if (item instanceof LayoutItemText) {
                 final LayoutItemText itemText = (LayoutItemText) item;
                 final TableRow innerRow = new TableRow(context);
-                tableLayout.addView(innerRow);
+                innerTableLayout.addView(innerRow);
 
                 //Sometimes a static text block can have a separate title:
                 final TextView textViewTitle = createTitleTextView(context, item, ": "); //TODO: Internationalization.
