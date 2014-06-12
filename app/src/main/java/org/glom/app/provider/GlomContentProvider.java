@@ -185,10 +185,10 @@ public class GlomContentProvider extends ContentProvider {
                 //TODO: Delete all associated files too.
                 break;
             case MATCHER_ID_SYSTEM:
-                final long systemId = ContentUris.parseId(uri);
+                final UriPartsTable uriParts = parseTableUri(uri);
                 affected = getDb().delete(DatabaseHelper.TABLE_NAME_SYSTEMS,
                         prependIdToSelection(selection),
-                        prependToArray(selectionArgs, systemId)
+                        prependToArray(selectionArgs, uriParts.systemId)
                 );
                 //TODO: Delete the associated files too.
                 break;
@@ -576,13 +576,13 @@ public class GlomContentProvider extends ContentProvider {
                 break;
 
             case MATCHER_ID_SYSTEM:
-                final String systemId = uri.getPathSegments().get(1); //TODO: Use long, as in query()?
+                final UriPartsTable uriParts = parseTableUri(uri);
 
                 //Prepend our ID=? argument to the selection arguments.
                 //This lets us use the ? syntax to avoid SQL injection
                 affected = getDb().update(DatabaseHelper.TABLE_NAME_SYSTEMS, values,
                         prependIdToSelection(selection),
-                        prependToArray(selectionArgs, systemId)
+                        prependToArray(selectionArgs, uriParts.systemId)
                 );
                 break;
 
