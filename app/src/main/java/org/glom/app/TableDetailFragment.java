@@ -22,13 +22,11 @@ package org.glom.app;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -45,7 +43,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.glom.app.libglom.Document;
-import org.glom.app.libglom.Field;
 import org.glom.app.libglom.TypedDataItem;
 import org.glom.app.libglom.layout.LayoutGroup;
 import org.glom.app.libglom.layout.LayoutItem;
@@ -54,7 +51,6 @@ import org.glom.app.libglom.layout.LayoutItemPortal;
 import org.glom.app.libglom.layout.LayoutItemText;
 import org.glom.app.libglom.layout.StaticText;
 import org.glom.app.provider.GlomSystem;
-import org.jooq.SQLDialect;
 
 import java.util.List;
 
