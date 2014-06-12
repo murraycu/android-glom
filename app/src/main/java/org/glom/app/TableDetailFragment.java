@@ -38,6 +38,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -207,28 +208,63 @@ public class TableDetailFragment extends Fragment
         final TextView textViewTitle = createTitleTextView(context, item, ": "); //TODO: Internationalization.
         innerRow.addView(textViewTitle);
 
-        final TextView textViewValue = UiUtils.createTextView(context);
-
         // TODO: Keep our own column index, because we cannot depend on the undocumented
         // and possibly incorrect behaviour of getColumnIndex() when the query has two
         // fields with the same name from different tables.
-        String value = null;
+        int columnIndex = -1;
         if (mCursor.getCount() >= 1) { //In case the query returned no rows.
             try {
-                final int columnIndex = mCursor.getColumnIndexOrThrow(item.getName());
-                if (columnIndex >= 0) {
-                    value = mCursor.getString(columnIndex); //TODO: Handle images.
-                }
+                columnIndex = mCursor.getColumnIndexOrThrow(item.getName());
             } catch (final IllegalArgumentException e) {
                 Log.error("IllegalArgumentException while getting value", e);
+                return;
             } catch (final Exception e) {
                 Log.error("Exception while getting value", e);
+                return;
             }
         }
 
-        if (null != value) {
-            textViewValue.setText(value);
-            innerRow.addView(textViewValue);
+        if (columnIndex < 0) {
+            Log.error("Column index not found for item: " + item.getName());
+            return;
+        }
+
+        //Add a different kind of widget, and get a different type of data,
+        //depending on the field type.
+        switch (item.getGlomType()) {
+            case TYPE_BOOLEAN: {
+                boolean value = false;
+                try {
+                    value = mCursor.getShort(columnIndex) != 0;
+                } catch (final Exception e) {
+                    Log.error("Exception while getting value", e);
+                    return;
+                }
+
+                final CheckBox checkBox = new CheckBox(context);
+                checkBox.setChecked(value);
+                checkBox.setClickable(false); //We don't support editing data yet.
+                innerRow.addView(checkBox);
+
+                break;
+            }
+            case TYPE_TEXT:
+            default: {
+                String value = null;
+                try {
+                    value = mCursor.getString(columnIndex); //TODO: Handle images.
+                } catch (final Exception e) {
+                    Log.error("Exception while getting value", e);
+                    return;
+                }
+
+                final TextView textViewValue = UiUtils.createTextView(context);
+
+                if (null != value) {
+                    textViewValue.setText(value);
+                    innerRow.addView(textViewValue);
+                }
+            }
         }
     }
 
