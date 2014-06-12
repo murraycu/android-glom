@@ -174,24 +174,28 @@ public class TableDetailFragment extends Fragment
                 addFieldToLayout(context, innerTableLayout, field);
             } else if (item instanceof LayoutItemText) {
                 final LayoutItemText itemText = (LayoutItemText) item;
-                final TableRow innerRow = new TableRow(context);
-                innerTableLayout.addView(innerRow);
+                addStaticTextToLayout(context, innerTableLayout, itemText);
+            }
+        }
+    }
 
-                //Sometimes a static text block can have a separate title:
-                final TextView textViewTitle = createTitleTextView(context, item, ": "); //TODO: Internationalization.
-                innerRow.addView(textViewTitle);
+    private void addStaticTextToLayout(Context context, TableLayout parentTableLayout, final LayoutItemText itemText) {
+        final TableRow innerRow = new TableRow(context);
+        parentTableLayout.addView(innerRow);
 
-                //Add the static text:
-                final TextView textViewValue = UiUtils.createTextView(context);
-                final StaticText staticText = itemText.getText();
-                if (staticText != null) {
-                    final String value = staticText.getTitle(""); //TODO: Internationalization
+        //Sometimes a static text block can have a separate title:
+        final TextView textViewTitle = createTitleTextView(context, itemText, ": "); //TODO: Internationalization.
+        innerRow.addView(textViewTitle);
 
-                    if (value != null) {
-                        textViewValue.setText(value);
-                        innerRow.addView(textViewValue);
-                    }
-                }
+        //Add the static text:
+        final TextView textViewValue = UiUtils.createTextView(context);
+        final StaticText staticText = itemText.getText();
+        if (staticText != null) {
+            final String value = staticText.getTitle(""); //TODO: Internationalization
+
+            if (value != null) {
+                textViewValue.setText(value);
+                innerRow.addView(textViewValue);
             }
         }
     }
