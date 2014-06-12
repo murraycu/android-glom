@@ -12,6 +12,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -114,6 +115,19 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
     }
 
     private void addGroupToLayout(final Context context, TableLayout tableLayout, LayoutGroup group) {
+
+        //Add the group title:
+        final String groupTitle = group.getTitle(""); //TODO: Internationalization.
+        if(!TextUtils.isEmpty(groupTitle)) {
+            final TextView textViewGroupTitle = UiUtils.createTextView(context);
+            final TableRow row = new TableRow(context);
+            tableLayout.addView(row);
+            textViewGroupTitle.setText(groupTitle + ":"); //TODO: Internationalization.
+            textViewGroupTitle.setTypeface(null, Typeface.BOLD);
+            row.addView(textViewGroupTitle);
+        }
+
+        //Add the child items:
         final List<LayoutItem> items = group.getItems();
         for (final LayoutItem item : items) {
             final Class itemClass = item.getClass();
@@ -123,13 +137,13 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
                 addGroupToLayout(context, innerTableLayout, innerGroup);
             } else if (itemClass.isAssignableFrom(LayoutItemField.class)) {
                 final LayoutItemField field = (LayoutItemField) item;
-                final TableRow row = new TableRow(context);
-                tableLayout.addView(row);
+                final TableRow innerRow = new TableRow(context);
+                tableLayout.addView(innerRow);
 
                 final TextView textViewTitle = UiUtils.createTextView(context);
                 textViewTitle.setText(item.getTitleOrName("") + ": "); //TODO: Internationalization.
                 textViewTitle.setTypeface(null, Typeface.BOLD);
-                row.addView(textViewTitle);
+                innerRow.addView(textViewTitle);
 
                 final TextView textViewValue = UiUtils.createTextView(context);
 
@@ -152,7 +166,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
 
                 if (null != value) {
                     textViewValue.setText(value);
-                    row.addView(textViewValue);
+                    innerRow.addView(textViewValue);
                 }
 
             }
