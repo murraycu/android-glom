@@ -20,7 +20,7 @@ import java.util.List;
 public class TableDataActivity extends DocumentActivity
         implements TableDataFragment.Callbacks {
 
-    String mTableName;
+    private String mTableName;
     private SparseArray<String> mTableActionIDs;
 
     @Override
@@ -83,7 +83,7 @@ public class TableDataActivity extends DocumentActivity
 
     @Override
     protected void navigateToList() {
-        navigate(mTableName, null);
+        navigate(getTableName(), null);
     }
 
     @Override
@@ -98,5 +98,9 @@ public class TableDataActivity extends DocumentActivity
     @Override
     public void onRecordSelected(final String tableName, final TypedDataItem primaryKeyValue) {
         navigate(tableName, primaryKeyValue);
+    }
+
+    public String getTableName() {
+        return mTableName;
     }
 }

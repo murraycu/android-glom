@@ -39,7 +39,7 @@ public class TableDetailActivity extends TableDataActivity {
             arguments.putLong(ARG_SYSTEM_ID,
                     getSystemId()); //Obtained in the super class.
             arguments.putString(TableDetailFragment.ARG_TABLE_NAME,
-                    mTableName); //Obtained in the super class.
+                    getTableName()); //Obtained in the super class.
 
             // TODO: Find a simpler way to just pass this through to the fragment.
             // For instance, pass the intent.getExtras() as the bundle?.
@@ -92,7 +92,7 @@ public class TableDetailActivity extends TableDataActivity {
             //
             final Intent intent = new Intent(this, TableListActivity.class);
             intent.putExtra(ARG_SYSTEM_ID, getSystemId());
-            intent.putExtra(TableDataFragment.ARG_TABLE_NAME, mTableName);
+            intent.putExtra(TableDataFragment.ARG_TABLE_NAME, getTableName());
             navigateUpTo(intent);
             return true;
         }

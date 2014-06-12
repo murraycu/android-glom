@@ -37,7 +37,7 @@ public class TableListActivity extends TableDataActivity {
             arguments.putLong(ARG_SYSTEM_ID,
                     getSystemId());
             arguments.putString(TableDataFragment.ARG_TABLE_NAME,
-                    mTableName);
+                    getTableName());
             TableListFragment fragment = new TableListFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -79,7 +79,7 @@ public class TableListActivity extends TableDataActivity {
             //
             final Intent intent = new Intent(this, TableNavActivity.class);
             intent.putExtra(ARG_SYSTEM_ID, getSystemId());
-            intent.putExtra(TableDataFragment.ARG_TABLE_NAME, mTableName);
+            intent.putExtra(TableDataFragment.ARG_TABLE_NAME, getTableName());
             navigateUpTo(intent);
             return true;
         }
