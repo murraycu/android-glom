@@ -187,10 +187,8 @@ public class GlomContentProvider extends ContentProvider {
             case MATCHER_ID_SYSTEM:
                 final long systemId = ContentUris.parseId(uri);
                 affected = getDb().delete(DatabaseHelper.TABLE_NAME_SYSTEMS,
-                        BaseColumns._ID + "=" + systemId
-                                + (!TextUtils.isEmpty(selection) ?
-                                " AND (" + selection + ')' : ""),
-                        selectionArgs
+                        prependIdToSelection(selection),
+                        prependToArray(selectionArgs, systemId)
                 );
                 //TODO: Delete the associated files too.
                 break;
@@ -296,7 +294,7 @@ public class GlomContentProvider extends ContentProvider {
         ContentValues valuesUpdate = new ContentValues();
         valuesUpdate.put(DatabaseHelper.DB_COLUMN_NAME_FILE_DATA, realFileUri);
         db.update(DatabaseHelper.TABLE_NAME_FILES, valuesUpdate,
-                BaseColumns._ID + "=" + fileId, null);
+                BaseColumns._ID + " = " + fileId, null);
 
         //Build the content: URI for the file to put in the Systems table:
         Uri fileUri = null;
@@ -362,12 +360,15 @@ public class GlomContentProvider extends ContentProvider {
                 // query the database for a specific database system:
                 final UriPartsTable uriParts = parseTableUri(uri);
 
+                //Prepend our ID=? argument to the selection arguments.
+                //This lets us use the ? syntax to avoid SQL injection
+
                 final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
                 builder.setTables(DatabaseHelper.TABLE_NAME_SYSTEMS);
                 builder.setProjectionMap(sSystemsProjectionMap);
-                builder.appendWhere(BaseColumns._ID + " = " + uriParts.systemId); //TODO: Use ? to avoid SQL Injection.
+                builder.appendWhere(BaseColumns._ID + " = ?"); //We use ? to avoid SQL Injection.
                 c = builder.query(getDb(), projection,
-                        selection, selectionArgs,
+                        selection, prependToArray(selectionArgs, uriParts.systemId),
                         null, null, orderBy);
                 c.setNotificationUri(getContext().getContentResolver(),
                         GlomSystem.CONTENT_URI); //TODO: More precise?
@@ -457,11 +458,12 @@ public class GlomContentProvider extends ContentProvider {
                 // query the database for a specific file:
                 // The caller will then use the _data value (the normal filesystem URI of a file).
                 final long fileId = ContentUris.parseId(uri);
+
+                //Prepend our ID=? argument to the selection arguments.
+                //This lets us use the ? syntax to avoid SQL injection
                 c = getDb().query(DatabaseHelper.TABLE_NAME_FILES, projection,
-                        BaseColumns._ID + " = " + fileId + //TODO: Use ? to avoid SQL Injection.
-                                (!TextUtils.isEmpty(selection) ?
-                                        " AND (" + selection + ')' : ""),
-                        selectionArgs, null, null, orderBy
+                        prependIdToSelection(selection),
+                        prependToArray(selectionArgs, fileId), null, null, orderBy
                 );
 
                 //debugging:
@@ -489,6 +491,26 @@ public class GlomContentProvider extends ContentProvider {
 
         //TODO: Can we avoid passing a Sqlite cursor up as a ContentResolver cursor?
         return c;
+    }
+
+    private String[] prependToArray(final String[] selectionArgs, long value) {
+        return prependToArray(selectionArgs, Double.toString(value));
+    }
+
+    private String[] prependToArray(final String[] array, final String value) {
+        int arrayLength = 0;
+        if (array != null) {
+            arrayLength = array.length;
+        }
+
+        final String[] result = new String[arrayLength + 1];
+        result[0] = value;
+
+        if (arrayLength > 0) {
+            System.arraycopy(array, 0, result, 1, result.length);
+        }
+
+        return result;
     }
 
     private UriPartsTable parseTableUri(final Uri uri) {
@@ -554,12 +576,13 @@ public class GlomContentProvider extends ContentProvider {
                 break;
 
             case MATCHER_ID_SYSTEM:
-                String systemId = uri.getPathSegments().get(1); //TODO: Use long, as in query()?
+                final String systemId = uri.getPathSegments().get(1); //TODO: Use long, as in query()?
+
+                //Prepend our ID=? argument to the selection arguments.
+                //This lets us use the ? syntax to avoid SQL injection
                 affected = getDb().update(DatabaseHelper.TABLE_NAME_SYSTEMS, values,
-                        BaseColumns._ID + "=" + systemId
-                                + (!TextUtils.isEmpty(selection) ?
-                                " AND (" + selection + ')' : ""),
-                        selectionArgs
+                        prependIdToSelection(selection),
+                        prependToArray(selectionArgs, systemId)
                 );
                 break;
 
@@ -570,6 +593,12 @@ public class GlomContentProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(uri, null);
 
         return affected;
+    }
+
+    private String prependIdToSelection(final String selection) {
+        return BaseColumns._ID + " = ?"
+                + (!TextUtils.isEmpty(selection) ?
+                " AND (" + selection + ')' : "");
     }
 
     private SQLiteDatabase getDb() {
