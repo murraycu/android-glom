@@ -113,7 +113,7 @@ public class SqlUtils {
         //return query;
     }
 
-    private static SelectSelectStep createSelect(final SQLDialect sqlDialect) {
+    private static SelectSelectStep<Record> createSelect(final SQLDialect sqlDialect) {
         final DSLContext dslContext = DSL.using(sqlDialect);
 
         final Configuration configuration = dslContext.configuration();
@@ -127,7 +127,7 @@ public class SqlUtils {
     private static SelectFinalStep buildSqlSelectStepWithWhereClause(final Document document, final String tableName,
                                                                      final List<LayoutItemField> fieldsToGet, final Condition whereClause, final SortClause sortClause, final SQLDialect sqlDialect) {
 
-        SelectSelectStep selectStep = createSelect(sqlDialect);
+        SelectSelectStep<Record> selectStep = createSelect(sqlDialect);
 
         // Add the fields, and any necessary joins:
         final List<UsesRelationship> listRelationships = buildSqlSelectAddFieldsToGet(selectStep, tableName,
@@ -142,7 +142,7 @@ public class SqlUtils {
         }
 
         final Table<Record> table = DSL.tableByName(tableName);
-        final SelectJoinStep joinStep = selectStep.from(table);
+        final SelectJoinStep<Record> joinStep = selectStep.from(table);
 
         // LEFT OUTER JOIN will get the field values from the other tables,
         // and give us our fields for this table even if there is no corresponding value in the other table.
@@ -172,7 +172,7 @@ public class SqlUtils {
 
     private static String buildSqlSelectCountRows(final SelectFinalStep selectInner, final SQLDialect sqlDialect) {
         // TODO: Find a way to do this with the jOOQ API:
-        final SelectSelectStep select = createSelect(sqlDialect);
+        final SelectSelectStep<Record> select = createSelect(sqlDialect);
 
         final org.jooq.Field<?> field = DSL.field("*");
         final AggregateFunction<?> count = DSL.count(field);
@@ -181,7 +181,7 @@ public class SqlUtils {
         // return "SELECT COUNT(*) FROM (" + query + ") AS glomarbitraryalias";
     }
 
-    private static List<UsesRelationship> buildSqlSelectAddFieldsToGet(SelectSelectStep step, final String tableName,
+    private static List<UsesRelationship> buildSqlSelectAddFieldsToGet(SelectSelectStep<Record> step, final String tableName,
                                                                        final List<LayoutItemField> fieldsToGet, final SortClause sortClause, final boolean extraJoin) {
 
         // Get all relationships used in the query:
@@ -326,7 +326,7 @@ public class SqlUtils {
 	 * } }
 	 */
 
-    private static void builderAddJoin(SelectJoinStep step, final UsesRelationship usesRelationship) {
+    private static void builderAddJoin(SelectJoinStep<Record> step, final UsesRelationship usesRelationship) {
         final Relationship relationship = usesRelationship.getRelationship();
         if (!relationship.getHasFields()) { // TODO: Handle related_record has_fields.
             if (relationship.getHasToTable()) {
