@@ -2,10 +2,12 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
@@ -43,7 +45,11 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link TableDetailActivity}
  * on handsets.
  */
-public class TableDetailFragment extends Fragment implements TableDataFragment {
+public class TableDetailFragment extends Fragment
+    implements TableDataFragment, LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int URL_LOADER = 0;
+
     /**
      * The fragment argument representing the database table that this fragment
      * represents.
@@ -292,10 +298,28 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         //Don't do any more if the activity is in the middle of
         //asynchronously loading the document. Otherwise
         //we would risk getting half-loaded information here.
-        final DocumentActivity docActivity = (DocumentActivity)activity;
-        if(docActivity.currentlyLoadingDocument()) {
+        final DocumentActivity docActivity = (DocumentActivity) activity;
+        if (docActivity.currentlyLoadingDocument()) {
             return;
         }
+
+         /*
+         * Initializes the CursorLoader. The URL_LOADER value is eventually passed
+         * to onCreateLoader().
+         * We generally don't want to do this until we know that the document has been loaded.
+         */
+        getLoaderManager().initLoader(URL_LOADER, null, this);
+    }
+
+    private void updateFromCursor() {
+        if (mCursor == null) {
+            Log.error("mCursor is null.");
+            return;
+        }
+
+        final Activity activity = getActivity();
+        if (activity == null)
+            return;
 
         final Context context = activity.getApplicationContext();
 
@@ -303,30 +327,6 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         if (document == null) {
             return;
         }
-
-        final List<LayoutGroup> groups = document.getDataLayoutGroups("details", getTableName());
-
-        final List<LayoutItemField> fieldsToGet = getFieldsToShow();
-
-        final Field primaryKey = document.getTablePrimaryKeyField(getTableName());
-        if (primaryKey == null) {
-            Log.error("Couldn't find primary key in table. Returning null.");
-            return;
-        }
-
-        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, getSystemId());
-        final Uri.Builder builder = uriSystem.buildUpon();
-        builder.appendPath(GlomSystem.TABLE_URI_PART);
-        builder.appendPath(getTableName());
-        builder.appendPath(GlomSystem.RECORD_URI_PART);
-        builder.appendPath(mPkValue.getStringRepresentation());
-
-        //The content provider ignores the projection (the list of fields).
-        //Instead, it assumes that we know what fields will be returned,
-        //because we have the layout from the Document.
-        //final String[] fieldNames = getFieldNamesToGet();
-        final ContentResolver resolver = activity.getContentResolver();
-        mCursor = resolver.query(builder.build(), null /* fieldNames*/, null, null, null); //TODO: Close the cursor?
 
         if (mCursor.getCount() <= 0) { //In case the query returned no rows.
             Log.error("The ContentProvider query returned no rows.");
@@ -341,8 +341,54 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         }
 
         final TableLayout tableLayout = getTableLayout(mRootView);
+
+        final List<LayoutGroup> groups = document.getDataLayoutGroups("details", getTableName());
         for (final LayoutGroup group : groups) {
             addGroupToLayout(context, tableLayout, group);
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        if (loaderId != URL_LOADER) {
+            return null;
+        }
+
+        final Activity activity = getActivity();
+
+        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, getSystemId());
+        final Uri.Builder builder = uriSystem.buildUpon();
+        builder.appendPath(GlomSystem.TABLE_URI_PART);
+        builder.appendPath(getTableName());
+        builder.appendPath(GlomSystem.RECORD_URI_PART);
+        builder.appendPath(mPkValue.getStringRepresentation());
+
+        //The content provider ignores the projection (the list of fields).
+        //Instead, it assumes that we know what fields will be returned,
+        //because we have the layout from the Document.
+        //final String[] fieldNames = getFieldNamesToGet();
+        return new CursorLoader(
+                activity,
+                builder.build(),
+                null, /* fieldNames */
+                null, // No where clause, return all records.
+                null, // No where clause, therefore no where column values.
+                null // Use the default sort order.
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        mCursor = cursor;
+        updateFromCursor();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> cursorLoader) {
+        /*
+         * Clears out our reference to the Cursor.
+         * This prevents memory leaks.
+         */
+        mCursor = null;
     }
 }
