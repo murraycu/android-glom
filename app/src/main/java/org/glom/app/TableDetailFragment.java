@@ -27,6 +27,8 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +41,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -235,7 +238,7 @@ public class TableDetailFragment extends Fragment
             case TYPE_BOOLEAN: {
                 boolean value = false;
                 try {
-                    value = mCursor.getShort(columnIndex) != 0;
+                    value = (mCursor.getShort(columnIndex) != 0);
                 } catch (final Exception e) {
                     Log.error("Exception while getting value", e);
                     return;
@@ -248,11 +251,27 @@ public class TableDetailFragment extends Fragment
 
                 break;
             }
+            case TYPE_IMAGE: {
+                byte[] value = null;
+                try {
+                    value = mCursor.getBlob(columnIndex);
+                } catch (final Exception e) {
+                    Log.error("Exception while getting value", e);
+                    return;
+                }
+
+                final ImageView imageView = new ImageView(context);
+                final Bitmap bMap = BitmapFactory.decodeByteArray(value, 0, value.length);
+                imageView.setImageBitmap(bMap);
+                innerRow.addView(imageView);
+
+                break;
+            }
             case TYPE_TEXT:
             default: {
                 String value = null;
                 try {
-                    value = mCursor.getString(columnIndex); //TODO: Handle images.
+                    value = mCursor.getString(columnIndex);
                 } catch (final Exception e) {
                     Log.error("Exception while getting value", e);
                     return;
