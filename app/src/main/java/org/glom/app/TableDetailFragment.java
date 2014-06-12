@@ -171,35 +171,7 @@ public class TableDetailFragment extends Fragment
                 addGroupToLayout(context, innerTableLayout, innerGroup);
             } else if (item instanceof LayoutItemField) {
                 final LayoutItemField field = (LayoutItemField) item;
-                final TableRow innerRow = new TableRow(context);
-                tableLayout.addView(innerRow);
-
-                final TextView textViewTitle = createTitleTextView(context, item, ": "); //TODO: Internationalization.
-                innerRow.addView(textViewTitle);
-
-                final TextView textViewValue = UiUtils.createTextView(context);
-
-                // TODO: Keep our own column index, because we cannot depend on the undocumented
-                // and possibly incorrect behaviour of getColumnIndex() when the query has two
-                // fields with the same name from different tables.
-                String value = null;
-                if (mCursor.getCount() >= 1) { //In case the query returned no rows.
-                    try {
-                        final int columnIndex = mCursor.getColumnIndexOrThrow(field.getName());
-                        if (columnIndex >= 0) {
-                            value = mCursor.getString(columnIndex); //TODO: Handle images.
-                        }
-                    } catch (final IllegalArgumentException e) {
-                        Log.error("IllegalArgumentException while getting value", e);
-                    } catch (final Exception e) {
-                        Log.error("Exception while getting value", e);
-                    }
-                }
-
-                if (null != value) {
-                    textViewValue.setText(value);
-                    innerRow.addView(textViewValue);
-                }
+                addFieldToLayout(context, innerTableLayout, field);
             } else if (item instanceof LayoutItemText) {
                 final LayoutItemText itemText = (LayoutItemText) item;
                 final TableRow innerRow = new TableRow(context);
@@ -221,6 +193,38 @@ public class TableDetailFragment extends Fragment
                     }
                 }
             }
+        }
+    }
+
+    private void addFieldToLayout(final Context context, final TableLayout parentTableLayout, final LayoutItemField item) {
+        final TableRow innerRow = new TableRow(context);
+        parentTableLayout.addView(innerRow);
+
+        final TextView textViewTitle = createTitleTextView(context, item, ": "); //TODO: Internationalization.
+        innerRow.addView(textViewTitle);
+
+        final TextView textViewValue = UiUtils.createTextView(context);
+
+        // TODO: Keep our own column index, because we cannot depend on the undocumented
+        // and possibly incorrect behaviour of getColumnIndex() when the query has two
+        // fields with the same name from different tables.
+        String value = null;
+        if (mCursor.getCount() >= 1) { //In case the query returned no rows.
+            try {
+                final int columnIndex = mCursor.getColumnIndexOrThrow(item.getName());
+                if (columnIndex >= 0) {
+                    value = mCursor.getString(columnIndex); //TODO: Handle images.
+                }
+            } catch (final IllegalArgumentException e) {
+                Log.error("IllegalArgumentException while getting value", e);
+            } catch (final Exception e) {
+                Log.error("Exception while getting value", e);
+            }
+        }
+
+        if (null != value) {
+            textViewValue.setText(value);
+            innerRow.addView(textViewValue);
         }
     }
 
