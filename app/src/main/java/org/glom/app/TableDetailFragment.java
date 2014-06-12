@@ -183,7 +183,7 @@ public class TableDetailFragment extends Fragment
                     try {
                         final int columnIndex = mCursor.getColumnIndexOrThrow(field.getName());
                         if (columnIndex >= 0) {
-                            value = mCursor.getString(columnIndex);
+                            value = mCursor.getString(columnIndex); //TODO: Handle images.
                         }
                     } catch (final IllegalArgumentException e) {
                         Log.error("IllegalArgumentException while getting value", e);
