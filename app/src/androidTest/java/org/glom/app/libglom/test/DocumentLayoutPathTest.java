@@ -2,20 +2,20 @@
  * Copyright (C) 2009, 2010, 2011 Openismus GmbH
  * Copyright (C) 2014 Murray Cumming
  *
- * This file is part of gwt-glom
+ * This file is part of android-glom
  *
- * gwt-glom is free software: you can redistribute it and/or modify it
+ * android-glom is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or (at your
  * option) any later version.
  *
- * gwt-glom is distributed in the hope that it will be useful, but WITHOUT
+ * android-glom is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
  * for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gwt-glom.  If not, see <http://www.gnu.org/licenses/>.
+ * along with android-glom.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.glom.app.libglom.test;
