@@ -121,7 +121,7 @@ public class GlomActivity extends Activity {
         //which might be running this code.
         //TODO: Just update this TableNavActivity if this one wasn't empty/new before.
         // Maybe check how it was opened.
-        if (!this.getClass().isAssignableFrom(TableNavActivity.class)) {
+        if (this instanceof TableNavActivity) {
             navigateToSystem(getSystemId());
         }
 

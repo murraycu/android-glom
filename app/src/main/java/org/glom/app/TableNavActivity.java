@@ -133,7 +133,7 @@ public class TableNavActivity extends DocumentActivity
 
         //Get the table name currently in use by the fragment:
         final Fragment fragment = fragmentManager.findFragmentById( R.id.table_data_container);
-        if(fragment != null) { //TODO: && (fragment.getClass().isAssignableFrom(TableDataFragment.class))) {
+        if(fragment != null) { //TODO: && (fragment instanceof TableDataFragment)) {
             final TableDataFragment dataFragment = (TableDataFragment)fragment;
             if (dataFragment == null) {
                 return;

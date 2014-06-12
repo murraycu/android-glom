@@ -104,7 +104,7 @@ public class TableDetailFragment extends Fragment
                 Log.error("The bundle doesn't contain the primary key value.");
             } else {
                 final Parcelable object = bundle.getParcelable(ARG_PRIMARY_KEY_VALUE);
-                if ((object != null) && object.getClass().isAssignableFrom(TypedDataItem.class)) {
+                if ((object != null) && (object instanceof TypedDataItem)) {
                     mPkValue = (TypedDataItem)object;
                 }
             }
@@ -157,17 +157,15 @@ public class TableDetailFragment extends Fragment
                 continue;
             }
 
-            final Class itemClass = item.getClass();
-
             //We check for portals (groups) before checking for groups in general,
             //or we would never get to our check for portals (a specicific type of group).
-            if (itemClass.isAssignableFrom(LayoutItemPortal.class)) {
+            if (item instanceof LayoutItemPortal) {
                 //TODO: Implement showing related records.
-            } else if (itemClass.isAssignableFrom(LayoutGroup.class)) {
+            } else if (item instanceof LayoutGroup) {
                 final LayoutGroup innerGroup = (LayoutGroup) item;
                 final TableLayout innerTableLayout = new TableLayout(context);
                 addGroupToLayout(context, innerTableLayout, innerGroup);
-            } else if (itemClass.isAssignableFrom(LayoutItemField.class)) {
+            } else if (item instanceof LayoutItemField) {
                 final LayoutItemField field = (LayoutItemField) item;
                 final TableRow innerRow = new TableRow(context);
                 tableLayout.addView(innerRow);
@@ -198,7 +196,7 @@ public class TableDetailFragment extends Fragment
                     textViewValue.setText(value);
                     innerRow.addView(textViewValue);
                 }
-            } else if (itemClass.isAssignableFrom(LayoutItemText.class)) {
+            } else if (item instanceof LayoutItemText) {
                 final LayoutItemText itemText = (LayoutItemText) item;
                 final TableRow innerRow = new TableRow(context);
                 tableLayout.addView(innerRow);

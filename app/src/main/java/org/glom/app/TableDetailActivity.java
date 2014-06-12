@@ -65,7 +65,7 @@ public class TableDetailActivity extends TableDataActivity {
             final Intent intent = getIntent();
 
             final Object pkValue = intent.getParcelableExtra(TableDetailFragment.ARG_PRIMARY_KEY_VALUE);
-            if ((pkValue != null) && pkValue.getClass().isAssignableFrom(TypedDataItem.class)) {
+            if ((pkValue != null) && (pkValue instanceof TypedDataItem)) {
                 arguments.putParcelable(TableDetailFragment.ARG_PRIMARY_KEY_VALUE,
                         (TypedDataItem) pkValue);
             }
