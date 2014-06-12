@@ -329,11 +329,6 @@ public class TableListFragment extends ListFragment
     }
 
     @Override
-    public SQLiteDatabase getDatabase() {
-        return DocumentsSingleton.getInstance().getDatabase(getSystemId());
-    }
-
-    @Override
     public String getTableName() {
         return mTableName;
     }
@@ -399,7 +394,7 @@ public class TableListFragment extends ListFragment
 
         switch (field.getGlomType()) {
             case TYPE_BOOLEAN:
-                //Sqlite has no boolean type.
+                //Sqlite (and Android's Sqlite/ContentProvider Cursor) has no boolean type.
                 if (cursor.isNull(primaryKeyIndex)) {
                     result.setBoolean(false);
                 } else {

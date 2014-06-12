@@ -203,6 +203,12 @@ public class DocumentsSingleton {
         return mDocumentMap.get(systemId);
     }
 
+    /** This should only be used by the ContentProvider.
+     *  The UI should not access SQLite directly.
+     *
+     * @param systemId
+     * @return
+     */
     public SQLiteDatabase getDatabase(long systemId) {
         return mDatabaseMap.get(systemId);
     }

@@ -22,6 +22,8 @@ import org.glom.app.Log;
 import org.glom.app.SqlUtils;
 import org.glom.app.Utils;
 import org.glom.app.libglom.Document;
+import org.glom.app.libglom.Field;
+import org.glom.app.libglom.TypedDataItem;
 import org.glom.app.libglom.layout.LayoutItemField;
 import org.jooq.SQLDialect;
 
@@ -37,6 +39,7 @@ public class GlomContentProvider extends ContentProvider {
     public static final String URI_PART_SYSTEM = "system";
     public static final String URI_PART_FILE = "file";
     public static final String URI_PART_TABLE = "table";
+    public static final String URI_PART_RECORD = "record";
 
     /**
      * The MIME type of {@link GlomSystem#CONTENT_URI} providing a directory of notes.
@@ -59,10 +62,12 @@ public class GlomContentProvider extends ContentProvider {
     //        "vnd.android.cursor.item/vnd.glom.system.file";
 
 
+    //TODO: Use an enum?
     private static final int MATCHER_ID_SYSTEMS = 1;
     private static final int MATCHER_ID_SYSTEM = 2;
     private static final int MATCHER_ID_SYSTEM_TABLE_RECORDS = 3;
-    private static final int MATCHER_ID_FILE = 4;
+    private static final int MATCHER_ID_SYSTEM_TABLE_RECORD_DETAIL = 4;
+    private static final int MATCHER_ID_FILE = 5;
     private static final UriMatcher sUriMatcher;
 
     static {
@@ -74,8 +79,11 @@ public class GlomContentProvider extends ContentProvider {
         // A URI for a single system:
         sUriMatcher.addURI(GlomSystem.AUTHORITY, URI_PART_SYSTEM + "/#", MATCHER_ID_SYSTEM);
 
-        // A URI for a single system's list of records:
+        // A URI for a single system's list of records in a particular table:
         sUriMatcher.addURI(GlomSystem.AUTHORITY, URI_PART_SYSTEM + "/#/" + URI_PART_TABLE + "/*", MATCHER_ID_SYSTEM_TABLE_RECORDS);
+
+        // A URI for a single system's particular single record for a particular table with a particular primary key value:
+        sUriMatcher.addURI(GlomSystem.AUTHORITY, URI_PART_SYSTEM + "/#/" + URI_PART_TABLE + "/*/" + URI_PART_RECORD + "/*", MATCHER_ID_SYSTEM_TABLE_RECORD_DETAIL);
 
         // A URI for a single file:
         sUriMatcher.addURI(GlomSystem.AUTHORITY, URI_PART_FILE + "/#", MATCHER_ID_FILE);
@@ -367,32 +375,18 @@ public class GlomContentProvider extends ContentProvider {
             }
             case MATCHER_ID_SYSTEM_TABLE_RECORDS: {
                 // query the database for all records for the database system
+                final UriPartsTable uriParts = parseTableUri(uri);
 
-                //ContentUris.parseId(uri) gets the first ID, not the last.
-                //final long systemId = ContentUris.parseId(uri);
-                final List<String> uriParts = uri.getPathSegments();
-                final int size = uriParts.size();
-                if (size < 3) {
-                    Log.error("The URI did not have the expected number of parts.");
-                }
-
-                final String tableName = uriParts.get(size - 1);
-
-                //Note: The UriMatcher will not even match the URI if this id (#) is -1
-                //so we will never reach this code then:
-                final String systemIdStr = uriParts.get(size - 3);
-                final long systemId = Long.parseLong(systemIdStr);
-
-                final Document document = getDocumentForSystem(systemId);
+                final Document document = getDocumentForSystem(uriParts.systemId);
                 if(document == null) {
-                    Log.error("getDocumentForSystem() returned null for systemId=" + systemId);
-                    throw new IllegalArgumentException("Document for system not found with ID=" + systemId);
+                    Log.error("getDocumentForSystem() returned null for systemId=" + uriParts.systemId);
+                    throw new IllegalArgumentException("Document for system not found with ID=" + uriParts.systemId);
                 }
 
                 final SQLiteDatabase db = getDatabaseForDocument(document);
                 if(db == null) {
-                    Log.error("getDatabaseForDocument() returned null for systemId=" + systemId);
-                    throw new IllegalArgumentException("Database System not found with ID=" + systemId);
+                    Log.error("getDatabaseForDocument() returned null for systemId=" + uriParts.systemId);
+                    throw new IllegalArgumentException("Database System not found with ID=" + uriParts.systemId);
                 }
 
                 //We ignore the projection (the array of fields to show) provided by the client
@@ -404,8 +398,8 @@ public class GlomContentProvider extends ContentProvider {
                 //and what joins those particular relationships would need, then use
                 //QueryBuilder to mention those tables and joins.
 
-                final List<LayoutItemField> fieldsToGet = getFieldsToShowForList(document, tableName);
-                final String query = SqlUtils.buildSqlSelectWithWhereClause(document, tableName, fieldsToGet,
+                final List<LayoutItemField> fieldsToGet = getFieldsToShowForList(document, uriParts.tableName);
+                final String query = SqlUtils.buildSqlSelectWithWhereClause(document, uriParts.tableName, fieldsToGet,
                         null, null, SQLDialect.SQLITE);
 
                 //TODO: Don't ignore selectionArgs and orderBy.
@@ -416,6 +410,49 @@ public class GlomContentProvider extends ContentProvider {
                         GlomSystem.CONTENT_URI);
                 break;
             }
+            case MATCHER_ID_SYSTEM_TABLE_RECORD_DETAIL: {
+                // query the database for all records for the database system
+                final UriPartsTable uriParts = parseTableUri(uri);
+
+                final Document document = getDocumentForSystem(uriParts.systemId);
+                if(document == null) {
+                    Log.error("getDocumentForSystem() returned null for systemId=" + uriParts.systemId);
+                    throw new IllegalArgumentException("Document for system not found with ID=" + uriParts.systemId);
+                }
+
+                final SQLiteDatabase db = getDatabaseForDocument(document);
+                if(db == null) {
+                    Log.error("getDatabaseForDocument() returned null for systemId=" + uriParts.systemId);
+                    throw new IllegalArgumentException("Database System not found with ID=" + uriParts.systemId);
+                }
+
+                //We ignore the projection (the array of fields to show) provided by the client
+                //a simple array of strings cannot easily express enough.
+                //So we assume that the caller uses the same Document to know what fields to
+                //expect in the resulting Cursor.
+                //
+                //TODO: Parse those strings to identify what relationships are used,
+                //and what joins those particular relationships would need, then use
+                //QueryBuilder to mention those tables and joins.
+
+                final List<LayoutItemField> fieldsToGet = getFieldsToShowForList(document, uriParts.tableName);
+                final Field pkField = document.getTablePrimaryKeyField(uriParts.tableName);
+
+                final TypedDataItem pkValue = new TypedDataItem();
+                pkValue.setFromStringRepresentation(pkField.getGlomType(), uriParts.primaryKeyValue);
+
+                final String query = SqlUtils.buildSqlSelectWithKey(document, uriParts.tableName, fieldsToGet,
+                        pkField, pkValue, SQLDialect.SQLITE);
+
+                //TODO: Don't ignore selectionArgs and orderBy.
+                c = db.rawQuery(query, null);
+
+                //TODO: Be more specific?
+                c.setNotificationUri(getContext().getContentResolver(),
+                        GlomSystem.CONTENT_URI);
+                break;
+            }
+
             case MATCHER_ID_FILE:
                 // query the database for a specific file:
                 // The caller will then use the _data value (the normal filesystem URI of a file).
@@ -452,6 +489,30 @@ public class GlomContentProvider extends ContentProvider {
 
         //TODO: Can we avoid passing a Sqlite cursor up as a ContentResolver cursor?
         return c;
+    }
+
+    private UriPartsTable parseTableUri(final Uri uri) {
+        final UriPartsTable result = new UriPartsTable();
+        //ContentUris.parseId(uri) gets the first ID, not the last.
+        //final long systemId = ContentUris.parseId(uri);
+        final List<String> uriParts = uri.getPathSegments();
+        final int size = uriParts.size();
+        if (size < 3) {
+            Log.error("The URI did not have the expected number of parts.");
+        }
+
+        //Note: The UriMatcher will not even match the URI if this id (#) is -1
+        //so we will never reach this code then:
+        final String systemIdStr = uriParts.get(1);
+        result.systemId = Long.parseLong(systemIdStr);
+
+        result.tableName = uriParts.get(3);
+
+        if (size >= 6) {
+            result.primaryKeyValue = uriParts.get(5);
+        }
+
+        return result;
     }
 
     private List<LayoutItemField> getFieldsToShowForList(final Document document, final String tableName) {
@@ -508,6 +569,12 @@ public class GlomContentProvider extends ContentProvider {
 
     private SQLiteDatabase getDb() {
         return mOpenDbHelper.getWritableDatabase();
+    }
+
+    private class UriPartsTable {
+        public String tableName;
+        public long systemId;
+        public String primaryKeyValue;
     }
 
     /*

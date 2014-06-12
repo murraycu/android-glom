@@ -58,7 +58,6 @@ import java.util.List;
 public class SqlUtils {
 
 
-    // TODO: Change to final ArrayList<LayoutItem_Field> fieldsToGet
     public static String buildSqlSelectWithKey(final Document document, final String tableName, final List<LayoutItemField> fieldsToGet,
                                                final Field primaryKey, final TypedDataItem primaryKeyValue, final SQLDialect sqlDialect) {
 

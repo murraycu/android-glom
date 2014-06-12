@@ -22,8 +22,11 @@ package org.glom.app.libglom;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import org.glom.app.Log;
 import org.glom.app.libglom.Field.GlomFieldType;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -92,6 +95,79 @@ public class TypedDataItem extends DataItem implements Parcelable  {
                 return "value-with-invalid-type";
             default:
                 return "value-with-unknown-type";
+        }
+    }
+
+    /** Get a string representation of the value,
+     * for instance to use in a URI to indicate a primary key value.
+     * See setFromStringRepresentation().
+     *
+     * @return
+     */
+    public String getStringRepresentation() {
+        switch (this.type) {
+            case TYPE_NUMERIC:
+                return Double.toString(getNumber()); //TODO: Is this locale-independent?
+            case TYPE_TEXT:
+                return getText();
+            case TYPE_DATE: {
+                final SimpleDateFormat format = new SimpleDateFormat();
+                return format.format(getDate()); //TODO: Is this locale-independent?
+            }
+            //TODO: case TYPE_TIME:
+            //	return getTime();
+            case TYPE_BOOLEAN:
+                return Boolean.toString(getBoolean());
+            case TYPE_IMAGE:
+                //TODO: return getImageData(str);
+            case TYPE_INVALID:
+                //TODO: return "value-with-invalid-type";
+            default:
+                Log.error("Unexpected type.");
+                return null;
+        }
+    }
+
+    /** Set the value from a string representation of the value,
+     * for instance, to parse a part of a URI that indicates a primary key value.
+     * See setFromStringRepresentation().
+     *
+     * @return
+     */
+    public void setFromStringRepresentation(final GlomFieldType type, final String str) {
+        switch (type) {
+            case TYPE_NUMERIC: {
+                setNumber(Double.parseDouble(str)); //TODO: Is this locale-independent?
+                break;
+            }
+            case TYPE_TEXT: {
+                setText(str);
+                break;
+            }
+            case TYPE_DATE: {
+                    final SimpleDateFormat format = new SimpleDateFormat();
+                    Date date = null; //TODO: Is this locale-independent?
+                    try {
+                        date = format.parse(str);
+                    } catch (final ParseException e) {
+                        Log.error("Failed to parse date", e);
+                    }
+
+                    setDate(date);
+                    break;
+                }
+            //TODO: case TYPE_TIME:
+            //	return getTime();
+            case TYPE_BOOLEAN: {
+                setBoolean(Boolean.parseBoolean(str)); //TODO: Is this locale-independent?
+                break;
+            }
+            case TYPE_IMAGE:
+                //TODO: return setImageData(str);
+            case TYPE_INVALID:
+                //TODO: return "value-with-invalid-type";
+            default:
+                Log.error("Unexpected type.");
         }
     }
 
@@ -208,7 +284,7 @@ public class TypedDataItem extends DataItem implements Parcelable  {
                 out.writeString(getText());
                 break;
             //TODO: case TYPE_DATE:
-            //TODOcase TYPE_TIME:
+            //TODO: case TYPE_TIME:
             default:
                 break;
         }

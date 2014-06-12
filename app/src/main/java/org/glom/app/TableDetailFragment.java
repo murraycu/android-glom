@@ -2,10 +2,14 @@ package org.glom.app;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -24,6 +28,7 @@ import org.glom.app.libglom.TypedDataItem;
 import org.glom.app.libglom.layout.LayoutGroup;
 import org.glom.app.libglom.layout.LayoutItem;
 import org.glom.app.libglom.layout.LayoutItemField;
+import org.glom.app.provider.GlomSystem;
 import org.jooq.SQLDialect;
 
 import java.util.List;
@@ -178,11 +183,6 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
     }
 
     @Override
-    public SQLiteDatabase getDatabase() {
-        return DocumentsSingleton.getInstance().getDatabase(getSystemId());
-    }
-
-    @Override
     public String getTableName() {
         return mTableName;
     }
@@ -255,13 +255,22 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
             return;
         }
 
-        final String query = SqlUtils.buildSqlSelectWithKey(document, getTableName(), fieldsToGet, primaryKey, mPkValue, SQLDialect.SQLITE);
+        final Uri uriSystem = ContentUris.withAppendedId(GlomSystem.SYSTEMS_URI, getSystemId());
+        final Uri.Builder builder = uriSystem.buildUpon();
+        builder.appendPath(GlomSystem.TABLE_URI_PART);
+        builder.appendPath(getTableName());
+        builder.appendPath(GlomSystem.RECORD_URI_PART);
+        builder.appendPath(mPkValue.getStringRepresentation());
 
-        final SQLiteDatabase db = getDatabase();
-        mCursor = db.rawQuery(query, null);
-        activity.startManagingCursor(mCursor);
+        //The content provider ignores the projection (the list of fields).
+        //Instead, it assumes that we know what fields will be returned,
+        //because we have the layout from the Document.
+        //final String[] fieldNames = getFieldNamesToGet();
+        final ContentResolver resolver = activity.getContentResolver();
+        mCursor = resolver.query(builder.build(), null /* fieldNames*/, null, null, null); //TODO: Close the cursor?
+
         if (mCursor.getCount() <= 0) { //In case the query returned no rows.
-            Log.error("The query returned no rows: " + query);
+            Log.error("The ContentProvider query returned no rows.");
         }
 
         mCursor.moveToFirst(); //There should only be one anyway.

@@ -18,6 +18,8 @@ public class GlomSystem {
 
     public static final String TABLE_URI_PART = GlomContentProvider.URI_PART_TABLE;
 
+    public static final String RECORD_URI_PART = GlomContentProvider.URI_PART_RECORD;
+
     /** The URI for the list of all (.glom XML) files,
      * or part of the URI for a single file.
      * Clients don't need to build a /file/ URI -
