@@ -155,7 +155,7 @@ public class DocumentsSingleton {
         final ContentResolver resolver = context.getContentResolver();
 
         final String[] projection = new String[] {GlomSystem.Columns._ID};
-        final String selection = GlomSystem.Columns.TITLE_COLUMN + "=?";
+        final String selection = GlomSystem.Columns.TITLE_COLUMN + " = ?";
         final String[] selectionArgs = new String[] {title};
         final Cursor cursor = resolver.query(GlomSystem.SYSTEMS_URI, projection, selection, selectionArgs, null);
 
