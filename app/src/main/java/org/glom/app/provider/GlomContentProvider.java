@@ -185,7 +185,7 @@ public class GlomContentProvider extends ContentProvider {
                 //TODO: Delete all associated files too.
                 break;
             case MATCHER_ID_SYSTEM:
-                final UriPartsTable uriParts = parseTableUri(uri);
+                final UriPartsTable uriParts = parseSystemUri(uri);
                 affected = getDb().delete(DatabaseHelper.TABLE_NAME_SYSTEMS,
                         prependIdToSelection(selection),
                         prependToArray(selectionArgs, uriParts.systemId)
@@ -358,7 +358,7 @@ public class GlomContentProvider extends ContentProvider {
              }
             case MATCHER_ID_SYSTEM: {
                 // query the database for a specific database system:
-                final UriPartsTable uriParts = parseTableUri(uri);
+                final UriPartsTable uriParts = parseSystemUri(uri);
 
                 //Prepend our ID=? argument to the selection arguments.
                 //This lets us use the ? syntax to avoid SQL injection
@@ -376,7 +376,7 @@ public class GlomContentProvider extends ContentProvider {
             }
             case MATCHER_ID_SYSTEM_TABLE_RECORDS: {
                 // query the database for all records for the database system
-                final UriPartsTable uriParts = parseTableUri(uri);
+                final UriPartsTable uriParts = parseSystemUri(uri);
 
                 final Document document = getDocumentForSystem(uriParts.systemId);
                 if(document == null) {
@@ -413,7 +413,7 @@ public class GlomContentProvider extends ContentProvider {
             }
             case MATCHER_ID_SYSTEM_TABLE_RECORD_DETAIL: {
                 // query the database for all records for the database system
-                final UriPartsTable uriParts = parseTableUri(uri);
+                final UriPartsTable uriParts = parseSystemUri(uri);
 
                 final Document document = getDocumentForSystem(uriParts.systemId);
                 if(document == null) {
@@ -513,7 +513,7 @@ public class GlomContentProvider extends ContentProvider {
         return result;
     }
 
-    private UriPartsTable parseTableUri(final Uri uri) {
+    private UriPartsTable parseSystemUri(final Uri uri) {
         final UriPartsTable result = new UriPartsTable();
         //ContentUris.parseId(uri) gets the first ID, not the last.
         //final long systemId = ContentUris.parseId(uri);
@@ -576,7 +576,7 @@ public class GlomContentProvider extends ContentProvider {
                 break;
 
             case MATCHER_ID_SYSTEM:
-                final UriPartsTable uriParts = parseTableUri(uri);
+                final UriPartsTable uriParts = parseSystemUri(uri);
 
                 //Prepend our ID=? argument to the selection arguments.
                 //This lets us use the ? syntax to avoid SQL injection
