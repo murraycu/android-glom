@@ -29,6 +29,9 @@ import org.glom.app.libglom.TypedDataItem;
 import org.glom.app.libglom.layout.LayoutGroup;
 import org.glom.app.libglom.layout.LayoutItem;
 import org.glom.app.libglom.layout.LayoutItemField;
+import org.glom.app.libglom.layout.LayoutItemPortal;
+import org.glom.app.libglom.layout.LayoutItemText;
+import org.glom.app.libglom.layout.StaticText;
 import org.glom.app.provider.GlomSystem;
 import org.jooq.SQLDialect;
 
@@ -119,19 +122,27 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
         //Add the group title:
         final String groupTitle = group.getTitle(""); //TODO: Internationalization.
         if(!TextUtils.isEmpty(groupTitle)) {
-            final TextView textViewGroupTitle = UiUtils.createTextView(context);
+            final TextView textViewGroupTitle = createTitleTextView(context, group, ":"); //TODO: Internationalization.
+
             final TableRow row = new TableRow(context);
             tableLayout.addView(row);
-            textViewGroupTitle.setText(groupTitle + ":"); //TODO: Internationalization.
-            textViewGroupTitle.setTypeface(null, Typeface.BOLD);
             row.addView(textViewGroupTitle);
         }
 
         //Add the child items:
         final List<LayoutItem> items = group.getItems();
         for (final LayoutItem item : items) {
+            if (item == null) {
+                continue;
+            }
+
             final Class itemClass = item.getClass();
-            if (itemClass.isAssignableFrom(LayoutGroup.class)) {
+
+            //We check for portals (groups) before checking for groups in general,
+            //or we would never get to our check for portals (a specicific type of group).
+            if (itemClass.isAssignableFrom(LayoutItemPortal.class)) {
+                //TODO: Implement showing related records.
+            } else if (itemClass.isAssignableFrom(LayoutGroup.class)) {
                 final LayoutGroup innerGroup = (LayoutGroup) item;
                 final TableLayout innerTableLayout = new TableLayout(context);
                 addGroupToLayout(context, innerTableLayout, innerGroup);
@@ -140,9 +151,7 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
                 final TableRow innerRow = new TableRow(context);
                 tableLayout.addView(innerRow);
 
-                final TextView textViewTitle = UiUtils.createTextView(context);
-                textViewTitle.setText(item.getTitleOrName("") + ": "); //TODO: Internationalization.
-                textViewTitle.setTypeface(null, Typeface.BOLD);
+                final TextView textViewTitle = createTitleTextView(context, item, ": "); //TODO: Internationalization.
                 innerRow.addView(textViewTitle);
 
                 final TextView textViewValue = UiUtils.createTextView(context);
@@ -168,9 +177,45 @@ public class TableDetailFragment extends Fragment implements TableDataFragment {
                     textViewValue.setText(value);
                     innerRow.addView(textViewValue);
                 }
+            } else if (itemClass.isAssignableFrom(LayoutItemText.class)) {
+                final LayoutItemText itemText = (LayoutItemText) item;
+                final TableRow innerRow = new TableRow(context);
+                tableLayout.addView(innerRow);
 
+                //Sometimes a static text block can have a separate title:
+                final TextView textViewTitle = createTitleTextView(context, item, ": "); //TODO: Internationalization.
+                innerRow.addView(textViewTitle);
+
+                //Add the static text:
+                final TextView textViewValue = UiUtils.createTextView(context);
+                final StaticText staticText = itemText.getText();
+                if (staticText != null) {
+                    final String value = staticText.getTitle(""); //TODO: Internationalization
+
+                    if (value != null) {
+                        textViewValue.setText(value);
+                        innerRow.addView(textViewValue);
+                    }
+                }
             }
         }
+    }
+
+    private TextView createTitleTextView(final Context context, final LayoutItem item) {
+        return createTitleTextView(context, item, null);
+    }
+
+    private TextView createTitleTextView(final Context context, final LayoutItem item, final String suffix) {
+        final TextView textViewTitle = UiUtils.createTextView(context);
+
+        String title = item.getTitleOrName(""); //TODO: Internationalization.
+        if(!TextUtils.isEmpty(suffix)) {
+            title += suffix;
+        }
+
+        textViewTitle.setText(title); //TODO: Internationalization.
+        textViewTitle.setTypeface(null, Typeface.BOLD);
+        return textViewTitle;
     }
 
     @Override
