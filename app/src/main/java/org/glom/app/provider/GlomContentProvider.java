@@ -294,7 +294,7 @@ public class GlomContentProvider extends ContentProvider {
         ContentValues valuesUpdate = new ContentValues();
         valuesUpdate.put(DatabaseHelper.DB_COLUMN_NAME_FILE_DATA, realFileUri);
         db.update(DatabaseHelper.TABLE_NAME_FILES, valuesUpdate,
-                BaseColumns._ID + " = " + fileId, null);
+                BaseColumns._ID + " = ?", new String[] {Double.toString(fileId)});
 
         //Build the content: URI for the file to put in the Systems table:
         Uri fileUri = null;
