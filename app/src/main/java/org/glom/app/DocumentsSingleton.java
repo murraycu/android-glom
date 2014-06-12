@@ -55,6 +55,7 @@ public class DocumentsSingleton {
         }
     }
 
+    //TODO: Maybe only the GlomContentProvider should call this, after being passed the local URI of the example document.
     /**
      * Load an example document, storing it in the ContentProvider and creating a local Sqlite
      * database for it, containing the example data.

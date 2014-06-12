@@ -360,12 +360,12 @@ public class GlomContentProvider extends ContentProvider {
              }
             case MATCHER_ID_SYSTEM: {
                 // query the database for a specific database system:
-                final long systemId = ContentUris.parseId(uri);
+                final UriPartsTable uriParts = parseTableUri(uri);
 
                 final SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
                 builder.setTables(DatabaseHelper.TABLE_NAME_SYSTEMS);
                 builder.setProjectionMap(sSystemsProjectionMap);
-                builder.appendWhere(BaseColumns._ID + " = " + systemId); //TODO: Use ? to avoid SQL Injection.
+                builder.appendWhere(BaseColumns._ID + " = " + uriParts.systemId); //TODO: Use ? to avoid SQL Injection.
                 c = builder.query(getDb(), projection,
                         selection, selectionArgs,
                         null, null, orderBy);
@@ -497,7 +497,8 @@ public class GlomContentProvider extends ContentProvider {
         //final long systemId = ContentUris.parseId(uri);
         final List<String> uriParts = uri.getPathSegments();
         final int size = uriParts.size();
-        if (size < 3) {
+
+        if (size < 2) {
             Log.error("The URI did not have the expected number of parts.");
         }
 
@@ -506,7 +507,11 @@ public class GlomContentProvider extends ContentProvider {
         final String systemIdStr = uriParts.get(1);
         result.systemId = Long.parseLong(systemIdStr);
 
-        result.tableName = uriParts.get(3);
+        if (size >= 4) {
+            result.tableName = uriParts.get(3);
+        } else {
+            return result;
+        }
 
         if (size >= 6) {
             result.primaryKeyValue = uriParts.get(5);
