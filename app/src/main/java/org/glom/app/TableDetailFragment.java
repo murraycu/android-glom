@@ -154,6 +154,12 @@ public class TableDetailFragment extends Fragment
         if(!TextUtils.isEmpty(groupTitle)) {
             final TextView textViewGroupTitle = createTitleTextView(context, group, ":"); //TODO: Internationalization.
 
+            //TODO: Somehow know whether to use TextAppearance_Medium or TextAppearance_Medium_Inverse
+            //regardless of the overall specified in our styles.xml file.
+            //If we use TextAppearance_Medium with the android:Theme.Holo.Light theme then
+            //the text is very light gray on white. *_Inverse is black on white.
+            textViewGroupTitle.setTextAppearance(context, android.R.style.TextAppearance_Medium_Inverse);
+
             final TableRow innerRow = new TableRow(context);
             innerTableLayout.addView(innerRow);
             innerRow.addView(textViewGroupTitle);
