@@ -21,6 +21,7 @@ package org.glom.app;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -45,6 +46,7 @@ public class DocumentActivity extends GlomActivity
      * device.
      */
     private boolean mTwoPane = false; //Set by derived constructors sometimes.
+    private String mLocale = null; //A cache.
 
     /**
      * Whether this activity uses two panes by using fragments.
@@ -128,7 +130,7 @@ public class DocumentActivity extends GlomActivity
         String databaseTitle = "";
         final Document document = getDocument();
         if (document != null) {
-            databaseTitle = getDocument().getDatabaseTitle("" /* TODO */);
+            databaseTitle = getDocument().getDatabaseTitle(getLocale());
         }
 
         final String title = String.format("Glom: %s", databaseTitle);
@@ -162,7 +164,7 @@ public class DocumentActivity extends GlomActivity
             }
 
             final TableNavItem item = new TableNavItem(tableName,
-                    document.getTableTitleOrName(tableName, "" /* TODO */));
+                    document.getTableTitleOrName(tableName, getLocale()));
             tables.add(item);
         }
 
@@ -242,4 +244,11 @@ public class DocumentActivity extends GlomActivity
         return mCurrentlyLoadingDocument;
     }
 
+    protected String getLocale() {
+        if (mLocale == null) {
+            mLocale = UiUtils.getLocale(this);
+        }
+
+        return mLocale;
+    }
 }

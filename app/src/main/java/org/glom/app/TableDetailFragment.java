@@ -86,6 +86,7 @@ public class TableDetailFragment extends Fragment
      */
     private Callbacks mCallbacks = sDummyCallbacks;
     private View mRootView;
+    private String mLocale; //A cache.
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -148,7 +149,7 @@ public class TableDetailFragment extends Fragment
         row.addView(innerTableLayout);
 
         //Add the group title:
-        final String groupTitle = group.getTitle(""); //TODO: Internationalization.
+        final String groupTitle = group.getTitle(getLocale());
         if (!TextUtils.isEmpty(groupTitle)) {
             final TextView textViewGroupTitle = createTitleTextView(context, group, ":"); //TODO: Internationalization.
 
@@ -200,7 +201,7 @@ public class TableDetailFragment extends Fragment
         final TextView textViewValue = UiUtils.createTextView(context);
         final StaticText staticText = itemText.getText();
         if (staticText != null) {
-            final String value = staticText.getTitle(""); //TODO: Internationalization
+            final String value = staticText.getTitle(getLocale());
 
             if (value != null) {
                 textViewValue.setText(value);
@@ -299,7 +300,7 @@ public class TableDetailFragment extends Fragment
     private TextView createTitleTextView(final Context context, final LayoutItem item, final String suffix) {
         final TextView textViewTitle = UiUtils.createTextView(context);
 
-        String title = item.getTitleOrName(""); //TODO: Internationalization.
+        String title = item.getTitleOrName(getLocale());
         if (!TextUtils.isEmpty(suffix)) {
             title += suffix;
         }
@@ -475,5 +476,13 @@ public class TableDetailFragment extends Fragment
          * This prevents memory leaks.
          */
         mCursor = null;
+    }
+
+    protected String getLocale() {
+        if (mLocale == null) {
+            mLocale = UiUtils.getLocale(getActivity());
+        }
+
+        return mLocale;
     }
 }

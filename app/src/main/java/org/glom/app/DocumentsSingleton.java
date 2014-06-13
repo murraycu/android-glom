@@ -119,8 +119,9 @@ public class DocumentsSingleton {
         //GlomContentProvider cache them.
         //TODO: This (or some other cache in future?) should be reset if the user's locale changes.
         //
-        //Change the title slightly if one already exists wit this title, to avoid user confusion:
-        final String originalTitle = document.getDatabaseTitle("");
+        //Change the title slightly if one already exists with this title, to avoid user confusion:
+        //TODO: Get the title from the document, in the UI, where we know the locale.
+        final String originalTitle = document.getDatabaseTitle("" /* TODO: locale */);
         String title = originalTitle;
         int suffix = 0;
         while (documentWithTitleExists(title, context)) {

@@ -24,12 +24,14 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.TextView;
 
 import org.glom.app.libglom.layout.LayoutItemField;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static java.lang.Math.max;
 
@@ -100,7 +102,7 @@ class UiUtils {
 
         //TODO:
         final float widthExample = measureText(textView, exampleText);
-        final float widthTitle = measureText(textView, item.getTitleOrName(""));
+        final float widthTitle = measureText(textView, item.getTitleOrName("")); //TODO: Take a locale.
         return max(widthExample, widthTitle);
     }
 
@@ -154,5 +156,16 @@ class UiUtils {
         if ((bundle != null) && bundle.containsKey(TableDataFragment.ARG_TABLE_NAME)) {
             fragment.setTableName(bundle.getString(TableDataFragment.ARG_TABLE_NAME));
         }
+    }
+
+    static String getLocale(final Context context) {
+        final Locale locale = context.getResources().getConfiguration().locale;
+        final String countryCode = locale.getCountry();
+        String result = locale.getLanguage();
+        if (!TextUtils.isEmpty(countryCode)) {
+            result += "_" + countryCode;
+        }
+
+        return result;
     }
 }

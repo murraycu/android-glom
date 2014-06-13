@@ -121,7 +121,7 @@ public class TableNavActivity extends DocumentActivity
         if (document == null)
             return null;
 
-        return document.getTableTitle(tableName, "" /* TODO */);
+        return document.getTableTitle(tableName, getLocale());
     }
 
     @Override
@@ -130,7 +130,7 @@ public class TableNavActivity extends DocumentActivity
         if (document == null)
             return null;
 
-        return document.getTableTitleSingular(tableName, "" /* TODO */);
+        return document.getTableTitleSingular(tableName, getLocale());
     }
 
     @Override

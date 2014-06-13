@@ -69,6 +69,7 @@ public class TableListFragment extends ListFragment
     private List<LayoutItemField> mFieldsToGet; //A cache.
     private int mPrimaryKeyIndex = -1;//A cache. A position in mFieldsToGet.
     private GlomCursorAdapter mAdapter;
+    private String mLocale = null; //A cache.
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -266,7 +267,7 @@ public class TableListFragment extends ListFragment
 
             //TODO: The left edges of these titles still don't quite align with the text in the rows.
             final TextView textView = UiUtils.createTextView(context);
-            textView.setText(field.getTitleOrName("")); //TODO: Handle locale properly.
+            textView.setText(field.getTitleOrName(getLocale()));
 
             if (i != MAX) { //Let the last field take all available space.
                 textView.setWidth(widths.get(i));
@@ -469,5 +470,13 @@ public class TableListFragment extends ListFragment
         }
 
         return mPrimaryKeyIndex;
+    }
+
+    protected String getLocale() {
+        if (mLocale == null) {
+            mLocale = UiUtils.getLocale(getActivity());
+        }
+
+        return mLocale;
     }
 }

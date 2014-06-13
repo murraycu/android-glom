@@ -53,6 +53,7 @@ public class Translatable {
         this.titleOriginal = title;
     }
 
+    //TODO: Remove this because it encourages bad internationalization?
     public String getTitle() {
         return getTitleOriginal();
     }
