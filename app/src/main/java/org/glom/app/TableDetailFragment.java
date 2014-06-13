@@ -158,6 +158,7 @@ public class TableDetailFragment extends Fragment
             //regardless of the overall specified in our styles.xml file.
             //If we use TextAppearance_Medium with the android:Theme.Holo.Light theme then
             //the text is very light gray on white. *_Inverse is black on white.
+            //Using TextAppearance.Medium in fragment_table_detail.xml doesn't have this problem.
             textViewGroupTitle.setTextAppearance(context, android.R.style.TextAppearance_Medium_Inverse);
 
             final TableRow innerRow = new TableRow(context);
