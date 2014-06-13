@@ -393,7 +393,7 @@ public class TableListFragment extends ListFragment
 
         final Field fieldPrimaryKey = getPrimaryKeyField();
         final TypedDataItem primaryKeyValue = getFieldValueFromCursor(cursor, fieldPrimaryKey, primaryKeyIndex);
-        cursor.close();
+        //cursor.close(); //Closing this leads to an exception when rotating the screen.
 
         mCallbacks.onRecordSelected(getTableName(), primaryKeyValue);
     }
