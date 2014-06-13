@@ -149,7 +149,7 @@ public class DatabaseListFragment extends ListFragment
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.menu_delete:
+                case R.id.option_menu_item_delete:
                     deleteSelectedDatabase();
                     mode.finish(); // Action picked, so close the CAB
                     return true;
