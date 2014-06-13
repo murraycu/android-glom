@@ -143,7 +143,7 @@ public class LayoutItemPortal extends LayoutGroup implements UsesRelationship {
     }
 
     /**
-     * @param navigationAutomatic
+     * @param navigationType
      */
     public void setNavigationType(final NavigationType navigationType) {
         this.navigationType = navigationType;

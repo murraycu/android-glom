@@ -84,7 +84,7 @@ public class Formatting {
     /**
      * Get the foreground color to use for text when displaying a field value.
      * <p/>
-     * This should be overridden by {@link GlomNumericFormat#setUseAltForegroundColorForNegatives(boolean)} if that is
+     * This should be overridden by {@link NumericFormat#setUseAltForegroundColorForNegatives(boolean)} if that is
      * active.
      *
      * @returns the text foreground color in GdkColor color format

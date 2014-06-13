@@ -211,7 +211,7 @@ public class LayoutItemField extends LayoutItemWithFormatting implements UsesRel
     }
 
     /**
-     * @param attribute
+     * @param useDefaultFormatting
      */
     public void setUseDefaultFormatting(final boolean useDefaultFormatting) {
         this.useDefaultFormatting = useDefaultFormatting;

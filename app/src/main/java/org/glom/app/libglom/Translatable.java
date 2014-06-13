@@ -102,7 +102,7 @@ public class Translatable  {
     }
 
     /**
-     * @param translatedTitle
+     * @param title
      * @param locale
      */
     public void setTitle(final String title, final String locale) {

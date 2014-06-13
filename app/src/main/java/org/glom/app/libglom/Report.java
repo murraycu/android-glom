@@ -32,7 +32,7 @@ public class Report extends Translatable {
     }
 
     /**
-     * @param listLayoutGroups
+     * @param layoutGroup
      */
     public void setLayoutGroup(final LayoutGroup layoutGroup) {
         this.layoutGroup = layoutGroup;

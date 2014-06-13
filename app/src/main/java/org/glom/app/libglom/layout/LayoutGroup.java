@@ -48,7 +48,7 @@ public class LayoutGroup extends LayoutItem {
     }
 
     /**
-     * @param layoutItemField
+     * @param layoutItem
      */
     public void addItem(final LayoutItem layoutItem) {
         items.add(layoutItem);

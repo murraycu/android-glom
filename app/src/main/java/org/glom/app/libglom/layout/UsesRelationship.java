@@ -38,7 +38,7 @@ public interface UsesRelationship {
     public abstract Relationship getRelatedRelationship();
 
     /**
-     * @param get_related_relationship
+     * @param relationship
      */
     public abstract void setRelatedRelationship(final Relationship relationship);
 

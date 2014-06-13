@@ -59,7 +59,7 @@ public class UsesRelationshipImpl implements UsesRelationship {
     }
 
     /**
-     * @param get_related_relationship
+     * @param relationship
      */
     @Override
     public void setRelatedRelationship(final Relationship relationship) {
