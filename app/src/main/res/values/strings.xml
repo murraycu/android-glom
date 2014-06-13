@@ -10,5 +10,8 @@
     <string name="title_alert_create_new">New Glom System</string>
     <string name="message_alert_create_new">Create new local Glom database system from the example file?</string>
     <string name="button_alert_create_new">Create</string>
+    <string name="title_alert_delete_system">Remove Glom System</string>
+    <string name="message_alert_delete_system">Delete this Glom database system? Its data will be lost forever.</string>
+    <string name="button_alert_delete_system">Remove</string>
 
 </resources>

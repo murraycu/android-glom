@@ -20,12 +20,14 @@
 package org.glom.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -150,7 +152,22 @@ public class DatabaseListFragment extends ListFragment
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.option_menu_item_delete:
-                    deleteSelectedDatabase();
+                    //Ask for confirmation:
+                    final AlertDialog dialog = new AlertDialog.Builder(DatabaseListFragment.this.getActivity())
+                            .setTitle(R.string.title_alert_delete_system)
+                            .setMessage(R.string.message_alert_delete_system)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+
+                            //Generic yes/no buttons are confusing:
+                            .setPositiveButton(R.string.button_alert_delete_system, new DialogInterface.OnClickListener() {
+
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    DatabaseListFragment.this.deleteSelectedDatabase();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, null).show();
+                    dialog.show();
+
                     mode.finish(); // Action picked, so close the CAB
                     return true;
                 default:
