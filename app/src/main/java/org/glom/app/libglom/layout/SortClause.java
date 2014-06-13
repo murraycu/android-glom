@@ -23,7 +23,7 @@ import java.util.ArrayList;
 
 public class SortClause extends ArrayList<SortClause.SortField> {
 
-    public static class SortField  {
+    public static class SortField {
 
         public UsesRelationship field;
         public boolean ascending;

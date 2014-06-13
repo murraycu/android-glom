@@ -40,22 +40,22 @@ import java.util.List;
 public class DocumentActivity extends GlomActivity
         implements TableNavCallbacks {
 
-    /** Whether this activity uses two panes by using fragments.
-     */
-    public void setTwoPane() {
-        this.mTwoPane = true;
-    }
-
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane = false; //Set by derived constructors sometimes.
 
+    /**
+     * Whether this activity uses two panes by using fragments.
+     */
+    public void setTwoPane() {
+        this.mTwoPane = true;
+    }
 
     protected boolean hasDocument() {
         //The Activity's Intent should have either a URI or a systemId:
-        if(hasUri())
+        if (hasUri())
             return true;
 
         return (getSystemId() != -1);
@@ -127,7 +127,7 @@ public class DocumentActivity extends GlomActivity
     private void showDocumentTitle() {
         String databaseTitle = "";
         final Document document = getDocument();
-        if(document != null) {
+        if (document != null) {
             databaseTitle = getDocument().getDatabaseTitle("" /* TODO */);
         }
 
@@ -220,7 +220,8 @@ public class DocumentActivity extends GlomActivity
         return super.onOptionsItemSelected(item);
     }
 
-    /** Navigate to the list of the current table,
+    /**
+     * Navigate to the list of the current table,
      * for derived classes that have a concept of a current table.
      */
     protected void navigateToList() {

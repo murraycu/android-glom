@@ -114,7 +114,7 @@ public class SelfHosterSqlite extends SelfHoster {
 
     private String getUnusedDatabaseName(final String databaseNamePrefix) {
         int suffix = 1;
-        while(true) {
+        while (true) {
             final String nameCandidate = databaseNamePrefix + suffix;
             final File fileDb = context.getDatabasePath(nameCandidate);
             if (!fileDb.exists()) {

@@ -84,7 +84,7 @@ public class TableDataActivity extends DocumentActivity
     public boolean onOptionsItemSelected(MenuItem item) {
 
         //Handle the Home and List items, for instance:
-        if(super.onOptionsItemSelected(item))
+        if (super.onOptionsItemSelected(item))
             return true;
 
         // Handle presses on the action bar items
@@ -108,7 +108,7 @@ public class TableDataActivity extends DocumentActivity
     @Override
     public String getTableTitle(String tableName) {
         final Document document = getDocument();
-        if(document == null)
+        if (document == null)
             return null;
 
         return document.getTableTitle(tableName, "" /* TODO */);
@@ -117,7 +117,7 @@ public class TableDataActivity extends DocumentActivity
     @Override
     public String getTableTitleSingular(String tableName) {
         final Document document = getDocument();
-        if(document == null)
+        if (document == null)
             return null;
 
         return document.getTableTitleSingular(tableName, "" /* TODO */);

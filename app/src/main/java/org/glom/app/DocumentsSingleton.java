@@ -67,7 +67,7 @@ public class DocumentsSingleton {
         }
 
         try {
-            return  resolver.openInputStream(fileUri);
+            return resolver.openInputStream(fileUri);
         } catch (FileNotFoundException e) {
             Log.error("load() failed.", e);
             return null;
@@ -75,6 +75,7 @@ public class DocumentsSingleton {
     }
 
     //TODO: Maybe only the GlomContentProvider should call this, after being passed the local URI of the example document.
+
     /**
      * Load an example document, storing it in the ContentProvider and creating a local Sqlite
      * database for it, containing the example data.
@@ -122,7 +123,7 @@ public class DocumentsSingleton {
         final String originalTitle = document.getDatabaseTitle("");
         String title = originalTitle;
         int suffix = 0;
-        while(documentWithTitleExists(title, context)) {
+        while (documentWithTitleExists(title, context)) {
             title = originalTitle + suffix;
             ++suffix;
         }
@@ -146,7 +147,7 @@ public class DocumentsSingleton {
 
         try {
             final OutputStream stream = resolver.openOutputStream(fileContentUri);
-            if(!document.save(stream)) {
+            if (!document.save(stream)) {
                 Log.error("Document save() failed.");
                 return -1;
             }
@@ -173,9 +174,9 @@ public class DocumentsSingleton {
     private boolean documentWithTitleExists(final String title, final Context context) {
         final ContentResolver resolver = context.getContentResolver();
 
-        final String[] projection = new String[] {GlomSystem.Columns._ID};
+        final String[] projection = new String[]{GlomSystem.Columns._ID};
         final String selection = GlomSystem.Columns.TITLE_COLUMN + " = ?";
-        final String[] selectionArgs = new String[] {title};
+        final String[] selectionArgs = new String[]{title};
         final Cursor cursor = resolver.query(GlomSystem.SYSTEMS_URI, projection, selection, selectionArgs, null);
 
         if ((cursor == null || (cursor.getCount() <= 0))) {
@@ -188,7 +189,7 @@ public class DocumentsSingleton {
 
     public boolean loadExisting(long systemId, final Context context) {
         Document document = getDocument(systemId);
-        if(document != null)
+        if (document != null)
             return true; //It has already been loaded.
 
         final ContentResolver resolver = context.getContentResolver();
@@ -223,8 +224,9 @@ public class DocumentsSingleton {
         return mDocumentMap.get(systemId);
     }
 
-    /** This should only be used by the ContentProvider.
-     *  The UI should not access SQLite directly.
+    /**
+     * This should only be used by the ContentProvider.
+     * The UI should not access SQLite directly.
      *
      * @param systemId
      * @return

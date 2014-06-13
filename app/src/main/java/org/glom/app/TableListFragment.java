@@ -58,19 +58,24 @@ import java.util.List;
 public class TableListFragment extends ListFragment
         implements TableDataFragment, LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int URL_LOADER = 0;
     private long mSystemId = -1;
     private String mTableName;
     private boolean mActivityCreated = false;
-
     /**
      * The fragment's current callback object.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
     private List<LayoutItemField> mFieldsToGet; //A cache.
     private int mPrimaryKeyIndex = -1;//A cache. A position in mFieldsToGet.
-
-    private static final int URL_LOADER = 0;
     private GlomCursorAdapter mAdapter;
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public TableListFragment() {
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
@@ -102,7 +107,7 @@ public class TableListFragment extends ListFragment
         final String[] result = new String[fieldsToGet.size()];
 
         int i = 0;
-        for(final LayoutItemField field : fieldsToGet) {
+        for (final LayoutItemField field : fieldsToGet) {
             result[i] = field.getSqlTableOrJoinAliasName(getTableName()) + "." + field.getName();
             ++i;
         }
@@ -126,14 +131,6 @@ public class TableListFragment extends ListFragment
          * This prevents memory leaks.
          */
         mAdapter.changeCursor(null);
-     }
-
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public TableListFragment() {
     }
 
     @Override
@@ -174,15 +171,15 @@ public class TableListFragment extends ListFragment
         //Don't do any more if the activity is in the middle of
         //asynchronously loading the document. Otherwise
         //we would risk getting half-loaded information here.
-        final DocumentActivity docActivity = (DocumentActivity)activity;
-        if(docActivity.currentlyLoadingDocument()) {
+        final DocumentActivity docActivity = (DocumentActivity) activity;
+        if (docActivity.currentlyLoadingDocument()) {
             return;
         }
 
         addListViewHeader();
 
         final List<LayoutItemField> fieldsToGet = getFieldsToShow();
-        if(fieldsToGet.isEmpty()) {
+        if (fieldsToGet.isEmpty()) {
             //Maybe the document hasn't loaded yet.
             return;
         }
@@ -223,7 +220,7 @@ public class TableListFragment extends ListFragment
     }
 
     private void addListViewHeader() {
-        if(!mActivityCreated) {
+        if (!mActivityCreated) {
             //Don't even try to call getListView() if onActivityCreated() has not yet been called.
             return;
         }
@@ -242,12 +239,12 @@ public class TableListFragment extends ListFragment
         //asynchronously loading the document. Otherwise
         //we would risk getting half-loaded information here.
         final Activity activity = getActivity();
-        if(activity == null) {
+        if (activity == null) {
             return;
         }
 
-        final DocumentActivity docActivity = (DocumentActivity)activity;
-        if(docActivity.currentlyLoadingDocument()) {
+        final DocumentActivity docActivity = (DocumentActivity) activity;
+        if (docActivity.currentlyLoadingDocument()) {
             return;
         }
 
@@ -304,7 +301,7 @@ public class TableListFragment extends ListFragment
         //If it's empty, make sure that we try again later,
         //when the document might be loaded.
         //TODO: We already avoid calling this while loading.
-        if((mFieldsToGet != null) && mFieldsToGet.isEmpty()) {
+        if ((mFieldsToGet != null) && mFieldsToGet.isEmpty()) {
             mFieldsToGet = null;
         }
 
@@ -434,12 +431,14 @@ public class TableListFragment extends ListFragment
         return result;
     }
 
-    /** Returns the index of the primary key in the database query's result cursor,
+    /**
+     * Returns the index of the primary key in the database query's result cursor,
      * or -1 if no primary key could be found.
+     *
      * @return
      */
     private int getPrimaryKeyIndex() {
-        if(mPrimaryKeyIndex != -1) {
+        if (mPrimaryKeyIndex != -1) {
             return mPrimaryKeyIndex;
         }
 

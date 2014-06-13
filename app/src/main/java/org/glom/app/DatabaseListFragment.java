@@ -59,7 +59,79 @@ public class DatabaseListFragment extends ListFragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int URL_LOADER = 0;
+    private static final Callbacks sDummyCallbacks = new Callbacks() {
+
+        @Override
+        public void onSystemSelected(final long systemId
+        ) {
+        }
+    };
+    /**
+     * The fragment's current callback object.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
     private SimpleCursorAdapter mAdapter;
+    private ActionMode mActionMode;
+    private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        // Called when the action mode is created - when startActionMode() was called
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.context_menu_database_list, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.option_menu_item_delete:
+                    //Ask for confirmation:
+                    final AlertDialog dialog = new AlertDialog.Builder(DatabaseListFragment.this.getActivity())
+                            .setTitle(R.string.title_alert_delete_system)
+                            .setMessage(R.string.message_alert_delete_system)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+
+                                    //Generic yes/no buttons are confusing:
+                            .setPositiveButton(R.string.button_alert_delete_system, new DialogInterface.OnClickListener() {
+
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    DatabaseListFragment.this.deleteSelectedDatabase();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.cancel, null).show();
+                    dialog.show();
+
+                    mode.finish(); // Action picked, so close the CAB
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+        }
+    };
+    private int mLongClickPosition = 0;
+
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment (e.g. upon screen orientation changes).
+     */
+    public DatabaseListFragment() {
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
@@ -70,7 +142,7 @@ public class DatabaseListFragment extends ListFragment
         /**
          * The columns needed by the cursor adapter
          */
-        final String[] PROJECTION = new String[] {
+        final String[] PROJECTION = new String[]{
                 GlomSystem.Columns._ID, // 0
                 GlomSystem.Columns.TITLE_COLUMN, // 1
         };
@@ -104,99 +176,6 @@ public class DatabaseListFragment extends ListFragment
         mAdapter.changeCursor(null);
     }
 
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement.
-     * <p/>
-     * This is the recommended way for activities and fragments to communicate,
-     * presumably because, unlike a direct function call, it still keeps the
-     * fragment and activity implementations separate.
-     * http://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
-     */
-    public interface Callbacks {
-        /**
-         * Callback for when a database has been selected.
-         */
-        public void onSystemSelected(final long systemId);
-
-    }
-
-    private static final Callbacks sDummyCallbacks = new Callbacks() {
-
-        @Override
-        public void onSystemSelected(final long systemId
-        ) {
-        }
-    };
-
-    private final ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
-
-        // Called when the action mode is created - when startActionMode() was called
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            // Inflate a menu resource providing context menu items
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.context_menu_database_list, menu);
-            return true;
-        }
-
-        // Called each time the action mode is shown. Always called after onCreateActionMode, but
-        // may be called multiple times if the mode is invalidated.
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false; // Return false if nothing is done
-        }
-
-        // Called when the user selects a contextual menu item
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.option_menu_item_delete:
-                    //Ask for confirmation:
-                    final AlertDialog dialog = new AlertDialog.Builder(DatabaseListFragment.this.getActivity())
-                            .setTitle(R.string.title_alert_delete_system)
-                            .setMessage(R.string.message_alert_delete_system)
-                            .setIcon(android.R.drawable.ic_dialog_alert)
-
-                            //Generic yes/no buttons are confusing:
-                            .setPositiveButton(R.string.button_alert_delete_system, new DialogInterface.OnClickListener() {
-
-                                public void onClick(DialogInterface dialog, int whichButton) {
-                                    DatabaseListFragment.this.deleteSelectedDatabase();
-                                }
-                            })
-                            .setNegativeButton(android.R.string.cancel, null).show();
-                    dialog.show();
-
-                    mode.finish(); // Action picked, so close the CAB
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        // Called when the user exits the action mode
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            mActionMode = null;
-        }
-    };
-
-    private ActionMode mActionMode;
-    private int mLongClickPosition = 0;
-
-    /**
-     * The fragment's current callback object.
-     */
-    private Callbacks mCallbacks = sDummyCallbacks;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public DatabaseListFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,9 +198,9 @@ public class DatabaseListFragment extends ListFragment
 
 
         // The names of the cursor columns to display in the view, initialized to the title column
-        String[] dataColumns = { GlomSystem.Columns.TITLE_COLUMN };
+        String[] dataColumns = {GlomSystem.Columns.TITLE_COLUMN};
 
-        final int[] viewIDs = { android.R.id.text1 };
+        final int[] viewIDs = {android.R.id.text1};
 
         mAdapter = new SimpleCursorAdapter(
                 getActivity(), // The Context for the ListView
@@ -359,13 +338,29 @@ public class DatabaseListFragment extends ListFragment
         super.onActivityCreated(savedInstanceState);
     }
 
-    private void deleteSelectedDatabase()
-    {
+    private void deleteSelectedDatabase() {
         final ListView listView = getListView();
         final long systemId = getSystemIdForItem(listView, mLongClickPosition);
         deleteDatabase(systemId);
 
         //final CursorAdapter cursorAdapter = (CursorAdapter)listView.getAdapter();
         //CursorAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement.
+     * <p/>
+     * This is the recommended way for activities and fragments to communicate,
+     * presumably because, unlike a direct function call, it still keeps the
+     * fragment and activity implementations separate.
+     * http://developer.android.com/guide/components/fragments.html#CommunicatingWithActivity
+     */
+    public interface Callbacks {
+        /**
+         * Callback for when a database has been selected.
+         */
+        public void onSystemSelected(final long systemId);
+
     }
 }

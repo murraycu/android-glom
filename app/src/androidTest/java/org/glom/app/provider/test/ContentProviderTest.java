@@ -37,26 +37,26 @@ import java.io.IOException;
  */
 public class ContentProviderTest extends ProviderTestCase2<GlomContentProvider> {
 
-    private MockContentResolver mMockResolver;
     private static final String VALID_TITLE = "Some Glom System";
+    private MockContentResolver mMockResolver;
 
     public ContentProviderTest() {
         super(GlomContentProvider.class, GlomSystem.AUTHORITY);
+    }
+
+    /**
+     * @return a ContentValues object with a value set for each column
+     */
+    private static ContentValues getFullContentValues() {
+        final ContentValues v = new ContentValues(7);
+        v.put(GlomSystem.Columns.TITLE_COLUMN, VALID_TITLE);
+        return v;
     }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         mMockResolver = getMockContentResolver();
-    }
-
-    /**
-     * @return a ContentValues object with a value set for each column
-     * */
-    private static ContentValues getFullContentValues() {
-        final ContentValues v = new ContentValues(7);
-        v.put(GlomSystem.Columns.TITLE_COLUMN, VALID_TITLE);
-        return v;
     }
 
     public void testInsertUri() {
@@ -67,7 +67,7 @@ public class ContentProviderTest extends ProviderTestCase2<GlomContentProvider> 
     public void testInsertThenQueryAll() {
         mMockResolver.insert(GlomSystem.CONTENT_URI, getFullContentValues());
 
-        final Cursor cursor = mMockResolver.query(GlomSystem.CONTENT_URI, null, null, new String[] {}, null);
+        final Cursor cursor = mMockResolver.query(GlomSystem.CONTENT_URI, null, null, new String[]{}, null);
         assertNotNull(cursor);
         assertEquals(1, cursor.getCount());
         assertTrue(cursor.moveToFirst());
@@ -77,7 +77,7 @@ public class ContentProviderTest extends ProviderTestCase2<GlomContentProvider> 
     public void testInsertThenQuerySpecific() {
         final Uri uri = mMockResolver.insert(GlomSystem.CONTENT_URI, getFullContentValues());
 
-        final Cursor cursor = mMockResolver.query(uri, null, null, new String[] {}, null);
+        final Cursor cursor = mMockResolver.query(uri, null, null, new String[]{}, null);
         assertNotNull(cursor);
         assertEquals(1, cursor.getCount());
         assertTrue(cursor.moveToFirst());
@@ -87,7 +87,7 @@ public class ContentProviderTest extends ProviderTestCase2<GlomContentProvider> 
 
     public void testInsertThenOpenFile() throws IOException {
         final Uri uriSystem = mMockResolver.insert(GlomSystem.CONTENT_URI, getFullContentValues());
-        final Cursor cursor = mMockResolver.query(uriSystem, null, null, new String[] {}, null);
+        final Cursor cursor = mMockResolver.query(uriSystem, null, null, new String[]{}, null);
         assertNotNull(cursor);
         assertEquals(1, cursor.getCount());
         assertTrue(cursor.moveToFirst());

@@ -36,7 +36,7 @@ import java.io.InputStream;
 
 /**
  * A base class for all activities, which is capable of loading (example or existing) documents.
- *
+ * <p/>
  * Created by murrayc on 6/5/14.
  */
 @SuppressLint("Registered") //This is a base class for other Activities.
@@ -82,7 +82,7 @@ public class GlomActivity extends Activity {
 
         //Check that we now have a Document:
         final Document document = documentSingleton.getDocument(getSystemId());
-        if(document == null) {
+        if (document == null) {
             Log.error("The existing system could not be found. System ID=" + getSystemId());
         }
 
@@ -110,7 +110,7 @@ public class GlomActivity extends Activity {
 
         //Check that we now have a Document:
         final Document document = documentSingleton.getDocument(getSystemId());
-        if(document == null) {
+        if (document == null) {
             Log.error("The existing system could not be found. System ID=" + getSystemId());
         }
 
@@ -144,7 +144,7 @@ public class GlomActivity extends Activity {
         final Intent intent = getIntent();
 
         setSystemId(intent.getLongExtra(ARG_SYSTEM_ID, -1));
-        if(getSystemId() != -1) {
+        if (getSystemId() != -1) {
             //Reload a previously-opened database:
             //Load the document asynchronously.
             //We respond when it finishes in onDocumentLoadingExistingFinished().
@@ -164,7 +164,7 @@ public class GlomActivity extends Activity {
                         .setMessage(R.string.message_alert_create_new)
                         .setIcon(android.R.drawable.ic_dialog_alert)
 
-                        //Generic yes/no buttons are confusing:
+                                //Generic yes/no buttons are confusing:
                         .setPositiveButton(R.string.button_alert_create_new, new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int whichButton) {

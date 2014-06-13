@@ -111,7 +111,8 @@ public class GlomContentProvider extends ContentProvider {
     private static final String[] FILE_MIME_TYPES = new String[]{"application/x-glom"};
 
 
-    /** A map of GlomContentProvider projection column names to underlying Sqlite column names
+    /**
+     * A map of GlomContentProvider projection column names to underlying Sqlite column names
      * for /system/ URIs, mapping to the systems tables.
      */
     private static final Map<String, String> sSystemsProjectionMap;
@@ -126,63 +127,6 @@ public class GlomContentProvider extends ContentProvider {
 
 
     private final DocumentsSingleton documentSingleton = DocumentsSingleton.getInstance();
-
-    /**
-     * There are 2 tables: systems and files.
-     * The systems table has a uri field that specifies a record in the files tables.
-     * The files table has a (standard for openInput/OutputStream()) _data field that
-     * contains the URI of the .glom Document file for the system.
-     *
-     * The location and creation of the SQLite database is left entirely up to the SQLiteOpenHelper
-     * class. We just store its name in the Document.
-     */
-    private static class DatabaseHelper extends SQLiteOpenHelper {
-        private static final String DATABASE_NAME = "systems.db";
-        private static final int DATABASE_VERSION = 1;
-
-        private static final String TABLE_NAME_SYSTEMS = "systems";
-        protected static final String DB_COLUMN_NAME_TITLE = "title"; //TODO: Internationalization of its contents.
-        protected static final String DB_COLUMN_NAME_FILE_URI = "uri"; //The content URI for a file in the files table.
-
-        private static final String TABLE_NAME_FILES = "files";
-        private static final String DB_COLUMN_NAME_FILE_DATA = "_data"; //The real URI
-
-        private static final String DEFAULT_SORT_ORDER = GlomSystem.Columns._ID + " DESC";
-
-        DatabaseHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase sqLiteDatabase) {
-            createTable(sqLiteDatabase);
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase sqLiteDatabase,
-                              int oldv, int newv) {
-            //TODO: Don't just lose the data:
-            //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " +
-            //        TABLE_NAME_SYSTEMS + ";");
-            //createTable(sqLiteDatabase);
-        }
-
-        private void createTable(SQLiteDatabase sqLiteDatabase) {
-            String qs = "CREATE TABLE " + TABLE_NAME_SYSTEMS + " (" +
-                    BaseColumns._ID +
-                    " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    DB_COLUMN_NAME_TITLE + " TEXT, " +
-                    DB_COLUMN_NAME_FILE_URI + " TEXT);";
-            sqLiteDatabase.execSQL(qs);
-
-            qs = "CREATE TABLE " + TABLE_NAME_FILES + " (" +
-                    BaseColumns._ID +
-                    " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    DB_COLUMN_NAME_FILE_DATA + " TEXT);";
-            sqLiteDatabase.execSQL(qs);
-        }
-    }
-
     private DatabaseHelper mOpenDbHelper;
 
     public GlomContentProvider() {
@@ -313,7 +257,7 @@ public class GlomContentProvider extends ContentProvider {
         ContentValues valuesUpdate = new ContentValues();
         valuesUpdate.put(DatabaseHelper.DB_COLUMN_NAME_FILE_DATA, realFileUri);
         db.update(DatabaseHelper.TABLE_NAME_FILES, valuesUpdate,
-                BaseColumns._ID + " = ?", new String[] {Double.toString(fileId)});
+                BaseColumns._ID + " = ?", new String[]{Double.toString(fileId)});
 
         //Build the content: URI for the file to put in the Systems table:
         Uri fileUri = null;
@@ -374,7 +318,7 @@ public class GlomContentProvider extends ContentProvider {
                 c.setNotificationUri(getContext().getContentResolver(),
                         GlomSystem.CONTENT_URI);
                 break;
-             }
+            }
             case MATCHER_ID_SYSTEM: {
                 // query the database for a specific database system:
                 final UriPartsTable uriParts = parseSystemUri(uri);
@@ -398,13 +342,13 @@ public class GlomContentProvider extends ContentProvider {
                 final UriPartsTable uriParts = parseSystemUri(uri);
 
                 final Document document = getDocumentForSystem(uriParts.systemId);
-                if(document == null) {
+                if (document == null) {
                     Log.error("getDocumentForSystem() returned null for systemId=" + uriParts.systemId);
                     throw new IllegalArgumentException("Document for system not found with ID=" + uriParts.systemId);
                 }
 
                 final SQLiteDatabase db = getDatabaseForDocument(document);
-                if(db == null) {
+                if (db == null) {
                     Log.error("getDatabaseForDocument() returned null for systemId=" + uriParts.systemId);
                     throw new IllegalArgumentException("Database System not found with ID=" + uriParts.systemId);
                 }
@@ -435,13 +379,13 @@ public class GlomContentProvider extends ContentProvider {
                 final UriPartsTable uriParts = parseSystemUri(uri);
 
                 final Document document = getDocumentForSystem(uriParts.systemId);
-                if(document == null) {
+                if (document == null) {
                     Log.error("getDocumentForSystem() returned null for systemId=" + uriParts.systemId);
                     throw new IllegalArgumentException("Document for system not found with ID=" + uriParts.systemId);
                 }
 
                 final SQLiteDatabase db = getDatabaseForDocument(document);
-                if(db == null) {
+                if (db == null) {
                     Log.error("getDatabaseForDocument() returned null for systemId=" + uriParts.systemId);
                     throw new IllegalArgumentException("Database System not found with ID=" + uriParts.systemId);
                 }
@@ -563,7 +507,7 @@ public class GlomContentProvider extends ContentProvider {
 
     private List<LayoutItemField> getFieldsToShowForList(final Document document, final String tableName) {
         return Utils.getFieldsToShowForSQLQuery(document, tableName,
-            document.getDataLayoutGroups("list", tableName));
+                document.getDataLayoutGroups("list", tableName));
     }
 
     private List<LayoutItemField> getFieldsToShowForDetails(final Document document, final String tableName) {
@@ -573,7 +517,7 @@ public class GlomContentProvider extends ContentProvider {
 
     private Document getDocumentForSystem(long systemId) {
         final Context context = getContext();
-        if(!documentSingleton.loadExisting(systemId, context)) {
+        if (!documentSingleton.loadExisting(systemId, context)) {
             return null;
         }
 
@@ -627,6 +571,60 @@ public class GlomContentProvider extends ContentProvider {
 
     private SQLiteDatabase getDb() {
         return mOpenDbHelper.getWritableDatabase();
+    }
+
+    /**
+     * There are 2 tables: systems and files.
+     * The systems table has a uri field that specifies a record in the files tables.
+     * The files table has a (standard for openInput/OutputStream()) _data field that
+     * contains the URI of the .glom Document file for the system.
+     * <p/>
+     * The location and creation of the SQLite database is left entirely up to the SQLiteOpenHelper
+     * class. We just store its name in the Document.
+     */
+    private static class DatabaseHelper extends SQLiteOpenHelper {
+        protected static final String DB_COLUMN_NAME_TITLE = "title"; //TODO: Internationalization of its contents.
+        protected static final String DB_COLUMN_NAME_FILE_URI = "uri"; //The content URI for a file in the files table.
+        private static final String DATABASE_NAME = "systems.db";
+        private static final int DATABASE_VERSION = 1;
+        private static final String TABLE_NAME_SYSTEMS = "systems";
+        private static final String TABLE_NAME_FILES = "files";
+        private static final String DB_COLUMN_NAME_FILE_DATA = "_data"; //The real URI
+
+        private static final String DEFAULT_SORT_ORDER = GlomSystem.Columns._ID + " DESC";
+
+        DatabaseHelper(Context context) {
+            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase sqLiteDatabase) {
+            createTable(sqLiteDatabase);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase sqLiteDatabase,
+                              int oldv, int newv) {
+            //TODO: Don't just lose the data:
+            //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " +
+            //        TABLE_NAME_SYSTEMS + ";");
+            //createTable(sqLiteDatabase);
+        }
+
+        private void createTable(SQLiteDatabase sqLiteDatabase) {
+            String qs = "CREATE TABLE " + TABLE_NAME_SYSTEMS + " (" +
+                    BaseColumns._ID +
+                    " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    DB_COLUMN_NAME_TITLE + " TEXT, " +
+                    DB_COLUMN_NAME_FILE_URI + " TEXT);";
+            sqLiteDatabase.execSQL(qs);
+
+            qs = "CREATE TABLE " + TABLE_NAME_FILES + " (" +
+                    BaseColumns._ID +
+                    " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    DB_COLUMN_NAME_FILE_DATA + " TEXT);";
+            sqLiteDatabase.execSQL(qs);
+        }
     }
 
     private class UriPartsTable {

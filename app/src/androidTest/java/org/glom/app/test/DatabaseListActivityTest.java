@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.test.ActivityUnitTestCase;
 
 import org.glom.app.DatabaseListActivity;
+
 /**
  * Created by murrayc on 5/26/14.
  */

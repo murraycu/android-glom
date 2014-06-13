@@ -24,8 +24,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
-* Created by murrayc on 5/30/14.
-*/
+ * Created by murrayc on 5/30/14.
+ */
 public class DbHelper extends SQLiteOpenHelper {
 
     public DbHelper(final Context context, final String databaseName) {

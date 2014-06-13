@@ -96,7 +96,7 @@ public class SqlUtils {
 	 */
 
 	/*
-	 * private static String buildSqlSelectWithWhereClause(final String tableName, final LayoutFieldVector fieldsToGet,
+     * private static String buildSqlSelectWithWhereClause(final String tableName, final LayoutFieldVector fieldsToGet,
 	 * final Condition whereClause) { final SortClause sortClause = null; return
 	 * buildSqlSelectWithWhereClause(tableName, fieldsToGet, whereClause, sortClause); }
 	 */
@@ -215,7 +215,7 @@ public class SqlUtils {
             // final String parent = layout_item.get_sql_table_or_join_alias_name(tableName);
 
 			/*
-			 * TODO: const LayoutItem_FieldSummary* fieldsummary = dynamic_cast<const
+             * TODO: const LayoutItem_FieldSummary* fieldsummary = dynamic_cast<const
 			 * LayoutItem_FieldSummary*>(layout_item.obj()); if(fieldsummary) { const Gnome::Gda::SqlBuilder::Id
 			 * id_function = builder->add_function( fieldsummary->get_summary_type_sql(),
 			 * builder->add_field_id(layout_item->get_name(), tableName)); builder->add_field_value_id(id_function); }

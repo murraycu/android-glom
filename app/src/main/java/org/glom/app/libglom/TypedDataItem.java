@@ -32,7 +32,17 @@ import java.util.Date;
 /**
  * This specialization of DataItem can hold a primary key item.
  */
-public class TypedDataItem extends DataItem implements Parcelable  {
+public class TypedDataItem extends DataItem implements Parcelable {
+    public static final Parcelable.Creator<DataItem> CREATOR
+            = new Parcelable.Creator<DataItem>() {
+        public DataItem createFromParcel(Parcel in) {
+            return new TypedDataItem(in);
+        }
+
+        public DataItem[] newArray(int size) {
+            return new DataItem[size];
+        }
+    };
     private boolean empty = true;
     private GlomFieldType type = GlomFieldType.TYPE_INVALID;
     private String unknown = null;
@@ -98,7 +108,8 @@ public class TypedDataItem extends DataItem implements Parcelable  {
         }
     }
 
-    /** Get a string representation of the value,
+    /**
+     * Get a string representation of the value,
      * for instance to use in a URI to indicate a primary key value.
      * See setFromStringRepresentation().
      *
@@ -128,7 +139,8 @@ public class TypedDataItem extends DataItem implements Parcelable  {
         }
     }
 
-    /** Set the value from a string representation of the value,
+    /**
+     * Set the value from a string representation of the value,
      * for instance, to parse a part of a URI that indicates a primary key value.
      * See setFromStringRepresentation().
      *
@@ -145,17 +157,17 @@ public class TypedDataItem extends DataItem implements Parcelable  {
                 break;
             }
             case TYPE_DATE: {
-                    final SimpleDateFormat format = new SimpleDateFormat();
-                    Date date = null; //TODO: Is this locale-independent?
-                    try {
-                        date = format.parse(str);
-                    } catch (final ParseException e) {
-                        Log.error("Failed to parse date", e);
-                    }
-
-                    setDate(date);
-                    break;
+                final SimpleDateFormat format = new SimpleDateFormat();
+                Date date = null; //TODO: Is this locale-independent?
+                try {
+                    date = format.parse(str);
+                } catch (final ParseException e) {
+                    Log.error("Failed to parse date", e);
                 }
+
+                setDate(date);
+                break;
+            }
             //TODO: case TYPE_TIME:
             //	return getTime();
             case TYPE_BOOLEAN: {
@@ -173,8 +185,8 @@ public class TypedDataItem extends DataItem implements Parcelable  {
 
     //TODO: Why is this override necessary?
     /*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+	 *
 	 * @see org.glom.web.shared.DataItem#setBoolean(boolean)
 	 */
     @Override
@@ -250,18 +262,6 @@ public class TypedDataItem extends DataItem implements Parcelable  {
     public GlomFieldType getType() {
         return type;
     }
-
-    public static final Parcelable.Creator<DataItem> CREATOR
-            = new Parcelable.Creator<DataItem>() {
-        public DataItem createFromParcel(Parcel in) {
-            return new TypedDataItem(in);
-        }
-
-        public DataItem[] newArray(int size) {
-            return new DataItem[size];
-        }
-    };
-
 
     @Override
     public int describeContents() {

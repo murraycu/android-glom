@@ -23,7 +23,7 @@ import android.text.TextUtils;
 
 import java.util.HashMap;
 
-public class Translatable  {
+public class Translatable {
 
     // A map of localeID to title:
     private final TranslationsMap translationsMap = new TranslationsMap();

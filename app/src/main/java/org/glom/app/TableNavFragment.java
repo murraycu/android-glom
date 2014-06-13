@@ -96,8 +96,8 @@ public class TableNavFragment extends ListFragment {
         //Don't do any more if the activity is in the middle of
         //asynchronously loading the document. Otherwise
         //we would risk getting half-loaded information here.
-        final DocumentActivity docActivity = (DocumentActivity)activity;
-        if(docActivity.currentlyLoadingDocument()) {
+        final DocumentActivity docActivity = (DocumentActivity) activity;
+        if (docActivity.currentlyLoadingDocument()) {
             return;
         }
 

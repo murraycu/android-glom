@@ -1950,7 +1950,7 @@ public class Document {
     public Field getTablePrimaryKeyField(final String tableName) {
         Field primaryKey = null;
         final List<Field> fieldsVec = getTableFields(tableName);
-        if(fieldsVec == null) {
+        if (fieldsVec == null) {
             return null;
         }
 
@@ -2042,11 +2042,11 @@ public class Document {
         HOSTING_MODE_POSTGRES_CENTRAL, HOSTING_MODE_POSTGRES_SELF, HOSTING_MODE_SQLITE, HOSTING_MODE_MYSQL_CENTRAL, HOSTING_MODE_MYSQL_SELF
     }
 
-    private static class TableInfo extends Translatable implements HasTitleSingular  {
-        private Translatable titleSingular = null;
+    private static class TableInfo extends Translatable implements HasTitleSingular {
         private final Hashtable<String, Field> fieldsMap = new Hashtable<>();
         private final Hashtable<String, Relationship> relationshipsMap = new Hashtable<>();
         private final Hashtable<String, Report> reportsMap = new Hashtable<>();
+        private Translatable titleSingular = null;
         private boolean isDefault;
         private boolean isHidden;
         private List<LayoutGroup> layoutGroupsList = new ArrayList<>();

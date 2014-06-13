@@ -198,7 +198,7 @@ public class Utils {
                 break;
             case TYPE_TIME:
             /*TODO :
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	        Date date;
 			try {
 				date = formatter.parse(unknownText);
@@ -297,7 +297,7 @@ public class Utils {
     }
 
     public static Uri buildFileContentUri(final Uri uriSystem, final ContentResolver resolver) {
-        final String[] projection = new String[] {GlomSystem.Columns.FILE_URI_COLUMN};
+        final String[] projection = new String[]{GlomSystem.Columns.FILE_URI_COLUMN};
         final Cursor cursor = resolver.query(uriSystem, projection, null, new String[]{}, null);
         if (cursor.getCount() <= 0) {
             Log.error("ContentResolver.query() returned no rows.");

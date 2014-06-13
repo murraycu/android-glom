@@ -65,16 +65,14 @@ import java.util.List;
  * on handsets.
  */
 public class TableDetailFragment extends Fragment
-    implements TableDataFragment, LoaderManager.LoaderCallbacks<Cursor> {
-
-    private static final int URL_LOADER = 0;
+        implements TableDataFragment, LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
      * The fragment argument representing the database table that this fragment
      * represents.
      */
     public static final String ARG_PRIMARY_KEY_VALUE = "pk_value";
-
+    private static final int URL_LOADER = 0;
     private long mSystemId = -1;
     private String mTableName;
     private TypedDataItem mPkValue;
@@ -109,7 +107,7 @@ public class TableDetailFragment extends Fragment
             } else {
                 final Parcelable object = bundle.getParcelable(ARG_PRIMARY_KEY_VALUE);
                 if ((object != null) && (object instanceof TypedDataItem)) {
-                    mPkValue = (TypedDataItem)object;
+                    mPkValue = (TypedDataItem) object;
                 }
             }
         }
@@ -151,7 +149,7 @@ public class TableDetailFragment extends Fragment
 
         //Add the group title:
         final String groupTitle = group.getTitle(""); //TODO: Internationalization.
-        if(!TextUtils.isEmpty(groupTitle)) {
+        if (!TextUtils.isEmpty(groupTitle)) {
             final TextView textViewGroupTitle = createTitleTextView(context, group, ":"); //TODO: Internationalization.
 
             //TODO: Somehow know whether to use TextAppearance_Medium or TextAppearance_Medium_Inverse
@@ -302,7 +300,7 @@ public class TableDetailFragment extends Fragment
         final TextView textViewTitle = UiUtils.createTextView(context);
 
         String title = item.getTitleOrName(""); //TODO: Internationalization.
-        if(!TextUtils.isEmpty(suffix)) {
+        if (!TextUtils.isEmpty(suffix)) {
             title += suffix;
         }
 
@@ -422,7 +420,7 @@ public class TableDetailFragment extends Fragment
         mCursor.moveToFirst(); //There should only be one anyway.
 
         //Look at each group in the layout:
-        if(mRootView == null) {
+        if (mRootView == null) {
             Log.error("mRootView is null.");
             return;
         }

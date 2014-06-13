@@ -74,7 +74,8 @@ public interface TableDataFragment {
 
     public void setTableName(final String tableName);
 
-    /** Update the UI in response to a document or database change.
+    /**
+     * Update the UI in response to a document or database change.
      */
     public void update();
 

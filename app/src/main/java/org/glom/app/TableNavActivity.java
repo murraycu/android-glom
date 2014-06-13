@@ -118,7 +118,7 @@ public class TableNavActivity extends DocumentActivity
     @Override
     public String getTableTitle(String tableName) {
         final Document document = getDocument();
-        if(document == null)
+        if (document == null)
             return null;
 
         return document.getTableTitle(tableName, "" /* TODO */);
@@ -127,7 +127,7 @@ public class TableNavActivity extends DocumentActivity
     @Override
     public String getTableTitleSingular(String tableName) {
         final Document document = getDocument();
-        if(document == null)
+        if (document == null)
             return null;
 
         return document.getTableTitleSingular(tableName, "" /* TODO */);
@@ -141,9 +141,9 @@ public class TableNavActivity extends DocumentActivity
         }
 
         //Get the table name currently in use by the fragment:
-        final Fragment fragment = fragmentManager.findFragmentById( R.id.table_data_container);
-        if(fragment != null) { //TODO: && (fragment instanceof TableDataFragment)) {
-            final TableDataFragment dataFragment = (TableDataFragment)fragment;
+        final Fragment fragment = fragmentManager.findFragmentById(R.id.table_data_container);
+        if (fragment != null) { //TODO: && (fragment instanceof TableDataFragment)) {
+            final TableDataFragment dataFragment = (TableDataFragment) fragment;
             if (dataFragment == null) {
                 return;
             }

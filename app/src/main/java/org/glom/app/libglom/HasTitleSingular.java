@@ -24,7 +24,9 @@ package org.glom.app.libglom;
  */
 public interface HasTitleSingular {
     public String getTitleSingular(final String locale);
+
     public String getTitleSingularWithFallback(final String locale);
+
     public Translatable getTitleSingularObject();
 
     public void setTitleSingular(final Translatable title);

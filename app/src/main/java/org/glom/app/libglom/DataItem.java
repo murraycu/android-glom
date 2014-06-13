@@ -24,7 +24,7 @@ import java.util.Date;
 /**
  * This Data Transfer Object (DTO) is used to send a data item between the client and the server.
  */
-public class DataItem  {
+public class DataItem {
 
     private String text;
     private boolean bool;
