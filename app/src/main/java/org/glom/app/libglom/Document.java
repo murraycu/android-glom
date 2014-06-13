@@ -99,6 +99,7 @@ public class Document {
     private static final String NODE_TRANSLATIONS = "trans";
     private static final String ATTRIBUTE_TRANSLATION_LOCALE = "loc";
     private static final String ATTRIBUTE_TRANSLATION_TITLE = "val";
+    private static final String NODE_TABLE_TITLE_SINGULAR = "title_singular";
     private static final String NODE_REPORTS = "reports";
     private static final String NODE_REPORT = "report";
     private static final String NODE_FIELDS = "fields";
@@ -385,6 +386,20 @@ public class Document {
                 }
             }
         }
+
+        //If it has a singular title, then load that too:
+        if (title instanceof HasTitleSingular) {
+            final Element nodeTitleSingular = getElementByName(node, NODE_TABLE_TITLE_SINGULAR);
+            if (nodeTitleSingular == null) {
+                return;
+            }
+
+            final Translatable titleSingular = new Translatable();
+            loadTitle(nodeTitleSingular, titleSingular);
+
+            final HasTitleSingular hasTitleSingular = (HasTitleSingular) title;
+            hasTitleSingular.setTitleSingular(titleSingular);
+        }
     }
 
     private void saveTitle(final org.w3c.dom.Document doc, final Element node, final Translatable title) {
@@ -399,6 +414,16 @@ public class Document {
 
             element.setAttribute(ATTRIBUTE_TRANSLATION_LOCALE, entry.getKey());
             element.setAttribute(ATTRIBUTE_TRANSLATION_TITLE, entry.getValue());
+        }
+
+        //If it has a singular title, then save that too:
+        if (title instanceof HasTitleSingular) {
+            final HasTitleSingular hasTitleSingular = (HasTitleSingular) title;
+            final Translatable titleSingular = hasTitleSingular.getTitleSingularObject();
+            if (titleSingular != null) {
+                final Element nodeTitleSingular = createElement(doc, node, NODE_TABLE_TITLE_SINGULAR);
+                saveTitle(doc, nodeTitleSingular, titleSingular);
+            }
         }
     }
 
@@ -1566,6 +1591,15 @@ public class Document {
         return info.getTitle(locale);
     }
 
+    public String getTableTitleSingular(final String tableName, final String locale) {
+        final TableInfo info = getTableInfo(tableName);
+        if (info == null) {
+            return "";
+        }
+
+        return info.getTitleSingularWithFallback(locale);
+    }
+
     public String getTableTitleOrName(final String tableName, final String locale) {
         final TableInfo info = getTableInfo(tableName);
         if (info == null) {
@@ -2008,7 +2042,8 @@ public class Document {
         HOSTING_MODE_POSTGRES_CENTRAL, HOSTING_MODE_POSTGRES_SELF, HOSTING_MODE_SQLITE, HOSTING_MODE_MYSQL_CENTRAL, HOSTING_MODE_MYSQL_SELF
     }
 
-    private static class TableInfo extends Translatable {
+    private static class TableInfo extends Translatable implements HasTitleSingular  {
+        private Translatable titleSingular = null;
         private final Hashtable<String, Field> fieldsMap = new Hashtable<>();
         private final Hashtable<String, Relationship> relationshipsMap = new Hashtable<>();
         private final Hashtable<String, Report> reportsMap = new Hashtable<>();
@@ -2019,6 +2054,34 @@ public class Document {
 
         // A list of maps (field name to value).
         private List<Map<String, DataItem>> exampleRows = null;
+
+        @Override
+        public String getTitleSingular(final String locale) {
+            if (titleSingular == null) {
+                return null;
+            }
+
+            return titleSingular.getTitle(locale);
+        }
+
+        @Override
+        public String getTitleSingularWithFallback(final String locale) {
+            String result = getTitleSingular(locale);
+            if (result == null) {
+                result = getTitleOrName(locale);
+            }
+
+            return result;
+        }
+
+        public Translatable getTitleSingularObject() {
+            return titleSingular;
+        }
+
+        @Override
+        public void setTitleSingular(final Translatable title) {
+            titleSingular = title;
+        }
     }
 
     /**

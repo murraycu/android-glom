@@ -115,6 +115,13 @@ public class DocumentTest extends AndroidTestCase {
         assertEquals("albums, songs, publishers, artists", tables);
     }
 
+    public void testReadSingularTableName() {
+        final String singularTitle = document.getTableTitleSingular("albums", defaultLocale);
+        assertEquals("Album", singularTitle);
+
+        //TODO: Check with the germanLocale too, when there is a translation.
+    }
+
     String getTitles(final List<Field> list, final String locale) {
         String result = "";
         for (int i = 0; i < list.size(); i++) {

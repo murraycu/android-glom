@@ -115,6 +115,16 @@ public class TableDataActivity extends DocumentActivity
     }
 
     @Override
+    public String getTableTitleSingular(String tableName) {
+        final Document document = getDocument();
+        if(document == null)
+            return null;
+
+        return document.getTableTitleSingular(tableName, "" /* TODO */);
+    }
+
+
+    @Override
     public void onRecordSelected(final String tableName, final TypedDataItem primaryKeyValue) {
         navigate(tableName, primaryKeyValue);
     }
