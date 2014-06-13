@@ -57,6 +57,11 @@ public interface TableDataFragment {
         public String getTableTitle(final String tableName) {
             return null;
         }
+
+        @Override
+        public String getTableTitleSingular(final String tableName) {
+            return null;
+        }
     };
 
     public long getSystemId();
@@ -85,9 +90,14 @@ public interface TableDataFragment {
      */
     public interface Callbacks extends TableNavCallbacks {
         /**
-         * Callback to get title of a table.
+         * Callback to get the title of a table.
          */
         public String getTableTitle(final String tableName);
+
+        /**
+         * Callback to get the singular title of a table.
+         */
+        public String getTableTitleSingular(final String tableName);
 
         //TODO: Don't just use a String for the primary key value.
 

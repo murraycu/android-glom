@@ -125,6 +125,15 @@ public class TableNavActivity extends DocumentActivity
     }
 
     @Override
+    public String getTableTitleSingular(String tableName) {
+        final Document document = getDocument();
+        if(document == null)
+            return null;
+
+        return document.getTableTitleSingular(tableName, "" /* TODO */);
+    }
+
+    @Override
     protected void navigateToList() {
         final FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager == null) {

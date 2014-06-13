@@ -365,7 +365,7 @@ public class TableDetailFragment extends Fragment
     }
 
     private void showTableTitle(final View rootView) {
-        final String title = mCallbacks.getTableTitle(getTableName());
+        final String title = mCallbacks.getTableTitleSingular(getTableName());
         ((TextView) rootView.findViewById(R.id.textView)).setText(title);
     }
 
