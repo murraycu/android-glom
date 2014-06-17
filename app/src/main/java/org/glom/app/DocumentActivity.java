@@ -21,7 +21,6 @@ package org.glom.app;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
