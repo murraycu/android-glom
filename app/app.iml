@@ -61,7 +61,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="jooq-3.3.2" level="project" />
+    <orderEntry type="library" exported="" name="jooq-3.4.0" level="project" />
     <orderEntry type="library" exported="" name="commons-codec-1.8" level="project" />
     <orderEntry type="library" exported="" name="guava-17.0" level="project" />
   </component>

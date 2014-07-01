@@ -27,7 +27,9 @@ import org.glom.app.libglom.DataItem;
 import org.glom.app.libglom.Document;
 import org.glom.app.libglom.Field;
 import org.jooq.DSLContext;
+import org.jooq.Insert;
 import org.jooq.InsertResultStep;
+import org.jooq.InsertSetMoreStep;
 import org.jooq.InsertSetStep;
 import org.jooq.Record;
 import org.jooq.SQLDialect;
@@ -130,7 +132,8 @@ public class SelfHoster {
 
         final List<Map<String, DataItem>> exampleRows = document.getExampleRows(tableName);
         for (final Map<String, DataItem> row : exampleRows) {
-            InsertSetStep<Record> insertStep = factory.insertInto(table);
+            final InsertSetStep<Record> insertStep = factory.insertInto(table);
+            InsertSetMoreStep<Record> insertMoreStep = null;
 
             for (final Entry<String, DataItem> entry : row.entrySet()) {
                 final String fieldName = entry.getKey();
@@ -150,16 +153,28 @@ public class SelfHoster {
                 }
 
                 final Object fieldValue = value.getValue(field.getGlomType());
-                insertStep = insertStep.set(jooqField, fieldValue);
+
+                // Cope with the different InsertSetStep/InsertSetMoreStep types,
+                // which have no useful common base.
+                if(insertMoreStep == null) {
+                    insertMoreStep = insertStep.set(jooqField, fieldValue);
+                } else {
+                    insertMoreStep = insertMoreStep.set(jooqField, fieldValue);
+                }
             }
 
-            if (!(insertStep instanceof InsertResultStep<?>)) {
+            // Cope with the different InsertSetStep/InsertSetMoreStep types,
+            // which have no useful common base. (InsertSetStep does not derive from Insert).
+            InsertResultStep<Record> insertResultStep = null;
+            if((insertMoreStep != null) && ((insertMoreStep instanceof InsertResultStep<?>))) {
+                insertResultStep = (InsertResultStep<Record>) insertMoreStep;
+            } else if(insertStep instanceof InsertResultStep<?>) {
+                insertResultStep = (InsertResultStep<Record>) insertStep;
+            }
+
+            if(insertResultStep == null) {
                 continue;
             }
-
-            // We suppress the warning because we _do_ check the cast above.
-            @SuppressWarnings("unchecked")
-            final InsertResultStep<Record> insertResultStep = (InsertResultStep<Record>) insertStep;
 
             db.execSQL(insertResultStep.getSQL(), insertResultStep.getBindValues().toArray());
             // TODO: Check that it worked.

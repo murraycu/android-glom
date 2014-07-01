@@ -30,6 +30,6 @@ android {
 
 dependencies {
     compile 'commons-codec:commons-codec:1.8'
-    compile 'org.jooq:jooq:3.3.2'
+    compile 'org.jooq:jooq:3.4.0'
     compile 'com.google.guava:guava:17.0'
 }
